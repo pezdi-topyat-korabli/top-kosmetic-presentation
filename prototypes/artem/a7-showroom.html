@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>A7 · Шоурум — прототип TOP Cosmetics</title>
+<link rel="stylesheet" href="shared/base.css">
+<style>
+@font-face { font-family: 'PT Serif'; src: url(fonts/pt-serif-cyrillic-400-normal.woff2) format('woff2'); font-weight: 400; font-display: swap; unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: 'PT Serif'; src: url(fonts/pt-serif-latin-400-normal.woff2) format('woff2'); font-weight: 400; font-display: swap; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD, U+20BD; }
+@font-face { font-family: 'PT Serif'; src: url(fonts/pt-serif-cyrillic-700-normal.woff2) format('woff2'); font-weight: 700; font-display: swap; unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: 'PT Serif'; src: url(fonts/pt-serif-latin-700-normal.woff2) format('woff2'); font-weight: 700; font-display: swap; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD, U+20BD; }
+@font-face { font-family: 'PT Sans'; src: url(fonts/pt-sans-cyrillic-400-normal.woff2) format('woff2'); font-weight: 400; font-display: swap; unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: 'PT Sans'; src: url(fonts/pt-sans-latin-400-normal.woff2) format('woff2'); font-weight: 400; font-display: swap; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD, U+20BD; }
+@font-face { font-family: 'PT Sans'; src: url(fonts/pt-sans-cyrillic-700-normal.woff2) format('woff2'); font-weight: 700; font-display: swap; unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: 'PT Sans'; src: url(fonts/pt-sans-latin-700-normal.woff2) format('woff2'); font-weight: 700; font-display: swap; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD, U+20BD; }
+:root {
+  --sand: #f6f1e7; --paper: #fffdf8; --sand-2: #efe7d6; --line: #ddd3bf; --line-2: #e9e1cf;
+  --ink: #14264a; --ink-2: #2c3a55; --ink-3: #4b5566;
+  --navy: #12233f; --navy-2: #1b3358; --on-navy: #f6f1e7; --on-navy-2: #c9d3e0;
+  --tc-focus: #1d5fbf; --tc-mark: #f3dc9b;
+  --serif: 'PT Serif', Georgia, serif; --sans: 'PT Sans', system-ui, sans-serif;
+  --panel: 360px; --pad: clamp(16px, 3.4vw, 48px); --r: 6px;
+}
+body { background: var(--sand); color: var(--ink); font: 400 17px/1.55 var(--sans); }
+h1, h2, h3 { margin: 0; font-family: var(--serif); font-weight: 700; line-height: 1.15; }
+.muted { color: var(--ink-3); }
+.ser { font-family: var(--serif); }
+
+.shell { display: grid; grid-template-columns: var(--panel) minmax(0, 1fr); align-items: start; }
+@media (min-width: 1024px) { .shell { background: linear-gradient(to right, var(--navy) var(--panel), transparent var(--panel)); } }
+
+/* ---------- панель магазина ---------- */
+.store { position: sticky; top: 0; height: 100vh; overflow-y: auto; background: var(--navy); color: var(--on-navy); scrollbar-width: thin; scrollbar-color: #3a5480 var(--navy); }
+.store :focus-visible { outline-color: #f3dc9b; }
+.store-sum { display: none; }
+.store-body { padding: 28px 28px 32px; }
+.s-logo { display: inline-block; font-family: var(--serif); font-weight: 700; font-size: 26px; line-height: 1.1; text-decoration: none; color: var(--on-navy); }
+.s-kicker { margin: 6px 0 0; font-size: 15px; color: var(--on-navy-2); }
+.s-photo { margin-top: 22px; aspect-ratio: 4 / 3; display: grid; place-items: center; align-content: center; gap: 8px; padding: 16px; border: 1.5px dashed #6d84a8; border-radius: var(--r); text-align: center; font-size: 15px; color: var(--on-navy-2); background: var(--navy-2); }
+.s-photo svg { color: var(--on-navy-2); }
+.s-facts { margin: 22px 0 0; display: grid; gap: 14px; }
+.s-facts > div { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; }
+.s-facts svg { margin-top: 3px; color: #f3dc9b; }
+.s-facts dt { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--on-navy-2); }
+.s-facts dd { margin: 2px 0 0; font-size: 17px; line-height: 1.4; }
+.s-facts a { color: var(--on-navy); font-weight: 700; text-underline-offset: 4px; text-decoration-color: #6d84a8; }
+.s-facts a:hover { text-decoration-color: currentColor; }
+.s-h { margin: 28px 0 10px; font-size: 19px; }
+.s-ways { list-style: none; margin: 0; padding: 0; border-top: 1px solid #304a72; }
+.s-ways li { padding: 10px 0; border-bottom: 1px solid #304a72; }
+.s-ways b { display: block; font-size: 17px; }
+.s-ways span { font-size: 15px; color: var(--on-navy-2); }
+.s-note { margin: 16px 0 0; font-size: 14px; color: var(--on-navy-2); }
+
+/* ---------- верх контента ---------- */
+.content { min-width: 0; }
+.top { position: sticky; top: 0; z-index: 20; background: var(--sand); border-bottom: 1px solid var(--line); }
+.top-row { display: flex; gap: 14px; align-items: center; padding: 14px var(--pad) 10px; }
+.search { position: relative; flex: 1; max-width: 560px; }
+.search input { width: 100%; height: 46px; padding: 0 14px 0 44px; border: 1px solid #b9ad94; border-radius: var(--r); background: var(--paper); font-size: 16px; color: var(--ink); }
+.search input::placeholder { color: #5d6675; }
+.search input:hover { border-color: var(--ink-3); }
+.search svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--ink-3); }
+.cart-btn { margin-left: auto; display: inline-flex; align-items: center; gap: 10px; height: 46px; padding: 0 16px; border: 0; border-radius: var(--r); background: var(--ink); color: var(--on-navy); font-weight: 700; font-size: 16px; }
+.cart-btn:hover { background: var(--navy-2); }
+.cart-btn b { min-width: 24px; height: 24px; padding: 0 6px; display: inline-grid; place-items: center; border-radius: 99px; background: var(--on-navy); color: var(--ink); font-size: 14px; }
+.nav { display: flex; gap: 4px; padding: 0 var(--pad); overflow-x: auto; scrollbar-width: none; }
+.nav a { flex: none; padding: 8px 10px 10px; font-size: 16px; text-decoration: none; color: var(--ink-2); border-bottom: 3px solid transparent; }
+.nav a:hover { color: var(--ink); border-bottom-color: var(--line); }
+.nav a[aria-current="page"] { color: var(--ink); font-weight: 700; border-bottom-color: var(--ink); }
+.nav a:focus-visible { outline-offset: -3px; }
+.page { padding: 0 var(--pad); max-width: 1180px; }
+
+/* ---------- главная ---------- */
+.hero { padding: clamp(32px, 5vw, 64px) 0 clamp(28px, 4vw, 44px); }
+.kicker { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-3); }
+.kicker::before { content: ''; width: 28px; height: 2px; background: var(--ink); }
+.hero h1 { margin-top: 14px; max-width: 820px; font-size: clamp(36px, 5.2vw, 68px); letter-spacing: -.01em; line-height: 1.05; }
+.hero h1 em { font-style: italic; font-weight: 400; }
+.hero p { margin: 18px 0 0; max-width: 620px; font-size: 19px; color: var(--ink-2); }
+.cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 50px; padding: 0 24px; border-radius: var(--r); border: 1.5px solid var(--ink); background: var(--ink); color: var(--on-navy); font-weight: 700; font-size: 17px; text-decoration: none; }
+.btn:hover { background: var(--navy-2); }
+.btn.ghost { background: transparent; color: var(--ink); }
+.btn.ghost:hover { background: var(--paper); }
+.sec { margin-top: clamp(36px, 5vw, 64px); }
+.sec-h { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 20px; margin-bottom: 18px; }
+.sec-h h2 { font-size: clamp(28px, 3.4vw, 42px); font-weight: 400; letter-spacing: -.01em; }
+.sec-h p { margin: 0; font-size: 15px; color: var(--ink-3); }
+.sec-h a { font-weight: 700; text-underline-offset: 4px; }
+
+.get { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.get-card { display: flex; flex-direction: column; padding: clamp(20px, 2.4vw, 32px); border-right: 1px solid var(--line); }
+.get-card:last-child { border-right: 0; }
+.get-card .n { font-family: var(--serif); font-size: 52px; line-height: 1; color: var(--ink); }
+.get-card h3 { margin-top: 14px; font-size: 26px; }
+.get-card p { margin: 10px 0 0; color: var(--ink-2); }
+.get-card .fine { margin-top: auto; padding-top: 18px; font-size: 15px; color: var(--ink-3); border-top: 1px dashed var(--line); }
+.get-card .addr { margin-top: 14px; padding: 12px 14px; border-radius: var(--r); background: var(--sand); font-size: 16px; }
+.get-card .addr b { display: block; }
+.get-foot { margin: 12px 0 0; font-size: 15px; color: var(--ink-3); }
+
+.shelves { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.shelf { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); background: var(--paper); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; transition: border-color .18s, box-shadow .18s; }
+.shelf:hover { border-color: var(--ink); box-shadow: 0 12px 28px rgba(20,38,74,.08); }
+.shelf-imgs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line-2); border-bottom: 1px solid var(--line); }
+.shelf-imgs span { background: #fff; padding: 10px; min-width: 0; }
+.shelf-imgs img { width: 100%; height: auto; aspect-ratio: 1; object-fit: contain; }
+.shelf-imgs .blank { background: var(--sand); }
+.shelf-b { padding: 18px 20px 20px; }
+.shelf-b h3 { font-size: 26px; }
+.shelf-b h3 a { text-decoration: none; }
+.shelf-b h3 a::after { content: ''; position: absolute; inset: 0; }
+.shelf-b h3 a:focus-visible { outline-offset: 3px; }
+.shelf:has(h3 a:focus-visible) { border-color: var(--ink); }
+.shelf-b p { margin: 6px 0 0; font-size: 15px; color: var(--ink-3); }
+.shelf-b .cnt { font-weight: 700; color: var(--ink); }
+
+.pro { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 20px 40px; align-items: center; padding: clamp(24px, 3.4vw, 44px); border-radius: 10px; background: var(--sand-2); border: 1px solid var(--line); }
+.pro h2 { font-size: clamp(26px, 3vw, 36px); font-weight: 400; }
+.pro p { margin: 12px 0 0; color: var(--ink-2); }
+.pro-call { padding: 20px; border-radius: var(--r); background: var(--paper); border: 1px solid var(--line); }
+.pro-call span { display: block; font-size: 14px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-3); }
+.pro-call a { display: inline-block; margin-top: 4px; font-family: var(--serif); font-weight: 700; font-size: clamp(24px, 2.6vw, 32px); text-underline-offset: 5px; }
+.pro-call p { margin: 8px 0 0; font-size: 15px; }
+
+/* ---------- каталог ---------- */
+.crumbs { display: flex; flex-wrap: wrap; gap: 4px 8px; padding-top: 22px; font-size: 15px; color: var(--ink-3); }
+.crumbs a { color: var(--ink-2); text-underline-offset: 3px; }
+.cat-h { padding: 14px 0 6px; }
+.cat-h h1 { font-size: clamp(32px, 4.4vw, 56px); font-weight: 400; letter-spacing: -.01em; }
+.found { margin: 8px 0 0; font-size: 16px; color: var(--ink-2); }
+.bar { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr); gap: 12px; margin-top: 18px; padding: 14px; border-radius: 10px; background: var(--paper); border: 1px solid var(--line); }
+.bar label { display: grid; gap: 4px; font-size: 14px; font-weight: 700; color: var(--ink-2); min-width: 0; }
+.bar select { width: 100%; min-width: 0; height: 44px; padding: 0 10px; border-radius: var(--r); border: 1px solid #b9ad94; background: var(--sand); font-size: 16px; color: var(--ink); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 4px 12px; border-radius: 99px; background: var(--ink); color: var(--on-navy); font-size: 15px; font-weight: 700; text-decoration: none; }
+.chip.ghost { background: transparent; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.pnote { margin: 16px 0 0; font-size: 14px; color: var(--ink-3); }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr)); gap: 14px; margin-top: 14px; padding-bottom: 20px; }
+.hc { position: relative; display: grid; grid-template-columns: 148px minmax(0, 1fr); background: var(--paper); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; transition: border-color .18s, box-shadow .18s; }
+.hc:hover { border-color: var(--ink); box-shadow: 0 10px 24px rgba(20,38,74,.08); }
+.hc-img { background: #fff; display: grid; place-items: center; padding: 10px; border-right: 1px solid var(--line-2); }
+.hc-img img { width: 100%; aspect-ratio: 1; object-fit: contain; }
+.hc-img .noimg { font-size: 14px; color: var(--ink-3); text-align: center; }
+.hc-b { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px 14px; min-width: 0; }
+.hc-brand { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+.hc-name { font-size: 18px; font-weight: 700; line-height: 1.3; text-decoration: none; }
+.hc-name::after { content: ''; position: absolute; inset: 0; }
+.hc-name:focus-visible { outline-offset: 3px; border-radius: 2px; }
+.hc:has(.hc-name:focus-visible) { border-color: var(--ink); }
+.hc-meta { font-size: 15px; color: var(--ink-3); }
+.hc-get { display: flex; gap: 8px; margin-top: 6px; padding: 8px 10px; border-radius: var(--r); background: var(--sand); font-size: 14px; line-height: 1.4; color: var(--ink-2); }
+.hc-get svg { flex: none; margin-top: 2px; color: var(--ink); }
+.hc-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; margin-top: auto; padding-top: 10px; }
+.price { font-family: var(--serif); font-weight: 700; font-size: 22px; white-space: nowrap; }
+.add { position: relative; z-index: 2; height: 40px; padding: 0 16px; border-radius: var(--r); border: 1.5px solid var(--ink); background: transparent; color: var(--ink); font-weight: 700; font-size: 15px; white-space: nowrap; }
+.add:hover { background: var(--ink); color: var(--on-navy); }
+.empty { margin-top: 18px; padding: 36px 24px; border: 1.5px dashed #b9ad94; border-radius: 10px; background: var(--paper); }
+.empty h2 { font-size: 26px; font-weight: 400; }
+.empty p { margin: 8px 0 16px; color: var(--ink-2); max-width: 560px; }
+
+/* ---------- товар ---------- */
+.pdp { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(24px, 3.4vw, 48px); padding: 18px 0 20px; }
+.gallery { position: sticky; top: 130px; align-self: start; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: clamp(14px, 2.4vw, 28px); }
+.gallery img { width: 100%; aspect-ratio: 1; object-fit: contain; }
+.gallery .lowres { margin: 12px 0 0; padding: 10px 12px; border-radius: var(--r); background: var(--sand); font-size: 15px; color: var(--ink-2); }
+.noimg-big { aspect-ratio: 1; display: grid; place-items: center; background: var(--sand); color: var(--ink-2); }
+.pdp-brand { font-size: 15px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+.pdp h1 { margin-top: 8px; font-size: clamp(28px, 3vw, 40px); line-height: 1.15; }
+.pdp-meta { margin: 8px 0 0; font-size: 16px; color: var(--ink-3); }
+.deal { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0; margin-top: 22px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--paper); }
+.deal > div { padding: 20px; min-width: 0; }
+.deal .buy { border-right: 1px solid var(--line); }
+.deal .price { font-size: 36px; }
+.note { margin: 6px 0 0; font-size: 14px; color: var(--ink-3); }
+.buy-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.buy-row .btn { flex: 1; min-width: 150px; }
+.qty { display: inline-flex; align-items: center; border: 1.5px solid #b9ad94; border-radius: var(--r); height: 50px; background: var(--paper); }
+.qty button { width: 42px; height: 100%; border: 0; background: transparent; font-size: 20px; font-weight: 700; color: var(--ink); }
+.qty output { min-width: 28px; text-align: center; font-weight: 700; }
+.pick { background: var(--sand-2); }
+.pick h2 { font-size: 21px; }
+.pick ul { list-style: none; margin: 12px 0 0; padding: 0; }
+.pick li { padding: 9px 0; border-top: 1px solid var(--line); }
+.pick li b { display: block; font-size: 16px; }
+.pick li span { font-size: 15px; color: var(--ink-2); }
+.pick .call { margin: 12px 0 0; font-size: 15px; }
+.pick .call a { font-weight: 700; text-underline-offset: 3px; }
+.also { margin: 12px 0 0; font-size: 16px; }
+.also a { font-weight: 700; text-underline-offset: 3px; }
+.block { margin-top: 28px; }
+.block h2 { font-size: 22px; margin-bottom: 10px; }
+.block p { margin: 0 0 10px; color: var(--ink-2); }
+.missing { padding: 10px 14px; border-radius: var(--r); background: var(--sand-2); color: var(--ink-2); font-size: 16px; }
+.ids { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 18px; margin: 0; font-size: 16px; }
+.ids dt { color: var(--ink-3); }
+.ids dd { margin: 0; font-weight: 700; overflow-wrap: anywhere; }
+
+/* ---------- корзина ---------- */
+dialog.cart { width: min(440px, 100vw); max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0 0 0 auto; padding: 0; border: 0; background: var(--paper); color: var(--ink); }
+dialog.cart::backdrop { background: rgba(18,35,63,.5); }
+dialog.cart[open] { animation: slide .22s ease-out; }
+@keyframes slide { from { transform: translateX(30px); opacity: 0; } }
+.cart-in { display: flex; flex-direction: column; height: 100%; }
+.cart-h { display: flex; align-items: center; justify-content: space-between; padding: 20px; border-bottom: 1px solid var(--line); }
+.cart-h h2 { font-size: 24px; }
+.x { width: 42px; height: 42px; border-radius: var(--r); border: 1px solid var(--line); background: transparent; font-size: 22px; line-height: 1; color: var(--ink); }
+.cart-list { flex: 1; overflow: auto; padding: 8px 20px; }
+.cart-item { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line-2); }
+.cart-item img { width: 64px; height: 64px; object-fit: contain; border-radius: var(--r); border: 1px solid var(--line-2); background: #fff; }
+.cart-item a { font-weight: 700; font-size: 15px; line-height: 1.35; text-decoration: none; }
+.ci-row { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; gap: 8px; }
+.cart-item .qty { height: 38px; }
+.cart-item .qty button { width: 34px; }
+.cart-f { padding: 18px 20px 22px; border-top: 1px solid var(--line); }
+.cart-total { display: flex; justify-content: space-between; font-family: var(--serif); font-weight: 700; font-size: 22px; }
+.cart-get { margin: 10px 0 0; font-size: 15px; color: var(--ink-2); }
+.cart-f .btn { width: 100%; margin-top: 14px; }
+.btn[aria-disabled="true"] { background: #e3dccd; border-color: #e3dccd; color: #2c3a55; cursor: not-allowed; }
+
+footer { margin-top: 56px; padding: 26px var(--pad) 40px; border-top: 1px solid var(--line); font-size: 15px; color: var(--ink-2); }
+
+@media (max-width: 1279px) {
+  :root { --panel: 320px; }
+  .store-body { padding: 24px 22px 28px; }
+  .get { grid-template-columns: 1fr; }
+  .get-card { border-right: 0; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 64px minmax(0, 1fr); column-gap: 18px; }
+  .get-card:last-child { border-bottom: 0; }
+  .get-card > * { grid-column: 2; }
+  .get-card .n { grid-column: 1; grid-row: 1 / span 4; }
+  .get-card h3 { margin-top: 0; }
+  .deal { grid-template-columns: 1fr; }
+  .deal .buy { border-right: 0; border-bottom: 1px solid var(--line); }
+}
+@media (max-width: 1023px) {
+  .shell { display: block; }
+  .store { position: static; height: auto; overflow: visible; }
+  .store-sum { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; padding: 8px var(--pad); cursor: pointer; list-style: none; }
+  .store-sum::-webkit-details-marker { display: none; }
+  .store-sum:focus-visible { outline-offset: -4px; }
+  .sum-name { font-family: var(--serif); font-weight: 700; font-size: 17px; line-height: 1.25; }
+  .sum-hint { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; color: var(--on-navy-2); white-space: nowrap; }
+  .sum-hint svg { transition: transform .2s; }
+  .store-d[open] .sum-hint svg { transform: rotate(180deg); }
+  .store-body { padding: 4px var(--pad) 24px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 28px; }
+  .store-body > * { grid-column: 1 / -1; }
+  .s-logo, .s-kicker { display: none; }
+  .s-photo { grid-column: 1; margin-top: 12px; }
+  .s-facts { grid-column: 2; margin-top: 12px; }
+  .pdp { grid-template-columns: 1fr; }
+  .gallery { position: static; max-width: 480px; }
+  .pro { grid-template-columns: 1fr; }
+}
+@media (max-width: 680px) {
+  .top-row { gap: 10px; padding-top: 10px; }
+  .search { max-width: none; }
+  .search input { padding-right: 8px; }
+  .cart-btn .lbl { display: none; }
+  .store-body { display: block; }
+  .s-photo { aspect-ratio: 16 / 7; }
+  .shelves { grid-template-columns: 1fr; }
+  .bar { grid-template-columns: 1fr 1fr; }
+  .bar label:first-child { grid-column: 1 / -1; }
+  .hc { grid-template-columns: 108px minmax(0, 1fr); }
+  .hc-img { align-items: start; padding: 8px; }
+  .hc-b { padding: 12px 12px 12px; }
+  .hc-name { font-size: 16px; }
+  .hero p { font-size: 17px; }
+  .get-card { grid-template-columns: 44px minmax(0, 1fr); column-gap: 12px; }
+  .get-card .n { font-size: 40px; }
+  .get-card h3 { font-size: 23px; }
+}
+@media (max-width: 360px) {
+  .bar { grid-template-columns: 1fr; }
+  .hc { grid-template-columns: 88px minmax(0, 1fr); }
+  .add { width: 100%; }
+  .sum-hint span { display: none; }
+}
+</style>
+</head>
+<body>
+<a class="tc-skip" href="#main">К содержанию</a>
+<div class="shell">
+  <aside class="store" aria-label="Магазин в Севастополе">
+    <details class="store-d" id="storeD">
+      <summary class="store-sum"><span class="sum-name">TOP Cosmetics · Севастополь</span><span class="sum-hint"><span>Адрес и часы</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></summary>
+      <div class="store-body" id="storeBody"></div>
+    </details>
+  </aside>
+  <div class="content">
+    <header class="top">
+      <div class="top-row">
+        <form class="search" role="search" id="search">
+          <label class="visually-hidden" for="q">Поиск по каталогу</label>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="q" name="q" type="search" placeholder="Название, бренд или артикул" autocomplete="off">
+        </form>
+        <button class="cart-btn" type="button" id="cartOpen" aria-haspopup="dialog"><span class="lbl">Корзина</span><b id="cartCount">0</b><span class="visually-hidden"> товаров в демо-корзине</span></button>
+      </div>
+      <nav class="nav" aria-label="Разделы" id="nav"></nav>
+    </header>
+    <main id="main"></main>
+    <footer>Прототип A7 «Шоурум». Адрес, телефон и часы — с сайта магазина. Тексты, цены и фото — из публичного каталога на 15.11.2026. Фото шоурума в прототипе нет: нужно от магазина.</footer>
+  </div>
+</div>
+<dialog class="cart" id="cart" aria-labelledby="cartTitle">
+  <div class="cart-in">
+    <div class="cart-h"><h2 id="cartTitle">Демо-корзина</h2><button class="x" type="button" id="cartClose" aria-label="Закрыть корзину">×</button></div>
+    <div class="cart-list" id="cartList"></div>
+    <div class="cart-f">
+      <div class="cart-total"><span>Итого</span><span id="cartTotal">0 ₽</span></div>
+      <p class="cart-get">Получение: самовывоз в Севастополе, курьер по Крыму или СДЭК — стоимость и срок при оформлении.</p>
+      <p class="note">Сумма по ценам снимка 15.11.2026. Итог считается при оформлении на сайте.</p>
+      <button class="btn" type="button" aria-disabled="true" id="checkout">Оформление недоступно в прототипе</button>
+    </div>
+  </div>
+</dialog>
+<script src="shared/data.js"></script>
+<script src="shared/engine.js"></script>
+<script>
+(function () {
+  const { esc, money, img, href } = TC
+  const $ = (s, el = document) => el.querySelector(s)
+  const main = $('#main')
+  const st = TC.store
+  TC.ribbon('A7 «Шоурум»')
+
+  const ico = {
+    pin: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',
+    phone: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>',
+    clock: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+    box: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5z"/><path d="M3 7.5 12 12l9-4.5M12 12v9"/></svg>',
+    cam: '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>',
+  }
+  const WAYS_NOTE = {
+    'Самовывоз': 'из магазина в Севастополе',
+    'Курьер по Крыму': 'по адресу в Крыму',
+    'СДЭК': 'в пункт выдачи СДЭК',
+  }
+
+  // ---------- панель магазина ----------
+  $('#storeBody').innerHTML = `
+    <a class="s-logo" href="#home">TOP Cosmetics</a>
+    <p class="s-kicker">Магазин косметики в Севастополе</p>
+    <div class="s-photo">${ico.cam}<span>Фото шоурума — нужно от магазина</span></div>
+    <dl class="s-facts">
+      <div>${ico.pin}<div><dt>Адрес</dt><dd>${esc(st.address)}</dd></div></div>
+      <div>${ico.phone}<div><dt>Телефон</dt><dd><a href="${esc(st.phoneHref)}">${esc(st.phone)}</a></dd></div></div>
+      <div>${ico.clock}<div><dt>Часы работы</dt><dd>${esc(st.hours).replace(', ', '<br>')}</dd></div></div>
+    </dl>
+    <h2 class="s-h">Как получить заказ</h2>
+    <ul class="s-ways">${TC.delivery.map((d) => `<li><b>${esc(d)}</b><span>${esc(WAYS_NOTE[d] || '')}</span></li>`).join('')}</ul>
+    <p class="s-note">Стоимость и срок — при оформлении.</p>`
+  const desk = matchMedia('(min-width: 1024px)')
+  const syncPanel = () => { $('#storeD').open = desk.matches }
+  desk.addEventListener('change', syncPanel); syncPanel()
+
+  // ---------- шапка ----------
+  function renderNav(r) {
+    const prm = r.params || {}
+    const p = r.page === 'product' ? TC.byId.get(r.id) : null
+    const curRoot = p ? String(p.rootId) : r.page === 'catalog' ? String(prm.root || (prm.section ? rootOfSection(prm.section) : '')) : ''
+    $('#nav').innerHTML = `<a href="#home" ${r.page === 'home' ? 'aria-current="page"' : ''}>Главная</a>` +
+      `<a href="#catalog" ${r.page === 'catalog' && !curRoot ? 'aria-current="page"' : ''}>Весь каталог</a>` +
+      TC.tree.map((t) => `<a href="${href('catalog', { root: t.id })}" ${curRoot === String(t.id) ? 'aria-current="page"' : ''}>${esc(t.name)}</a>`).join('')
+  }
+  const rootOfSection = (sid) => { for (const r of TC.tree) if (r.children.some((c) => String(c.id) === String(sid))) return r.id; return '' }
+  $('#search').addEventListener('submit', (e) => { e.preventDefault(); TC.go('catalog', { q: $('#q').value.trim() }) })
+
+  // ---------- горизонтальная карточка ----------
+  function card(p, q) {
+    const src = img(p)
+    return `<article class="hc">
+      <div class="hc-img">${src ? `<img src="${src}" alt="${esc(p.brand + ' ' + p.kind)}" loading="lazy" width="280" height="280">` : '<span class="noimg">Фото нет на сайте</span>'}</div>
+      <div class="hc-b">
+        <span class="hc-brand">${TC.mark(p.brand, q)}${p.line ? ' · ' + esc(p.line) : ''}</span>
+        <a class="hc-name" href="${href('product', {}, p.id)}">${TC.mark(p.kind, q)}</a>
+        <span class="hc-meta">${esc(p.volume)} · ${esc(p.section || p.root)}${p.lowRes ? ' · фото низкого разрешения' : ''}</span>
+        <p class="hc-get" style="margin:6px 0 0">${ico.box}<span>Как получить: самовывоз / курьер по Крыму / СДЭК — стоимость при оформлении</span></p>
+        <div class="hc-foot"><span class="price">${money(p.price)}</span><button class="add" type="button" data-add="${p.id}" aria-label="В корзину: ${esc(p.name)}">В корзину</button></div>
+      </div></article>`
+  }
+
+  // ---------- главная ----------
+  function home() {
+    const ways = TC.delivery.map((d, i) => {
+      const body = d === 'Самовывоз'
+        ? `<p>Заберите заказ в магазине — там же можно посмотреть средства до покупки.</p><div class="addr"><b>${esc(st.address)}</b>${esc(st.hours).replace(', ', '<br>')}</div>`
+        : d === 'Курьер по Крыму' ? '<p>Привезём по адресу в Крыму. Адрес и удобное время укажете при оформлении.</p>'
+        : '<p>Отправим в пункт выдачи СДЭК. Пункт выберете при оформлении.</p>'
+      return `<article class="get-card"><span class="n" aria-hidden="true">${i + 1}</span><h3>${esc(d)}</h3>${body}<p class="fine">Стоимость и срок уточняются при оформлении.</p></article>`
+    }).join('')
+    const shelves = TC.tree.map((t) => {
+      const list = TC.products.filter((p) => p.rootId === t.id)
+      const pics = list.filter((p) => img(p)).slice(0, 3)
+      const secs = [...new Set(list.map((p) => p.section).filter(Boolean))]
+      return `<article class="shelf">
+        <div class="shelf-imgs">${[0, 1, 2].map((i) => pics[i] ? `<span><img src="${img(pics[i])}" alt="" loading="lazy" width="200" height="200"></span>` : '<span class="blank"></span>').join('')}</div>
+        <div class="shelf-b"><h3><a href="${href('catalog', { root: t.id })}">${esc(t.name)}</a></h3>
+          <p><span class="cnt">${TC.countLabel(list.length)} в прототипе</span>${secs.length ? ' · ' + esc(secs.join(', ')) : ''}</p></div>
+      </article>`
+    }).join('')
+    main.innerHTML = `<div class="page">
+      <section class="hero">
+        <span class="kicker">Севастополь · Крым</span>
+        <h1>Магазин косметики в&nbsp;Севастополе <em>— заберите сами или получите курьером</em></h1>
+        <p>Уход для лица, волос и тела. Выберите в каталоге, а получите удобным способом: в магазине, курьером по Крыму или через СДЭК.</p>
+        <div class="cta"><a class="btn" href="#catalog">Смотреть каталог</a><a class="btn ghost" href="${esc(st.phoneHref)}">${ico.phone} ${esc(st.phone)}</a></div>
+      </section>
+      <section class="sec" aria-labelledby="getH">
+        <div class="sec-h"><h2 id="getH">Как получить заказ</h2><p>Три способа, как на сайте магазина</p></div>
+        <div class="get">${ways}</div>
+        <p class="get-foot">Цены доставки и сроки в прототипе не показываем: их считает сайт при оформлении.</p>
+      </section>
+      <section class="sec" aria-labelledby="visitH">
+        <div class="sec-h"><h2 id="visitH">Зайти и посмотреть</h2><a href="#catalog">Весь каталог</a></div>
+        <p class="pnote" style="margin:-6px 0 16px">Разделы витрины — как в каталоге сайта. В прототипе ${TC.products.length} товара из ${TC.catalogTotal}.</p>
+        <div class="shelves">${shelves}</div>
+      </section>
+      <section class="sec pro" aria-labelledby="proH">
+        <div><h2 id="proH">Для специалистов</h2>
+          <p>Косметологам и салонам: условия уточняются у магазина. Позвоните — расскажут, как работать вместе.</p></div>
+        <div class="pro-call"><span>Телефон магазина</span><a href="${esc(st.phoneHref)}">${esc(st.phone)}</a><p class="muted">${esc(st.hours)}</p></div>
+      </section>
+    </div>`
+  }
+
+  // ---------- каталог ----------
+  function catalog(r) {
+    const prm = { ...r.params }
+    if (prm.section) prm.root = rootOfSection(prm.section) || prm.root
+    if (Array.isArray(prm.brand)) prm.brand = prm.brand[0]
+    const list = TC.filter(prm)
+    // числа для фильтров: при остальных выбранных условиях
+    const baseNoSect = TC.filter({ q: prm.q, brand: prm.brand })
+    const cntRoot = (id) => baseNoSect.filter((p) => p.rootId === id).length
+    const cntSect = (id) => baseNoSect.filter((p) => p.sectionId === id).length
+    const fc = TC.facets(prm)
+    const placeVal = prm.section ? 's' + prm.section : prm.root ? 'r' + prm.root : ''
+    const placeName = prm.section ? TC.sectionName(prm.section) : prm.root ? TC.rootName(prm.root) : ''
+    const title = placeName || (prm.q ? `Поиск: «${prm.q}»` : 'Весь каталог')
+    const chips = []
+    if (prm.q) chips.push(['Поиск: ' + prm.q, { ...prm, q: '' }])
+    if (placeName) chips.push([placeName, { ...prm, root: '', section: '' }])
+    if (prm.brand) chips.push([prm.brand, { ...prm, brand: '' }])
+    const body = list.length ? `<div class="cards">${list.map((p) => card(p, prm.q)).join('')}</div>`
+      : `<div class="empty"><h2>Ничего не нашли</h2><p>В прототипе ${TC.products.length} товара из ${TC.catalogTotal}. Попробуйте бренд, например «KLAPP», или тип средства — «шампунь». Или позвоните в магазин: <a href="${esc(st.phoneHref)}">${esc(st.phone)}</a>.</p><a class="btn ghost" href="#catalog">Сбросить поиск и фильтры</a></div>`
+    main.innerHTML = `<div class="page">
+      <nav class="crumbs" aria-label="Навигация"><a href="#home">Главная</a><span aria-hidden="true">/</span>${placeName ? `<a href="#catalog">Каталог</a><span aria-hidden="true">/</span>${prm.section ? `<a href="${href('catalog', { root: prm.root })}">${esc(TC.rootName(prm.root))}</a><span aria-hidden="true">/</span>` : ''}<span>${esc(placeName)}</span>` : '<span>Каталог</span>'}</nav>
+      <div class="cat-h"><h1>${esc(title)}</h1><p class="found" aria-live="polite">Найдено ${TC.countLabel(list.length)} в прототипе · всего на сайте ${TC.catalogTotal}</p></div>
+      <form class="bar" id="filters">
+        <label>Раздел<select name="place">
+          <option value="">Все разделы (${baseNoSect.length})</option>
+          ${TC.tree.map((t) => `<optgroup label="${esc(t.name)}"><option value="r${t.id}" ${placeVal === 'r' + t.id ? 'selected' : ''}>${esc(t.name)} — весь раздел (${cntRoot(t.id)})</option>${t.children.map((c) => `<option value="s${c.id}" ${placeVal === 's' + c.id ? 'selected' : ''}>${esc(c.name)} (${cntSect(c.id)})</option>`).join('')}</optgroup>`).join('')}
+        </select></label>
+        <label>Бренд<select name="brand">
+          <option value="">Все бренды</option>
+          ${TC.brands.map((b) => `<option value="${esc(b)}" ${prm.brand === b ? 'selected' : ''}>${esc(b)} (${fc.brand.get(b) || 0})</option>`).join('')}
+        </select></label>
+        <label>Порядок<select name="sort">${Object.entries(TC.SORTS).map(([k, s]) => `<option value="${k}" ${prm.sort === k ? 'selected' : ''}>${s.label}</option>`).join('')}</select></label>
+      </form>
+      ${chips.length ? `<div class="chips">${chips.map(([t, p]) => `<a class="chip" href="${href('catalog', p)}" aria-label="Убрать фильтр ${esc(t)}">${esc(t)} <span aria-hidden="true">×</span></a>`).join('')}<a class="chip ghost" href="#catalog">Сбросить всё</a></div>` : ''}
+      <p class="pnote">${TC.PRICE_NOTE}. ${TC.STOCK_NOTE}.</p>
+      ${body}
+    </div>`
+    $('#filters').addEventListener('change', () => {
+      const f = new FormData($('#filters')), pl = f.get('place') || ''
+      TC.go('catalog', { q: prm.q, root: pl[0] === 'r' ? pl.slice(1) : '', section: pl[0] === 's' ? pl.slice(1) : '', brand: f.get('brand'), sort: f.get('sort') })
+    })
+    $('#q').value = prm.q || ''
+  }
+
+  // ---------- товар ----------
+  let qty = 1
+  function product(r) {
+    const p = TC.byId.get(r.id)
+    if (!p) { main.innerHTML = `<div class="page"><div class="empty" style="margin-top:40px"><h1>Товар не найден</h1><p><a href="#catalog">В каталог</a></p></div></div>`; return }
+    qty = 1
+    const src = img(p)
+    const same = TC.products.filter((x) => x.id !== p.id && (p.sectionId ? x.sectionId === p.sectionId : x.rootId === p.rootId)).slice(0, 4)
+    const paras = p.description ? p.description.split('\n').filter(Boolean).map((t) => `<p>${esc(t)}</p>`).join('') : ''
+    const sample = p.sampleId && TC.byId.get(p.sampleId), full = p.fullSizeId && TC.byId.get(p.fullSizeId)
+    main.innerHTML = `<div class="page">
+      <nav class="crumbs" aria-label="Навигация"><a href="#home">Главная</a><span aria-hidden="true">/</span><a href="${href('catalog', { root: p.rootId })}">${esc(p.root)}</a>${p.sectionId ? `<span aria-hidden="true">/</span><a href="${href('catalog', { section: p.sectionId })}">${esc(p.section)}</a>` : ''}</nav>
+      <div class="pdp">
+        <div class="gallery">${src ? `<img src="${src}" alt="${esc(p.name)}" width="720" height="720">` : '<div class="noimg-big">Фото нет на сайте</div>'}
+          ${p.lowRes ? '<p class="lowres">Фото на сайте низкого разрешения — нужна замена от бренда или съёмка в магазине.</p>' : ''}</div>
+        <div>
+          <span class="pdp-brand">${esc(p.brand)}${p.line ? ' · ' + esc(p.line) : ''}</span>
+          <h1>${esc(p.kind)}</h1>
+          <p class="pdp-meta">${esc(p.volume)} · ${esc(p.section || p.root)} · арт. ${esc(p.article || 'не указан')}</p>
+          <div class="deal">
+            <div class="buy">
+              <div class="price">${money(p.price)}</div>
+              <p class="note">${TC.PRICE_NOTE}. ${TC.STOCK_NOTE}.</p>
+              <div class="buy-row">
+                <div class="qty" role="group" aria-label="Количество"><button type="button" data-q="-1" aria-label="Меньше">−</button><output id="qty" aria-live="polite">1</output><button type="button" data-q="1" aria-label="Больше">+</button></div>
+                <button class="btn" type="button" id="buyBtn">В корзину</button>
+              </div>
+            </div>
+            <div class="pick" aria-labelledby="pickH">
+              <h2 id="pickH">Получить в Севастополе</h2>
+              <ul>
+                <li><b>Самовывоз</b><span>${esc(st.address)}<br>${esc(st.hours).replace(', ', '<br>')}</span></li>
+                <li><b>Курьер по Крыму</b><span>стоимость и срок — при оформлении</span></li>
+                <li><b>СДЭК</b><span>стоимость и срок — при оформлении</span></li>
+              </ul>
+              <p class="call">Наличие уточняйте по телефону: <a href="${esc(st.phoneHref)}">${esc(st.phone)}</a></p>
+            </div>
+          </div>
+          ${sample ? `<p class="also">Есть пробник: <a href="${href('product', {}, sample.id)}">${esc(sample.kind)}, ${esc(sample.volume)}</a></p>` : ''}
+          ${full ? `<p class="also">Полный объём: <a href="${href('product', {}, full.id)}">${esc(full.kind)}, ${esc(full.volume)}</a></p>` : ''}
+          <div class="block"><h2>Описание</h2>${paras || '<p class="missing">Описания на сайте нет.</p>'}</div>
+          ${!p.hasComposition ? '<div class="block"><h2>Состав</h2><p class="missing">На сайте отдельно не указано. Нужен от бренда или из 1С.</p></div>' : ''}
+          ${!p.hasUsage ? '<div class="block"><h2>Применение</h2><p class="missing">На сайте отдельно не указано.</p></div>' : ''}
+          <div class="block"><h2>Данные товара</h2><dl class="ids">
+            <dt>ID в Битрикс</dt><dd>${p.id}</dd><dt>Артикул</dt><dd>${esc(p.article || 'не указан')}</dd><dt>XML_ID</dt><dd>не опубликован на сайте</dd>
+            <dt>Название на сайте</dt><dd>${esc(p.sourceName)}</dd><dt>Раздел</dt><dd>${esc(p.root)}${p.section ? ' / ' + esc(p.section) : ''}</dd></dl></div>
+        </div>
+      </div>
+      ${same.length ? `<section class="sec" aria-labelledby="sameH"><div class="sec-h"><h2 id="sameH">С той же полки</h2><a href="${href('catalog', p.sectionId ? { section: p.sectionId } : { root: p.rootId })}">${esc(p.section || p.root)}</a></div><div class="cards">${same.map((x) => card(x)).join('')}</div></section>` : ''}
+    </div>`
+    main.querySelectorAll('[data-q]').forEach((b) => b.addEventListener('click', () => { qty = Math.max(1, Math.min(99, qty + Number(b.dataset.q))); $('#qty').textContent = qty }))
+    $('#buyBtn').addEventListener('click', () => TC.cart.add(p.id, qty))
+  }
+
+  // ---------- корзина ----------
+  const dlg = $('#cart')
+  $('#cartOpen').addEventListener('click', () => dlg.showModal())
+  $('#cartClose').addEventListener('click', () => dlg.close())
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close() })
+  $('#checkout').addEventListener('click', () => TC.toast('Это прототип: заказ не оформляется, оплата не проводится.'))
+  TC.cart.on((s) => {
+    $('#cartCount').textContent = s.count
+    $('#cartTotal').textContent = money(s.total)
+    $('#cartList').innerHTML = s.items.length ? s.items.map(({ product: p, qty: n }) => `<div class="cart-item">
+      ${img(p) ? `<img src="${img(p)}" alt="" width="64" height="64">` : '<span></span>'}
+      <div><a href="${href('product', {}, p.id)}">${esc(p.name)}</a>
+      <div class="ci-row"><div class="qty" role="group" aria-label="Количество"><button type="button" data-cq="${p.id}" data-d="-1" aria-label="Меньше">−</button><output>${n}</output><button type="button" data-cq="${p.id}" data-d="1" aria-label="Больше">+</button></div><b>${money((p.price || 0) * n)}</b></div></div></div>`).join('') :
+      '<p class="muted" style="padding:20px 0">Пока пусто. Добавьте товар — заказ всё равно не оформится, это прототип.</p>'
+  })
+  $('#cartList').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-cq]')
+    if (b) { const id = Number(b.dataset.cq), it = TC.cart.state().items.find((x) => x.id === id); TC.cart.set(id, it.qty + Number(b.dataset.d)); return }
+    if (e.target.closest('a')) dlg.close()
+  })
+  document.addEventListener('click', (e) => { const b = e.target.closest('[data-add]'); if (b) TC.cart.add(Number(b.dataset.add)) })
+
+  TC.onRoute((r) => {
+    renderNav(r)
+    if (r.page !== 'catalog') $('#q').value = ''
+    if (r.page === 'catalog') catalog(r)
+    else if (r.page === 'product') product(r)
+    else home()
+    const p = r.page === 'product' && TC.byId.get(r.id)
+    document.title = (p ? p.name + ' — ' : r.page === 'catalog' ? 'Каталог — ' : '') + 'A7 · Шоурум — прототип TOP Cosmetics'
+  })
+})()
+</script>
+</body>
+</html>

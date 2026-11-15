@@ -1,0 +1,758 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>A4 · Лента — прототип TOP Cosmetics</title>
+<link rel="stylesheet" href="shared/base.css">
+<style>
+@font-face { font-family: 'Onest'; src: url(fonts/onest-cyrillic-wght-normal.woff2) format('woff2'); font-weight: 100 900; font-display: swap; unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: 'Onest'; src: url(fonts/onest-latin-wght-normal.woff2) format('woff2'); font-weight: 100 900; font-display: swap; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD, U+20BD; }
+:root {
+  --bg: #f6f4f1; --surface: #fff; --ink: #17141b; --ink-2: #47424e; --ink-3: #5b5563; --line: #e4dfe6; --line-2: #eeeaef;
+  --acc: #5530d9; --acc-ink: #fff; --acc-soft: #ece7fc; --acc-deep: #3f1fb3;
+  --tc-focus: #5530d9; --tc-mark: #ffe08a;
+  --tab-h: 64px; --safe-b: env(safe-area-inset-bottom, 0px);
+  --r: 22px;
+  /* поля разделов: фон под фото, тёмный текст на них ≥ 10:1 */
+  --f-169: #f5dfcc; --f-182: #f4dae3; --f-194: #d9e9db; --f-307: #f1e5b6; --f-0: #e8e5f2;
+  --ring-169: #c9733a; --ring-182: #c25a80; --ring-194: #4f8c62; --ring-307: #b08d18; --ring-0: #5530d9;
+}
+html { scroll-padding-top: 8px; }
+body { background: var(--bg); color: var(--ink); font: 400 16px/1.5 Onest, system-ui, sans-serif; font-feature-settings: 'tnum' 0; }
+h1, h2, h3 { margin: 0; line-height: 1.12; letter-spacing: -.02em; }
+p { margin: 0; }
+.muted { color: var(--ink-3); }
+.only-d { display: none; }
+
+/* ---------- каркас: на телефоне одна колонка + нижняя навигация ---------- */
+.shell { min-height: 100vh; }
+.side-l, .side-r { display: none; }
+.center { max-width: 600px; margin: 0 auto; padding-bottom: calc(var(--tab-h) + var(--safe-b) + 16px); }
+.mtop { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px 4px; }
+.logo { font-weight: 800; font-size: 19px; letter-spacing: -.035em; text-decoration: none; white-space: nowrap; }
+.logo i { font-style: normal; color: var(--acc); }
+.mtop a.phone { font-size: 14px; font-weight: 600; color: var(--ink-2); text-underline-offset: 3px; white-space: nowrap; }
+
+/* ---------- верх ленты ---------- */
+.top { padding: 14px 16px 6px; }
+.top h1 { font-size: clamp(30px, 8.4vw, 44px); font-weight: 800; letter-spacing: -.045em; line-height: 1.02; }
+.top .lead { margin-top: 10px; color: var(--ink-2); font-size: 16px; max-width: 34em; }
+.stories { display: flex; gap: 12px; overflow-x: auto; padding: 14px 16px 10px; scrollbar-width: none; scroll-snap-type: x proximity; scroll-padding-inline: 16px; }
+.stories::-webkit-scrollbar { display: none; }
+.story { flex: none; width: 76px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-decoration: none; scroll-snap-align: start; border-radius: 14px; padding: 2px 0; }
+.story-ring { position: relative; width: 70px; height: 70px; border-radius: 50%; padding: 3px; background: var(--bg); box-shadow: 0 0 0 2.5px var(--ring); transition: transform .18s; }
+.story-ring > span { display: grid; place-items: center; width: 100%; height: 100%; border-radius: 50%; background: var(--f); overflow: hidden; }
+.story-ring img { width: 78%; height: 78%; object-fit: contain; mix-blend-mode: multiply; }
+.story-ring b { font-size: 22px; font-weight: 800; color: var(--ink); letter-spacing: -.03em; }
+.story:hover .story-ring { transform: scale(1.05); }
+.story:active .story-ring { transform: scale(.96); }
+.story-l { font-size: 13px; line-height: 1.2; font-weight: 600; text-align: center; color: var(--ink); max-width: 76px; }
+.story[aria-current="page"] .story-l { color: var(--acc-deep); font-weight: 800; }
+
+.find { position: relative; margin: 8px 16px 0; }
+.find input { width: 100%; height: 50px; padding: 0 52px 0 46px; border: 1.5px solid var(--line); border-radius: 16px; background: var(--surface); font-size: 16px; transition: border-color .15s; }
+.find input::placeholder { color: var(--ink-3); opacity: 1; }
+.find input:hover { border-color: #c9c2cf; }
+.find input:focus-visible { border-color: var(--acc); outline-offset: 0; }
+.find svg { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--ink-2); pointer-events: none; }
+.find button { position: absolute; right: 6px; top: 6px; height: 38px; padding: 0 12px; border: 0; border-radius: 11px; background: var(--ink); color: #fff; font-weight: 700; font-size: 14px; }
+.feed-h { display: flex; align-items: baseline; justify-content: space-between; gap: 6px 12px; flex-wrap: wrap; padding: 22px 16px 10px; }
+.feed-h h2 { font-size: 20px; font-weight: 800; letter-spacing: -.03em; }
+.feed-note { font-size: 13px; color: var(--ink-3); }
+.feed-note-wide { padding: 0 16px 12px; font-size: 13px; color: var(--ink-3); }
+
+/* ---------- карточка ленты ---------- */
+.feed { display: grid; gap: 14px; padding: 0 8px; }
+.post { position: relative; display: flex; flex-direction: column; background: var(--surface); border-radius: var(--r); overflow: hidden; min-height: min(calc(100svh - var(--tab-h) - var(--safe-b) - 26px), 860px); scroll-snap-align: start; scroll-margin-top: 8px; box-shadow: 0 1px 0 var(--line-2); }
+.post-media { position: relative; flex: 1; min-height: 250px; background: var(--f); }
+.post-media > a.ph { position: absolute; inset: 0; display: block; border-radius: 0; }
+.post-media img { position: absolute; left: 22px; top: 56px; width: calc(100% - 44px); height: calc(100% - 100px); object-fit: contain; mix-blend-mode: multiply; transition: transform .35s ease; }
+.post:hover .post-media img { transform: scale(1.025); }
+.noimg { position: absolute; inset: 56px 22px 44px; display: grid; place-items: center; text-align: center; border: 1.5px dashed rgba(23,20,27,.35); border-radius: 16px; color: var(--ink-2); font-size: 14px; padding: 16px; }
+.sec { position: absolute; left: 12px; top: 12px; z-index: 2; display: inline-flex; align-items: center; gap: 6px; max-width: calc(100% - 24px); height: 32px; padding: 0 12px; border-radius: 99px; background: rgba(255,255,255,.88); color: var(--ink); font-size: 13px; font-weight: 700; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sec:hover { background: #fff; }
+.sec i { width: 8px; height: 8px; border-radius: 50%; background: var(--ring); flex: none; }
+.flag { position: absolute; left: 12px; bottom: 12px; z-index: 2; padding: 4px 10px; border-radius: 99px; background: rgba(255,255,255,.9); color: var(--ink-2); font-size: 13px; font-weight: 600; }
+.post-body { padding: 14px 16px 16px; display: grid; gap: 4px; }
+.post-meta { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.brand { font-size: 13px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; text-decoration: none; color: var(--ink); white-space: nowrap; }
+.brand:hover { color: var(--acc-deep); text-decoration: underline; text-underline-offset: 3px; }
+.line { font-size: 13px; color: var(--ink-3); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.post-name { font-size: 19px; font-weight: 650; line-height: 1.25; letter-spacing: -.015em; }
+.post-name a { text-decoration: none; }
+.post-name a:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+.post-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.vol { flex: none; height: 30px; display: inline-flex; align-items: center; padding: 0 10px; border-radius: 8px; background: var(--line-2); font-size: 14px; font-weight: 700; color: var(--ink-2); white-space: nowrap; }
+.price { font-size: 22px; font-weight: 800; letter-spacing: -.03em; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.add { margin-left: auto; flex: none; height: 46px; padding: 0 18px; border: 0; border-radius: 14px; background: var(--acc); color: var(--acc-ink); font-weight: 750; font-size: 15px; white-space: nowrap; transition: transform .12s, background-color .15s; }
+.add:hover { background: var(--acc-deep); }
+.add:active { transform: scale(.97); }
+
+/* вставки в ленте */
+.post-note { min-height: 0; padding: 22px 20px 22px; background: var(--f); gap: 10px; }
+.post-note .kicker { font-size: 13px; font-weight: 700; color: var(--ink-2); text-transform: uppercase; letter-spacing: .07em; }
+.post-note h2 { font-size: 26px; font-weight: 800; letter-spacing: -.035em; }
+.post-note p { color: var(--ink-2); }
+.post-note .go { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; height: 44px; margin-top: 4px; padding: 0 16px; border-radius: 14px; background: var(--ink); color: #fff; font-weight: 700; text-decoration: none; }
+.post-note .go:hover { background: #000; }
+.ways { margin: 4px 0 0; padding: 0; list-style: none; display: grid; gap: 0; }
+.ways li { display: flex; justify-content: space-between; gap: 6px 12px; flex-wrap: wrap; padding: 10px 0; border-top: 1px solid rgba(23,20,27,.14); }
+.ways li span:last-child { color: var(--ink-2); font-size: 14px; }
+
+/* ---------- каталог ---------- */
+.bar { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 8px; padding: 10px 16px; margin-top: 8px; background: color-mix(in srgb, var(--bg) 94%, transparent); backdrop-filter: blur(8px); }
+.pill { display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 14px; border-radius: 99px; border: 1.5px solid var(--ink); background: var(--surface); font-weight: 700; font-size: 15px; white-space: nowrap; text-decoration: none; }
+.pill:hover { background: var(--ink); color: #fff; }
+.pill b { min-width: 22px; height: 22px; padding: 0 6px; display: inline-grid; place-items: center; border-radius: 99px; background: var(--acc); color: #fff; font-size: 13px; }
+.sort { margin-left: auto; display: flex; align-items: center; gap: 6px; min-width: 0; }
+.sort select { height: 42px; max-width: 100%; padding: 0 10px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--surface); font-weight: 600; font-size: 15px; }
+.found { padding: 2px 16px 0; font-size: 15px; color: var(--ink-2); }
+.found b { color: var(--ink); }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; padding: 10px 16px 4px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-radius: 99px; background: var(--acc-soft); color: var(--acc-deep); font-size: 14px; font-weight: 700; text-decoration: none; }
+.chip:hover { background: #ddd4fb; }
+.chip.ghost { background: transparent; color: var(--ink-2); text-decoration: underline; text-underline-offset: 3px; }
+.empty { margin: 8px; padding: 40px 22px; border-radius: var(--r); background: var(--surface); text-align: center; display: grid; gap: 10px; justify-items: center; }
+.empty h2 { font-size: 24px; font-weight: 800; }
+.empty p { color: var(--ink-2); max-width: 30em; }
+
+/* ---------- карточка товара ---------- */
+.pdp-media { position: relative; height: min(68svh, 125vw); min-height: 300px; margin: 0 8px; border-radius: var(--r); overflow: hidden; background: var(--f); }
+.pdp-media img { position: absolute; left: 8%; top: 64px; width: 84%; height: calc(100% - 110px); object-fit: contain; mix-blend-mode: multiply; }
+.back { position: absolute; right: 12px; top: 12px; z-index: 2; display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 12px; border-radius: 99px; background: var(--ink); color: #fff; font-size: 13px; font-weight: 700; text-decoration: none; }
+.back:hover { background: #000; }
+.pdp-head { padding: 16px 16px 4px; display: grid; gap: 6px; }
+.pdp-head h1 { font-size: clamp(25px, 6.6vw, 32px); font-weight: 750; letter-spacing: -.03em; line-height: 1.12; }
+.pdp-sub { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 4px; }
+.pdp-price { padding: 12px 16px 0; }
+.pdp-price .price { font-size: 30px; }
+.note { margin-top: 4px; font-size: 13px; color: var(--ink-3); }
+.vols { display: flex; gap: 8px; flex-wrap: wrap; padding: 14px 16px 0; }
+.vols a { display: grid; min-width: 104px; padding: 9px 14px; border-radius: 14px; border: 1.5px solid var(--line); background: var(--surface); text-decoration: none; font-weight: 750; }
+.vols a span { font-size: 14px; font-weight: 500; color: var(--ink-3); }
+.vols a:hover { border-color: var(--ink); }
+.vols a[aria-current="true"] { border-color: var(--acc); box-shadow: inset 0 0 0 1.5px var(--acc); }
+.vols-note { padding: 6px 16px 0; font-size: 13px; color: var(--ink-3); }
+.acc { margin: 18px 8px 0; background: var(--surface); border-radius: var(--r); overflow: hidden; }
+.acc details + details { border-top: 1px solid var(--line-2); }
+.acc summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 58px; padding: 0 16px; cursor: pointer; list-style: none; border-radius: 4px; }
+.acc summary::-webkit-details-marker { display: none; }
+.acc summary h2 { font-size: 17px; font-weight: 750; letter-spacing: -.01em; }
+.acc summary::after { content: ''; flex: none; width: 10px; height: 10px; border-right: 2px solid var(--ink-2); border-bottom: 2px solid var(--ink-2); transform: translateY(-3px) rotate(45deg); transition: transform .2s; }
+.acc details[open] > summary::after { transform: translateY(2px) rotate(-135deg); }
+.acc summary:hover h2 { color: var(--acc-deep); }
+.acc .in { padding: 0 16px 18px; display: grid; gap: 10px; color: var(--ink-2); }
+.acc .in h3 { font-size: 15px; font-weight: 750; color: var(--ink); margin-top: 4px; }
+.acc .in ul { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+.missing { padding: 12px 14px; border-radius: 12px; background: #f1eef3; color: var(--ink-2); font-size: 15px; }
+.ids { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; margin: 0; font-size: 15px; }
+.ids dt { color: var(--ink-3); }
+.ids dd { margin: 0; font-weight: 600; color: var(--ink); overflow-wrap: anywhere; }
+.buybar { position: sticky; bottom: calc(var(--tab-h) + var(--safe-b) + 8px); z-index: 15; display: flex; align-items: center; gap: 12px; margin: 14px 8px 0; padding: 10px 10px 10px 16px; border-radius: 20px; background: var(--ink); color: #fff; box-shadow: 0 12px 30px rgba(23,20,27,.28); }
+.buybar .price { font-size: 22px; color: #fff; }
+.buybar small { display: block; font-size: 13px; color: #d9d4de; line-height: 1.3; }
+.buybar .add { height: 50px; padding: 0 22px; background: #fff; color: var(--ink); }
+.buybar .add:hover { background: var(--acc-soft); }
+.more-h { padding: 28px 16px 10px; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.more-h h2 { font-size: 20px; font-weight: 800; letter-spacing: -.03em; }
+.more-h a { font-weight: 700; font-size: 15px; text-underline-offset: 3px; }
+.rail { display: grid; grid-auto-flow: column; grid-auto-columns: 46%; gap: 10px; overflow-x: auto; padding: 0 8px 6px; scroll-snap-type: x mandatory; scrollbar-width: thin; }
+.mini { position: relative; scroll-snap-align: start; background: var(--surface); border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; }
+.mini-ph { aspect-ratio: 1; position: relative; background: var(--f); }
+.mini-ph img { position: absolute; inset: 10%; width: 80%; height: 80%; object-fit: contain; mix-blend-mode: multiply; }
+.mini-b { padding: 10px 12px 12px; display: grid; gap: 2px; }
+.mini-b a { font-size: 14px; font-weight: 650; line-height: 1.3; text-decoration: none; }
+.mini-b a::after { content: ''; position: absolute; inset: 0; }
+.mini-b .price { font-size: 16px; margin-top: 4px; }
+
+/* ---------- нижняя навигация ---------- */
+.tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: grid; grid-template-columns: repeat(4, 1fr); height: calc(var(--tab-h) + var(--safe-b)); padding-bottom: var(--safe-b); background: rgba(255,255,255,.96); backdrop-filter: blur(12px); border-top: 1px solid var(--line); }
+.tab { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border: 0; background: transparent; color: var(--ink-2); font-size: 13px; font-weight: 650; text-decoration: none; border-radius: 14px; margin: 4px 2px; }
+.tab svg { width: 24px; height: 24px; transition: transform .15s; }
+.tab:active svg { transform: scale(.9); }
+.tab[aria-current="page"] { color: var(--acc-deep); }
+.tab[aria-current="page"] .ic { background: var(--acc-soft); }
+.ic { display: grid; place-items: center; width: 52px; height: 28px; border-radius: 99px; }
+.badge { position: absolute; top: 2px; left: calc(50% + 6px); min-width: 20px; height: 20px; padding: 0 5px; display: grid; place-items: center; border-radius: 99px; background: var(--acc); color: #fff; font-size: 13px; font-weight: 800; line-height: 1; }
+.badge[data-n="0"] { background: var(--line); color: var(--ink-2); }
+
+/* ---------- шторки ---------- */
+dialog.sheet { position: fixed; inset: auto 0 0 0; margin: 0 auto; width: min(100%, 600px); max-width: 100%; max-height: 88dvh; padding: 0; border: 0; border-radius: 26px 26px 0 0; background: var(--surface); color: var(--ink); overflow: hidden; }
+dialog.sheet[open] { display: flex; flex-direction: column; animation: up .24s ease-out; }
+@keyframes up { from { transform: translateY(28px); opacity: 0; } }
+dialog.sheet::backdrop { background: rgba(23,20,27,.5); }
+.sh-h { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 22px 16px 12px 20px; border-bottom: 1px solid var(--line-2); }
+.sh-h::before { content: ''; position: absolute; left: 50%; top: 8px; width: 40px; height: 4px; margin-left: -20px; border-radius: 4px; background: var(--line); }
+.sh-h h2 { font-size: 21px; font-weight: 800; letter-spacing: -.03em; }
+.x { flex: none; width: 44px; height: 44px; border-radius: 99px; border: 0; background: var(--line-2); font-size: 22px; line-height: 1; }
+.x:hover { background: var(--line); }
+.sh-b { flex: 1; overflow: auto; padding: 8px 20px 16px; overscroll-behavior: contain; }
+.sh-f { display: flex; gap: 10px; padding: 12px 16px calc(14px + var(--safe-b)); border-top: 1px solid var(--line-2); }
+.sh-f .btn { flex: 1; }
+.btn { height: 52px; padding: 0 20px; border-radius: 16px; border: 0; background: var(--acc); color: #fff; font-weight: 750; font-size: 16px; }
+.btn:hover { background: var(--acc-deep); }
+.btn.sec-btn { flex: none; background: var(--line-2); color: var(--ink); }
+.btn.sec-btn:hover { background: var(--line); }
+.btn[aria-disabled="true"] { width: 100%; background: #e6e2ea; color: var(--ink-2); cursor: not-allowed; }
+.grp { border: 0; margin: 0; padding: 12px 0 6px; }
+.grp legend { padding: 0; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-2); margin-bottom: 6px; }
+.opt { display: flex; align-items: center; gap: 12px; min-height: 46px; padding: 4px 8px; margin: 0 -8px; border-radius: 12px; cursor: pointer; font-weight: 600; }
+.opt:hover { background: var(--line-2); }
+.opt.sub { padding-left: 34px; font-weight: 500; }
+.opt input { width: 20px; height: 20px; accent-color: var(--acc); flex: none; }
+.opt em { margin-left: auto; font-style: normal; font-size: 14px; color: var(--ink-3); font-weight: 600; font-variant-numeric: tabular-nums; }
+.opt.zero { color: var(--ink-3); }
+.brands { display: flex; flex-wrap: wrap; gap: 8px; }
+.bchip { position: relative; }
+.bchip input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.bchip span { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px; border-radius: 99px; border: 1.5px solid var(--line); font-weight: 650; font-size: 15px; cursor: pointer; }
+.bchip span em { font-style: normal; color: var(--ink-3); font-size: 14px; }
+.bchip input:checked + span { border-color: var(--acc); background: var(--acc-soft); color: var(--acc-deep); }
+.bchip input:checked + span em { color: var(--acc-deep); }
+.bchip input:focus-visible + span { outline: 3px solid var(--tc-focus); outline-offset: 2px; }
+.secs { list-style: none; margin: 0; padding: 0; display: grid; }
+.secs a { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 4px 8px; margin: 0 -8px; border-radius: 12px; text-decoration: none; font-weight: 700; }
+.secs a:hover { background: var(--line-2); }
+.secs a em { margin-left: auto; font-style: normal; font-size: 14px; color: var(--ink-3); font-weight: 600; }
+.secs a .dot { width: 28px; height: 28px; border-radius: 50%; background: var(--f); box-shadow: inset 0 0 0 2px var(--ring); flex: none; }
+.secs .secs a { font-weight: 500; padding-left: 48px; min-height: 42px; }
+
+/* корзина */
+.cart-items { display: grid; }
+.ci { display: grid; grid-template-columns: 56px 1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line-2); }
+.ci-ph { width: 56px; height: 56px; border-radius: 12px; background: var(--f); position: relative; overflow: hidden; }
+.ci-ph img { position: absolute; inset: 6px; width: 44px; height: 44px; object-fit: contain; mix-blend-mode: multiply; }
+.ci a { font-size: 14px; font-weight: 650; line-height: 1.3; text-decoration: none; display: block; }
+.ci a:hover { text-decoration: underline; }
+.ci-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
+.qty { display: inline-flex; align-items: center; height: 36px; border-radius: 99px; background: var(--line-2); }
+.qty button { width: 36px; height: 36px; border: 0; border-radius: 99px; background: transparent; font-size: 18px; font-weight: 700; }
+.qty button:hover { background: var(--line); }
+.qty output { min-width: 26px; text-align: center; font-weight: 800; font-variant-numeric: tabular-nums; }
+.ci-row b { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cart-empty { padding: 18px 0; color: var(--ink-2); }
+.cart-total { display: flex; justify-content: space-between; align-items: baseline; font-weight: 800; font-size: 20px; padding-top: 14px; }
+.cart-f-note { margin: 6px 0 12px; font-size: 13px; color: var(--ink-3); }
+
+.mfoot { margin: 28px 16px 0; padding-top: 18px; border-top: 1px solid var(--line); display: grid; gap: 4px; font-size: 14px; color: var(--ink-2); }
+.mfoot a { font-weight: 700; }
+@media (max-width: 1023px) {
+  html { scroll-snap-type: y proximity; }
+  .tc-ribbon { scroll-snap-align: start; }
+  .tc-toast { bottom: calc(var(--tab-h) + var(--safe-b) + 14px); width: max-content; }
+  .is-pdp .tc-toast { bottom: calc(var(--tab-h) + var(--safe-b) + 98px); }
+}
+@media (min-width: 600px) and (max-width: 1023px) {
+  .feed, .rail { padding-inline: 0; }
+  .pdp-media, .acc, .buybar { margin-inline: 0; }
+  .rail { grid-auto-columns: 31%; }
+}
+@media (max-width: 359px) {
+  .post-row { flex-wrap: wrap; }
+  .post-row .add { margin-left: 0; width: 100%; }
+  .sort .lbl { display: none; }
+  .buybar { gap: 8px; padding-left: 12px; }
+  .buybar .add { padding: 0 14px; }
+  .buybar .price { font-size: 19px; }
+  .rail { grid-auto-columns: 64%; }
+}
+
+/* ---------- десктоп: три колонки, без верхней шапки ---------- */
+@media (min-width: 1024px) {
+  .shell { display: grid; grid-template-columns: minmax(200px, 1fr) minmax(0, 560px) minmax(260px, 1fr); gap: clamp(24px, 3vw, 48px); padding: 0 24px; }
+  .side-l, .side-r { display: block; }
+  .side-l .in { position: sticky; top: 0; max-height: 100vh; overflow: auto; margin-left: auto; width: 100%; max-width: 250px; padding: 28px 4px 28px 0; }
+  .side-r .in { position: sticky; top: 0; max-height: 100vh; overflow: auto; width: 100%; max-width: 330px; padding: 28px 0 28px; display: grid; gap: 14px; align-content: start; }
+  .center { max-width: none; margin: 0; padding-bottom: 64px; }
+  .mtop, .tabbar, .mfoot, .only-m { display: none; }
+  .only-d { display: inline; }
+  .panel .btn[aria-disabled="true"] { font-size: 15px; height: 48px; }
+  .top { padding: 28px 0 4px; }
+  .top h1 { font-size: 44px; }
+  .stories, .feed-h, .find, .bar, .found, .chips, .feed-note-wide, .pdp-head, .pdp-price, .vols, .vols-note, .more-h { padding-inline: 0; margin-inline: 0; }
+  .stories { margin-inline: -4px; padding-inline: 4px; }
+  .feed { padding: 0; gap: 18px; }
+  .post { min-height: 0; }
+  .post-media { flex: none; aspect-ratio: 1 / 1; }
+  .post-body { padding: 16px 20px 20px; }
+  .post-name { font-size: 21px; }
+  .pdp-media { margin: 24px 0 0; height: auto; aspect-ratio: 1; }
+  .acc, .buybar { margin-inline: 0; }
+  .buybar { bottom: 16px; }
+  .rail { padding: 0 0 6px; grid-auto-columns: 31%; }
+  .empty { margin: 8px 0; }
+  .bar { margin-top: 4px; }
+  dialog.sheet { bottom: 0; }
+  .is-pdp .tc-toast { bottom: 100px; }
+}
+.lnav { display: grid; gap: 2px; margin-top: 22px; }
+.lnav a { display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 12px; border-radius: 12px; text-decoration: none; font-weight: 650; font-size: 15px; color: var(--ink); }
+.lnav a:hover { background: var(--surface); }
+.lnav a[aria-current="page"] { background: var(--ink); color: #fff; }
+.lnav a[aria-current="page"] em { color: #d9d4de; }
+.lnav a em { margin-left: auto; font-style: normal; font-size: 13px; color: var(--ink-3); font-weight: 600; }
+.lnav a .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--ring); flex: none; }
+.lnav a.sub { min-height: 34px; padding-left: 34px; font-weight: 500; font-size: 14px; }
+.lnav .h { margin: 18px 12px 4px; font-size: 13px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+.side-l .tag { margin-top: 4px; font-size: 13px; color: var(--ink-3); }
+.panel { background: var(--surface); border-radius: 20px; padding: 18px; }
+.panel h2 { font-size: 18px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.panel h2 span { font-size: 14px; font-weight: 600; color: var(--ink-3); }
+.panel .cart-items { max-height: 42vh; overflow: auto; }
+.tips { margin: 6px 0 0; padding: 0; list-style: none; display: grid; gap: 10px; font-size: 14px; color: var(--ink-2); }
+.tips li { display: grid; grid-template-columns: 22px 1fr; gap: 8px; }
+.tips li b { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--acc-soft); color: var(--acc-deep); font-size: 13px; }
+.store { font-size: 14px; color: var(--ink-2); display: grid; gap: 2px; margin-top: 10px; }
+.store a { font-weight: 700; color: var(--ink); }
+</style>
+</head>
+<body>
+<a class="tc-skip" href="#main">К содержанию</a>
+<div class="shell">
+  <aside class="side-l" aria-label="Меню разделов">
+    <div class="in">
+      <a class="logo" href="#home">TOP <i>Cosmetics</i></a>
+      <p class="tag">Севастополь · каталог лентой</p>
+      <nav class="lnav" id="lnav" aria-label="Разделы каталога"></nav>
+    </div>
+  </aside>
+  <div class="center">
+    <header class="mtop">
+      <a class="logo" href="#home">TOP <i>Cosmetics</i></a>
+      <a class="phone" id="mPhone"></a>
+    </header>
+    <main id="main"></main>
+    <footer class="mfoot" id="mfoot"></footer>
+  </div>
+  <aside class="side-r" aria-label="Корзина и подсказки">
+    <div class="in">
+      <section class="panel" aria-labelledby="sideCartH">
+        <h2 id="sideCartH">Демо-корзина <span id="sideCount">0</span></h2>
+        <div id="sideCart"></div>
+      </section>
+      <section class="panel" aria-labelledby="tipsH">
+        <h2 id="tipsH">Как устроена лента</h2>
+        <ul class="tips">
+          <li><b>1</b><span>Листайте карточки вниз — в ленте вперемешку товары из разных разделов.</span></li>
+          <li><b>2</b><span>Кружки наверху и меню слева открывают ленту одного раздела.</span></li>
+          <li><b>3</b><span>Поиск ищет по названию, бренду и артикулу.</span></li>
+        </ul>
+      </section>
+      <section class="panel" aria-labelledby="getH">
+        <h2 id="getH">Как получить</h2>
+        <ul class="ways" id="sideWays"></ul>
+        <div class="store" id="sideStore"></div>
+      </section>
+    </div>
+  </aside>
+</div>
+
+<nav class="tabbar" aria-label="Основная навигация">
+  <a class="tab" href="#home" id="tabFeed"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="4" y="3" width="16" height="11" rx="3"/><path d="M4 18h16M7 21h10"/></svg></span>Лента</a>
+  <button class="tab" type="button" id="tabSecs" aria-haspopup="dialog"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="7" cy="7" r="3.2"/><circle cx="17" cy="7" r="3.2"/><circle cx="7" cy="17" r="3.2"/><circle cx="17" cy="17" r="3.2"/></svg></span>Разделы</button>
+  <a class="tab" href="#catalog" id="tabSearch"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4-4"/></svg></span>Поиск</a>
+  <button class="tab" type="button" id="tabCart" aria-haspopup="dialog"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg></span>Корзина<span class="badge" id="cartCount" data-n="0">0</span><span class="visually-hidden"> — товаров в демо-корзине</span></button>
+</nav>
+
+<dialog class="sheet" id="shSecs" aria-labelledby="shSecsH">
+  <div class="sh-h"><h2 id="shSecsH">Разделы</h2><button class="x" type="button" data-close aria-label="Закрыть разделы">×</button></div>
+  <div class="sh-b" id="shSecsB"></div>
+</dialog>
+<dialog class="sheet" id="shFilt" aria-labelledby="shFiltH">
+  <div class="sh-h"><h2 id="shFiltH">Фильтры</h2><button class="x" type="button" data-close aria-label="Закрыть фильтры">×</button></div>
+  <form class="sh-b" id="ff"></form>
+  <div class="sh-f"><button class="btn sec-btn" type="button" id="ffReset">Сбросить</button><button class="btn" type="button" id="ffApply">Показать</button></div>
+</dialog>
+<dialog class="sheet" id="shCart" aria-labelledby="shCartH">
+  <div class="sh-h"><h2 id="shCartH">Демо-корзина</h2><button class="x" type="button" data-close aria-label="Закрыть корзину">×</button></div>
+  <div class="sh-b" id="shCartB"></div>
+</dialog>
+
+<script src="shared/data.js"></script>
+<script src="shared/engine.js"></script>
+<script>
+(function () {
+  const { esc, money, img, href } = TC
+  const $ = (s, el = document) => el.querySelector(s)
+  const main = $('#main')
+  TC.ribbon('A4 «Лента»')
+
+  // ---------- цвета разделов и короткие подписи (редакционные, прототип) ----------
+  const ROOT_KEYS = { 169: 169, 182: 182, 194: 194, 307: 307 }
+  const tone = (rootId) => { const k = ROOT_KEYS[rootId] || 0; return `--f:var(--f-${k});--ring:var(--ring-${k})` }
+  const SHORT = { 192: 'Уход за лицом', 190: 'Умывание', 191: 'Вокруг глаз', 184: 'Маски и патчи', 186: 'Наборы для лица', 181: 'Шампуни', 174: 'Маски для волос', 172: 'Кондиционеры', 177: 'Пробники', 179: 'Укладка', 200: 'Уход за телом', 199: 'Для рук' }
+  const ROOT_SHORT = { 169: 'Волосы', 182: 'Лицо', 194: 'Тело', 307: 'Витамины' }
+  const ROOT_ORDER = [182, 169, 194, 307]
+  const roots = ROOT_ORDER.map((id) => TC.tree.find((t) => t.id === id)).filter(Boolean)
+  const byRoot = (id) => TC.products.filter((p) => p.rootId === id)
+  // разделы второго уровня, в которых есть товары прототипа
+  const sections = []
+  for (const r of roots) for (const c of r.children) { const n = TC.products.filter((p) => p.sectionId === c.id).length; if (n) sections.push({ id: c.id, name: c.name, root: r.id, n }) }
+  const st = TC.store
+
+  // Лента «из разных разделов»: по очереди берём по товару из каждого корневого раздела.
+  function mixed(list) {
+    const q = ROOT_ORDER.map((id) => list.filter((p) => p.rootId === id))
+    const out = []
+    while (q.some((a) => a.length)) for (const a of q) if (a.length) out.push(a.shift())
+    return out
+  }
+
+  // ---------- описание: отделяем «Способ применения», чистим служебные строки ----------
+  const JUNK = new Set(['Описание', 'Характеристики', 'Доставка', 'Оплата', 'Режим работы'])
+  const USAGE_RE = /^(способ применения|применение)(?=[\s:,.]|$)/i
+  function lines2html(lines) {
+    let out = '', list = []
+    const flush = () => { if (list.length) { out += '<ul>' + list.map((x) => `<li>${esc(x)}</li>`).join('') + '</ul>'; list = [] } }
+    lines.forEach((l, i) => {
+      const m = l.match(/^[-•]\s*(.+)/)
+      if (m) { list.push(m[1]); return }
+      flush()
+      const head = l.length <= 40 && !/[.!;]$/.test(l) && i < lines.length - 1
+      out += head ? `<h3>${esc(l.replace(/:$/, ''))}</h3>` : `<p>${esc(l)}</p>`
+    })
+    flush()
+    return out
+  }
+  function parseDesc(text) {
+    const lines = String(text || '').split('\n').map((s) => s.trim()).filter((l) => l && !JUNK.has(l))
+    const ui = lines.findIndex((l) => USAGE_RE.test(l))
+    const about = ui >= 0 ? lines.slice(0, ui) : lines
+    let usage = ui >= 0 ? lines.slice(ui) : []
+    if (usage.length && /^(способ применения|применение)\s*:?\s*$/i.test(usage[0])) usage = usage.slice(1)
+    return { about: lines2html(about), usage: usage.length ? lines2html(usage) : '' }
+  }
+
+  // ---------- общие куски ----------
+  const secLabel = (p) => (p.section ? (SHORT[p.sectionId] || p.section) : p.root)
+  const secHref = (p) => (p.sectionId ? href('catalog', { section: p.sectionId }) : href('catalog', { root: p.rootId }))
+  const photo = (p, cls = '') => {
+    const src = img(p)
+    return src ? `<img class="${cls}" src="${src}" alt="${esc(p.brand + ', ' + p.kind + ', ' + p.volume)}" loading="lazy" width="720" height="720">` : '<span class="noimg">Фото этого товара на сайте нет</span>'
+  }
+  function post(p, q) {
+    return `<article class="post" style="${tone(p.rootId)}" aria-labelledby="pn-${p.id}">
+      <div class="post-media">
+        <a class="ph" href="${href('product', {}, p.id)}" tabindex="-1" aria-hidden="true">${photo(p)}</a>
+        <a class="sec" href="${secHref(p)}"><i aria-hidden="true"></i>${esc(p.root)} · ${esc(secLabel(p))}</a>
+        ${p.lowRes ? '<span class="flag">Фото на сайте низкого разрешения</span>' : ''}
+      </div>
+      <div class="post-body">
+        <div class="post-meta"><a class="brand" href="${href('catalog', { brand: p.brand })}">${esc(p.brand)}</a>${p.line ? `<span class="line">${esc(p.line)}</span>` : ''}</div>
+        <h2 class="post-name" id="pn-${p.id}"><a href="${href('product', {}, p.id)}">${TC.mark(p.kind, q)}</a></h2>
+        <div class="post-row"><span class="vol">${esc(p.volume)}</span><span class="price">${money(p.price)}</span>
+          <button class="add" type="button" data-add="${p.id}" aria-label="В корзину: ${esc(p.name)}">В корзину</button></div>
+      </div>
+    </article>`
+  }
+  const ways = () => TC.delivery.map((d) => `<li><span>${esc(d)}</span><span>стоимость и срок — при оформлении</span></li>`).join('')
+  function noteSection(rootId) {
+    const r = TC.tree.find((t) => t.id === rootId); const n = byRoot(rootId).length
+    return `<aside class="post post-note" style="${tone(rootId)}" aria-label="Раздел ${esc(r.name)}">
+      <span class="kicker">Раздел</span><h2>${esc(r.name)}</h2>
+      <p>${TC.countLabel(n)} в прототипе. Откройте ленту только этого раздела.</p>
+      <a class="go" href="${href('catalog', { root: rootId })}">Лента раздела <span aria-hidden="true">→</span></a></aside>`
+  }
+  function noteWays() {
+    return `<aside class="post post-note" style="--f:var(--surface)" aria-label="Как получить заказ">
+      <span class="kicker">Получение</span><h2>Как получить заказ</h2>
+      <ul class="ways">${ways()}</ul>
+      <p class="feed-note">${esc(st.address)} · ${esc(st.hours)}</p></aside>`
+  }
+  const searchForm = (val = '') => `<form class="find" role="search" id="findForm">
+      <label class="visually-hidden" for="q">Поиск по каталогу</label>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4-4"/></svg>
+      <input id="q" name="q" type="search" value="${esc(val)}" placeholder="Бренд, средство или артикул" autocomplete="off" enterkeyhint="search">
+      <button type="submit">Найти</button></form>`
+  function bindSearch(prm) {
+    $('#findForm').addEventListener('submit', (e) => {
+      e.preventDefault()
+      const q = $('#q').value.trim()
+      TC.go('catalog', prm ? { ...prm, q } : { q })
+    })
+  }
+
+  // ---------- главная ----------
+  function stories(r) {
+    const cur = r.params || {}
+    const one = (label, link, rootId, p, active, big) => `<a class="story" href="${link}" style="${tone(rootId)}" ${active ? 'aria-current="page"' : ''}>
+      <span class="story-ring" aria-hidden="true"><span>${big ? `<b>${big}</b>` : p && img(p) ? `<img src="${img(p)}" alt="" width="64" height="64" loading="lazy">` : ''}</span></span>
+      <span class="story-l">${esc(label)}</span></a>`
+    return `<nav class="stories" data-scroll-x aria-label="Разделы кружками">
+      ${one('Все товары', href('catalog'), 0, null, r.page === 'catalog' && !cur.root && !cur.section && !cur.brand && !cur.kind && !cur.q, TC.products.length)}
+      ${roots.map((t) => one(ROOT_SHORT[t.id] || t.name, href('catalog', { root: t.id }), t.id, byRoot(t.id)[0], String(cur.root) === String(t.id) && !cur.section)).join('')}
+      ${sections.map((s) => one(SHORT[s.id] || s.name, href('catalog', { section: s.id }), s.root, TC.products.find((p) => p.sectionId === s.id), String(cur.section) === String(s.id))).join('')}
+    </nav>`
+  }
+  function home(r) {
+    const list = mixed(TC.products)
+    const body = []
+    list.forEach((p, i) => {
+      body.push(post(p))
+      if (i === 4) body.push(noteSection(169))
+      if (i === 10) body.push(noteWays())
+      if (i === 18) body.push(noteSection(194))
+    })
+    main.innerHTML = `<div class="top"><h1>Косметика лентой</h1>
+        <p class="lead">Листайте крупные карточки, как в соцсети. Разделы — в кружках сверху<span class="only-m"> и в нижнем меню</span><span class="only-d"> и в меню слева</span>.</p></div>
+      ${stories(r)}
+      ${searchForm()}
+      <div class="feed-h"><h2>Из разных разделов</h2><span class="feed-note">${TC.countLabel(TC.products.length)} в прототипе из ${TC.catalogTotal} на сайте</span></div>
+      <p class="feed-note-wide">${TC.PRICE_NOTE}. ${TC.STOCK_NOTE}.</p>
+      <div class="feed">${body.join('')}</div>`
+    bindSearch()
+  }
+
+  // ---------- каталог ----------
+  const KIND = { sample: 'Пробники', set: 'Наборы' }
+  function catTitle(prm) {
+    const brands = [].concat(prm.brand || [])
+    if (prm.q) return `Поиск: «${prm.q}»`
+    if (prm.section) return TC.sectionName(prm.section) || 'Каталог'
+    if (prm.root) return TC.rootName(prm.root) || 'Каталог'
+    if (brands.length === 1) return brands[0]
+    if (prm.kind) return KIND[prm.kind] || 'Каталог'
+    return 'Вся лента каталога'
+  }
+  const activeCount = (prm) => [].concat(prm.brand || []).length + (prm.root || prm.section ? 1 : 0) + (prm.kind ? 1 : 0)
+  function catalog(r) {
+    const prm = r.params
+    const list = TC.filter(prm)
+    const brands = [].concat(prm.brand || [])
+    const chips = []
+    if (prm.q) chips.push(['Поиск: ' + prm.q, { ...prm, q: '' }])
+    if (prm.root) chips.push([TC.rootName(prm.root), { ...prm, root: '' }])
+    if (prm.section) chips.push([TC.sectionName(prm.section), { ...prm, section: '' }])
+    brands.forEach((b) => chips.push([b, { ...prm, brand: brands.filter((x) => x !== b) }]))
+    if (prm.kind) chips.push([KIND[prm.kind], { ...prm, kind: '' }])
+    const n = activeCount(prm)
+    const ordered = prm.sort && prm.sort !== 'popular' ? list : (prm.root || prm.section ? list : mixed(list))
+    main.innerHTML = `<div class="top"><h1>${esc(catTitle(prm))}</h1></div>
+      ${stories(r)}
+      ${searchForm(prm.q || '')}
+      <div class="bar">
+        <button class="pill" type="button" id="filterBtn" aria-haspopup="dialog">Фильтры${n ? ` <b>${n}</b>` : ''}</button>
+        <label class="sort"><span class="lbl visually-hidden">Порядок</span><select id="sort" aria-label="Порядок">${Object.entries(TC.SORTS).map(([k, s]) => `<option value="${k}" ${prm.sort === k ? 'selected' : ''}>${s.label}</option>`).join('')}</select></label>
+      </div>
+      <p class="found" aria-live="polite">Найдено <b>${TC.countLabel(list.length)}</b> в прототипе · на сайте всего ${TC.catalogTotal}</p>
+      ${chips.length ? `<div class="chips">${chips.map(([t, p]) => `<a class="chip" href="${href('catalog', p)}" aria-label="Убрать фильтр: ${esc(t)}">${esc(t)} <span aria-hidden="true">×</span></a>`).join('')}<a class="chip ghost" href="#catalog">Сбросить всё</a></div>` : ''}
+      ${list.length ? `<p class="feed-note-wide" style="padding-top:10px">${TC.PRICE_NOTE}. ${TC.STOCK_NOTE}.</p><div class="feed">${ordered.map((p) => post(p, prm.q)).join('')}</div>` :
+        `<div class="empty"><h2>В ленте пусто</h2><p>По этому запросу и фильтрам в прототипе ничего нет. В прототипе ${TC.products.length} товара из ${TC.catalogTotal} — попробуйте бренд, например «KLAPP», или тип средства — «шампунь».</p><a class="pill" href="#catalog">Сбросить поиск и фильтры</a></div>`}`
+    bindSearch({ ...prm })
+    $('#sort').addEventListener('change', (e) => TC.go('catalog', { ...prm, sort: e.target.value }))
+    $('#filterBtn').addEventListener('click', (e) => openFilters(prm, e.currentTarget))
+  }
+
+  // ---------- шторка фильтров ----------
+  const shFilt = $('#shFilt'), ff = $('#ff')
+  let filtBase = {}
+  function draft() {
+    const f = new FormData(ff)
+    const cat = f.get('cat') || ''
+    return { q: filtBase.q, sort: filtBase.sort, root: cat.startsWith('r:') ? cat.slice(2) : '', section: cat.startsWith('s:') ? cat.slice(2) : '', brand: f.getAll('brand'), kind: f.get('kind') || '' }
+  }
+  function updateCounts() {
+    const d = draft()
+    ff.querySelectorAll('[data-c]').forEach((em) => {
+      const [k, v] = em.dataset.c.split('|')
+      let p
+      if (k === 'cat') p = { ...d, root: v.startsWith('r:') ? v.slice(2) : '', section: v.startsWith('s:') ? v.slice(2) : '' }
+      else if (k === 'brand') p = { ...d, brand: [v] }
+      else p = { ...d, kind: v }
+      const c = TC.filter(p).length
+      em.textContent = c
+      em.closest('.opt, .bchip').classList.toggle('zero', !c)
+    })
+    $('#ffApply').textContent = `Показать ${TC.countLabel(TC.filter(d).length)}`
+  }
+  function openFilters(prm, opener) {
+    filtBase = prm
+    const brands = [].concat(prm.brand || [])
+    const cat = prm.section ? 's:' + prm.section : prm.root ? 'r:' + prm.root : ''
+    const radio = (val, label, sub) => `<label class="opt ${sub ? 'sub' : ''}"><input type="radio" name="cat" value="${val}" ${cat === val ? 'checked' : ''}> ${esc(label)} <em data-c="cat|${val}"></em></label>`
+    ff.innerHTML = `<fieldset class="grp"><legend>Раздел</legend>
+        ${radio('', 'Все разделы')}
+        ${roots.map((t) => radio('r:' + t.id, t.name) + sections.filter((s) => s.root === t.id).map((s) => radio('s:' + s.id, s.name, true)).join('')).join('')}</fieldset>
+      <fieldset class="grp"><legend>Бренд</legend><div class="brands">
+        ${TC.brands.map((b) => `<label class="bchip"><input type="checkbox" name="brand" value="${esc(b)}" ${brands.includes(b) ? 'checked' : ''}><span>${esc(b)} <em data-c="brand|${esc(b)}"></em></span></label>`).join('')}</div></fieldset>
+      <fieldset class="grp"><legend>Тип</legend>
+        <label class="opt"><input type="radio" name="kind" value="" ${prm.kind ? '' : 'checked'}> Все товары <em data-c="kind|"></em></label>
+        <label class="opt"><input type="radio" name="kind" value="sample" ${prm.kind === 'sample' ? 'checked' : ''}> Только пробники <em data-c="kind|sample"></em></label>
+        <label class="opt"><input type="radio" name="kind" value="set" ${prm.kind === 'set' ? 'checked' : ''}> Только наборы <em data-c="kind|set"></em></label></fieldset>`
+    updateCounts()
+    openSheet(shFilt, opener)
+  }
+  ff.addEventListener('change', updateCounts)
+  ff.addEventListener('submit', (e) => e.preventDefault())
+  $('#ffReset').addEventListener('click', () => {
+    ff.querySelectorAll('input').forEach((i) => { i.checked = i.type === 'radio' && i.value === '' })
+    updateCounts()
+  })
+  $('#ffApply').addEventListener('click', () => {
+    const d = draft()
+    pendingFocus = 'filterBtn'
+    shFilt._skip = true
+    shFilt.close()
+    TC.go('catalog', d)
+  })
+
+  // ---------- шторки: открытие, закрытие по Esc/кнопке/фону, возврат фокуса ----------
+  let pendingFocus = null
+  function openSheet(d, opener) {
+    d._openerId = opener && opener.id
+    d._opener = opener
+    d._skip = false
+    d.showModal()
+  }
+  document.querySelectorAll('dialog.sheet').forEach((d) => {
+    d.addEventListener('click', (e) => {
+      if (e.target === d || e.target.closest('[data-close]')) d.close()
+      else if (e.target.closest('a[href^="#"]')) { d._skip = true; d.close() }
+    })
+    d.addEventListener('close', () => {
+      if (d._skip) return
+      const t = (d._openerId && document.getElementById(d._openerId)) || d._opener
+      if (t && t.isConnected) t.focus()
+    })
+  })
+
+  // ---------- разделы (нижняя шторка и меню слева) ----------
+  function renderSections() {
+    const cnt = (id) => byRoot(id).length
+    $('#shSecsB').innerHTML = `<ul class="secs">
+      <li><a href="#catalog"><span class="dot" style="${tone(0)}" aria-hidden="true"></span>Все товары <em>${TC.products.length}</em></a></li>
+      ${roots.map((t) => `<li style="${tone(t.id)}"><a href="${href('catalog', { root: t.id })}"><span class="dot" aria-hidden="true"></span>${esc(t.name)} <em>${cnt(t.id)}</em></a>
+        ${sections.some((s) => s.root === t.id) ? `<ul class="secs">${sections.filter((s) => s.root === t.id).map((s) => `<li><a href="${href('catalog', { section: s.id })}">${esc(s.name)} <em>${s.n}</em></a></li>`).join('')}</ul>` : ''}</li>`).join('')}
+      <li><a href="${href('catalog', { kind: 'sample' })}"><span class="dot" style="${tone(0)}" aria-hidden="true"></span>Пробники <em>${TC.filter({ kind: 'sample' }).length}</em></a></li>
+      <li><a href="${href('catalog', { kind: 'set' })}"><span class="dot" style="${tone(0)}" aria-hidden="true"></span>Наборы <em>${TC.filter({ kind: 'set' }).length}</em></a></li>
+    </ul>
+    <fieldset class="grp"><legend>Бренды</legend><div class="brands">${TC.brands.map((b) => `<a class="pill" href="${href('catalog', { brand: b })}">${esc(b)}</a>`).join('')}</div></fieldset>`
+  }
+  function renderLeft(r) {
+    const prm = r.params || {}
+    const isCat = r.page === 'catalog'
+    const cur = (cond) => (cond ? 'aria-current="page"' : '')
+    const activeRoot = isCat && prm.root ? Number(prm.root) : isCat && prm.section ? (sections.find((s) => String(s.id) === String(prm.section)) || {}).root : r.page === 'product' && TC.byId.get(r.id) ? TC.byId.get(r.id).rootId : null
+    $('#lnav').innerHTML = `<a href="#home" ${cur(r.page === 'home')}>Лента</a>
+      <a href="#catalog" ${cur(isCat && !prm.root && !prm.section && !prm.brand && !prm.kind && !prm.q)}>Все товары <em>${TC.products.length}</em></a>
+      <p class="h">Разделы</p>
+      ${roots.map((t) => `<a href="${href('catalog', { root: t.id })}" style="${tone(t.id)}" ${cur(isCat && String(prm.root) === String(t.id) && !prm.section)}><span class="dot" aria-hidden="true"></span>${esc(t.name)} <em>${byRoot(t.id).length}</em></a>
+        ${activeRoot === t.id ? sections.filter((s) => s.root === t.id).map((s) => `<a class="sub" href="${href('catalog', { section: s.id })}" ${cur(isCat && String(prm.section) === String(s.id))}>${esc(s.name)} <em>${s.n}</em></a>`).join('') : ''}`).join('')}
+      <a href="${href('catalog', { kind: 'sample' })}" ${cur(isCat && prm.kind === 'sample' && !prm.root)}>Пробники <em>${TC.filter({ kind: 'sample' }).length}</em></a>
+      <a href="${href('catalog', { kind: 'set' })}" ${cur(isCat && prm.kind === 'set' && !prm.root)}>Наборы <em>${TC.filter({ kind: 'set' }).length}</em></a>
+      <p class="h">Бренды</p>
+      ${TC.brands.map((b) => `<a href="${href('catalog', { brand: b })}" ${cur(isCat && [].concat(prm.brand || []).length === 1 && prm.brand === b && !prm.root && !prm.q)}>${esc(b)} <em>${TC.products.filter((p) => p.brand === b).length}</em></a>`).join('')}`
+  }
+
+  // ---------- карточка товара ----------
+  function product(r) {
+    const p = TC.byId.get(r.id)
+    if (!p) { main.innerHTML = `<div class="top"><h1>Товар не найден</h1></div><div class="empty"><p>Такого товара нет в прототипе.</p><a class="pill" href="#home">В ленту</a></div>`; return }
+    const d = parseDesc(p.description)
+    const group = p.volumeGroup ? p.volumeGroup : p.sampleId ? [p.sampleId, p.id] : p.fullSizeId ? [p.id, p.fullSizeId] : null
+    const vols = group ? group.map((id) => TC.byId.get(id)).filter(Boolean) : null
+    const more = TC.products.filter((x) => x.id !== p.id && (x.sectionId === p.sectionId || x.rootId === p.rootId)).sort((a, b) => (b.sectionId === p.sectionId) - (a.sectionId === p.sectionId)).slice(0, 8)
+    const inCart = (TC.cart.state().items.find((x) => x.id === p.id) || {}).qty || 0
+    const usage = d.usage || `<p class="missing">${p.hasUsage ? 'Отдельным блоком на сайте не выделено — упоминание есть в тексте описания.' : 'На сайте отдельно не указано.'}</p>`
+    const comp = p.hasComposition ? '<p class="missing">Списком на сайте не указан. Отдельные компоненты упоминаются в описании.</p>' : '<p class="missing">На сайте отдельно не указано.</p>'
+    main.innerHTML = `<article style="${tone(p.rootId)}">
+      <div class="pdp-media">
+        ${photo(p).replace('loading="lazy"', 'fetchpriority="high"')}
+        <a class="sec" href="${secHref(p)}"><i aria-hidden="true"></i>${esc(p.root)} · ${esc(secLabel(p))}</a>
+        <a class="back" href="#home"><span aria-hidden="true">←</span> Лента</a>
+        ${p.lowRes ? '<span class="flag">Фото на сайте низкого разрешения — нужна замена</span>' : ''}
+      </div>
+      <div class="pdp-head">
+        <div class="post-meta"><a class="brand" href="${href('catalog', { brand: p.brand })}">${esc(p.brand)}</a>${p.line ? `<span class="line">${esc(p.line)}</span>` : ''}</div>
+        <h1>${esc(p.kind)}</h1>
+        <div class="pdp-sub"><span class="vol">${esc(p.volume)}</span></div>
+      </div>
+      <div class="pdp-price"><div class="price">${money(p.price)}</div><p class="note">${TC.PRICE_NOTE}. ${TC.STOCK_NOTE}.</p></div>
+      ${vols && vols.length > 1 ? `<div class="vols" role="group" aria-label="Другие объёмы">${vols.map((v) => `<a href="${href('product', {}, v.id)}" aria-current="${v.id === p.id}">${esc(v.volume)}<span>${money(v.price)}</span></a>`).join('')}</div>
+        <p class="vols-note">Объёмы связаны по совпадению названия на сайте — группировка прототипа.</p>` : ''}
+      <div class="acc">
+        <details open><summary><h2>Описание</h2></summary><div class="in">${d.about || '<p class="missing">Описания на сайте нет.</p>'}</div></details>
+        <details><summary><h2>Состав</h2></summary><div class="in">${comp}</div></details>
+        <details><summary><h2>Применение</h2></summary><div class="in">${usage}</div></details>
+        <details><summary><h2>Данные товара</h2></summary><div class="in"><dl class="ids">
+          <dt>ID в Битрикс</dt><dd>${p.id}</dd>
+          <dt>Артикул</dt><dd>${esc(p.article || 'не указан')}</dd>
+          <dt>XML_ID</dt><dd>не опубликован на сайте</dd>
+          <dt>Название на сайте</dt><dd>${esc(p.sourceName)}</dd>
+          <dt>Раздел</dt><dd>${esc(p.root)}${p.section ? ' / ' + esc(p.section) : ''}</dd></dl></div></details>
+        <details><summary><h2>Как получить</h2></summary><div class="in"><ul class="ways">${ways()}</ul>
+          <p>Магазин: ${esc(st.address)}. ${esc(st.hours)}. <a href="${st.phoneHref}">${esc(st.phone)}</a></p></div></details>
+      </div>
+      <div class="buybar">
+        <div><span class="price">${money(p.price)}</span><small id="inCart">${inCart ? `В корзине: ${inCart}` : 'Цена — снимок 15.11.2026'}</small></div>
+        <button class="add" type="button" id="buyBtn">В корзину</button>
+      </div>
+    </article>
+    ${more.length ? `<div class="more-h"><h2>Ещё в разделе «${esc(p.section ? SHORT[p.sectionId] || p.section : p.root)}»</h2><a href="${secHref(p)}">Вся лента раздела</a></div>
+      <div class="rail">${more.map((x) => `<div class="mini" style="${tone(x.rootId)}"><div class="mini-ph">${img(x) ? `<img src="${img(x)}" alt="" loading="lazy" width="360" height="360">` : ''}</div>
+        <div class="mini-b"><span class="brand">${esc(x.brand)}</span><a href="${href('product', {}, x.id)}">${esc(x.kind)}</a><span class="price">${money(x.price)}</span></div></div>`).join('')}</div>` : ''}`
+    $('#buyBtn').addEventListener('click', () => TC.cart.add(p.id, 1))
+  }
+
+  // ---------- корзина: шторка на телефоне, колонка справа на десктопе ----------
+  function cartHTML(s, where) {
+    const items = s.items.length ? `<div class="cart-items">${s.items.map(({ product: p, qty: n }) => `<div class="ci">
+        <div class="ci-ph" style="${tone(p.rootId)}">${img(p) ? `<img src="${img(p)}" alt="" width="44" height="44">` : ''}</div>
+        <div><a href="${href('product', {}, p.id)}">${esc(p.name)}</a>
+          <div class="ci-row"><div class="qty" role="group" aria-label="Количество: ${esc(p.kind)}"><button type="button" data-cq="${p.id}" data-d="-1" aria-label="Меньше">−</button><output>${n}</output><button type="button" data-cq="${p.id}" data-d="1" aria-label="Больше">+</button></div><b>${money((p.price || 0) * n)}</b></div></div></div>`).join('')}</div>`
+      : `<p class="cart-empty">Пока пусто. Нажмите «В корзину» на любой карточке — заказ всё равно не оформится, это прототип.</p>`
+    return `${items}
+      <div class="cart-total"><span>Итого</span><span>${money(s.total)}</span></div>
+      <p class="cart-f-note">Сумма по ценам снимка 15.11.2026. Доставка и оплата считаются при оформлении на сайте.</p>
+      <button class="btn" type="button" aria-disabled="true" data-checkout="${where}">Оформление недоступно в прототипе</button>`
+  }
+  TC.cart.on((s) => {
+    $('#cartCount').textContent = s.count
+    $('#cartCount').dataset.n = s.count
+    $('#sideCount').textContent = s.count ? TC.countLabel(s.count) : ''
+    $('#shCartB').innerHTML = cartHTML(s, 'sheet')
+    $('#sideCart').innerHTML = cartHTML(s, 'side')
+    const ic = $('#inCart'); const r = TC.parse()
+    if (ic && r.page === 'product') { const it = s.items.find((x) => x.id === r.id); ic.textContent = it ? `В корзине: ${it.qty}` : 'Цена — снимок 15.11.2026' }
+  })
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('[data-add]'); if (a) { TC.cart.add(Number(a.dataset.add)); return }
+    const q = e.target.closest('[data-cq]')
+    if (q) { const id = Number(q.dataset.cq), it = TC.cart.state().items.find((x) => x.id === id); if (it) TC.cart.set(id, it.qty + Number(q.dataset.d)); return }
+    if (e.target.closest('[data-checkout]')) TC.toast('Оформление недоступно в прототипе: заказ не создаётся, оплата не проводится.')
+  })
+  $('#tabCart').addEventListener('click', (e) => openSheet($('#shCart'), e.currentTarget))
+  $('#tabSecs').addEventListener('click', (e) => openSheet($('#shSecs'), e.currentTarget))
+  $('#tabSearch').addEventListener('click', (e) => {
+    const r = TC.parse()
+    if (r.page === 'home' || r.page === 'catalog') { e.preventDefault(); const q = $('#q'); q.scrollIntoView({ block: 'center' }); q.focus({ preventScroll: true }) }
+    else pendingFocus = 'q'
+  })
+
+  // ---------- подвал и правая колонка ----------
+  $('#mPhone').textContent = st.phone; $('#mPhone').href = st.phoneHref
+  $('#mfoot').innerHTML = `<b>${esc(st.name)}</b><span>${esc(st.address)}</span><span>${esc(st.hours)} · <a href="${st.phoneHref}">${esc(st.phone)}</a></span><span class="muted">Прототип A4 «Лента». Тексты, цены и фото — из публичного каталога сайта на 15.11.2026.</span>`
+  $('#sideWays').innerHTML = ways()
+  $('#sideStore').innerHTML = `<span>${esc(st.address)}</span><span>${esc(st.hours)}</span><a href="${st.phoneHref}">${esc(st.phone)}</a>`
+  renderSections()
+
+  TC.onRoute((r) => {
+    document.querySelectorAll('dialog[open]').forEach((d) => { d._skip = true; d.close() })
+    renderLeft(r)
+    document.body.classList.toggle('is-pdp', r.page === 'product')
+    if (r.page === 'catalog') catalog(r)
+    else if (r.page === 'product') product(r)
+    else home(r)
+    $('#tabFeed').toggleAttribute('aria-current', false)
+    if (r.page === 'home') $('#tabFeed').setAttribute('aria-current', 'page')
+    if (r.page === 'catalog') $('#tabSearch').setAttribute('aria-current', 'page'); else $('#tabSearch').removeAttribute('aria-current')
+    const p = r.page === 'product' && TC.byId.get(r.id)
+    document.title = (p ? p.name + ' — ' : r.page === 'catalog' ? 'Каталог — ' : '') + 'A4 · Лента — прототип TOP Cosmetics'
+    if (pendingFocus) { const id = pendingFocus; pendingFocus = null; setTimeout(() => { const el = document.getElementById(id); if (el) { if (id === 'q') el.scrollIntoView({ block: 'center' }); el.focus({ preventScroll: id !== 'q' }) } }, 0) }
+  })
+})()
+</script>
+</body>
+</html>

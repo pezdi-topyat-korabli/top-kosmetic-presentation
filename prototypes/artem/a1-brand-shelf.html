@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>A1 · Бренд-полка — прототип TOP Cosmetics</title>
+<link rel="stylesheet" href="shared/base.css">
+<style>
+@font-face { font-family: 'Manrope'; src: url(fonts/manrope-cyrillic-wght-normal.woff2) format('woff2'); font-weight: 200 800; font-display: swap; unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: 'Manrope'; src: url(fonts/manrope-latin-wght-normal.woff2) format('woff2'); font-weight: 200 800; font-display: swap; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD, U+20BD; }
+:root {
+  --bg: #f6f4ef; --paper: #fff; --ink: #16150f; --ink-2: #4b4940; --ink-3: #6a675c; --line: #dcd8cd; --line-2: #ebe8df;
+  --blue: #0b4fb3; --blue-ink: #fff; --tc-focus: #0b4fb3; --tc-mark: #ffe08a;
+  --r: 14px; --wrap: 1320px; --pad: clamp(16px, 4vw, 40px);
+}
+body { background: var(--bg); color: var(--ink); font: 400 16px/1.55 Manrope, system-ui, sans-serif; }
+.wrap { max-width: var(--wrap); margin: 0 auto; padding-inline: var(--pad); }
+h1, h2, h3 { margin: 0; line-height: 1.12; letter-spacing: -.02em; }
+.muted { color: var(--ink-3); }
+.small { font-size: 14px; }
+
+/* ---------- шапка ---------- */
+.hdr { position: sticky; top: 0; z-index: 30; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.hdr-row { display: grid; grid-template-columns: auto 1fr auto; gap: 24px; align-items: center; padding-block: 14px; }
+.logo { font-weight: 800; font-size: 20px; letter-spacing: -.03em; text-decoration: none; white-space: nowrap; }
+.logo span { color: var(--blue); }
+.search { position: relative; max-width: 620px; width: 100%; justify-self: center; }
+.search input { width: 100%; height: 48px; padding: 0 16px 0 46px; border: 1.5px solid var(--ink); border-radius: 999px; background: var(--paper); font-size: 16px; }
+.search svg { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); }
+.cart-btn { display: inline-flex; align-items: center; gap: 10px; height: 48px; padding: 0 18px; border: 0; border-radius: 999px; background: var(--ink); color: #fff; font-weight: 700; }
+.cart-btn b { min-width: 24px; height: 24px; display: inline-grid; place-items: center; border-radius: 99px; background: #fff; color: var(--ink); font-size: 13px; }
+.nav { display: flex; gap: 6px; padding-bottom: 12px; overflow-x: auto; scrollbar-width: none; }
+.nav a { flex: none; padding: 7px 14px; border-radius: 999px; text-decoration: none; font-weight: 600; font-size: 15px; color: var(--ink-2); }
+.nav a:hover, .nav a[aria-current="page"] { background: var(--ink); color: #fff; }
+
+/* ---------- главная ---------- */
+.hero { padding-block: clamp(32px, 6vw, 72px) clamp(24px, 4vw, 40px); display: grid; grid-template-columns: 1.2fr .8fr; gap: 40px; align-items: end; }
+.hero h1 { font-size: clamp(36px, 6vw, 76px); font-weight: 800; letter-spacing: -.045em; }
+.hero p { margin: 18px 0 0; max-width: 520px; font-size: 18px; color: var(--ink-2); }
+.facts { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.facts div { background: var(--paper); padding: 16px 18px; }
+.facts b { display: block; font-size: 28px; letter-spacing: -.03em; }
+.facts span { font-size: 14px; color: var(--ink-3); }
+.sec-h { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin: clamp(36px, 6vw, 64px) 0 18px; flex-wrap: wrap; }
+.sec-h h2 { font-size: clamp(26px, 3.4vw, 40px); font-weight: 800; }
+.sec-h a { font-weight: 700; text-underline-offset: 4px; }
+
+.wall { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; }
+.brand-tile { position: relative; display: flex; flex-direction: column; justify-content: space-between; min-height: 132px; padding: 18px; border-radius: var(--r); background: var(--paper); border: 1px solid var(--line-2); text-decoration: none; transition: transform .18s, border-color .18s, box-shadow .18s; }
+.brand-tile:hover { transform: translateY(-2px); border-color: var(--ink); box-shadow: 0 10px 24px rgba(22,21,15,.08); }
+.brand-tile strong { font-size: clamp(22px, 2.2vw, 30px); font-weight: 800; letter-spacing: -.03em; line-height: 1.05; overflow-wrap: anywhere; }
+.brand-tile span { font-size: 14px; color: var(--ink-3); }
+.brand-tile.is-big { grid-column: span 2; background: var(--ink); color: #fff; border-color: var(--ink); }
+.brand-tile.is-big span { color: #d8d6cf; }
+.brand-tile.is-empty { background: transparent; border-style: dashed; }
+.brand-tile .tag { position: absolute; right: 12px; top: 12px; font-size: 13px; padding: 2px 8px; border-radius: 99px; border: 1px solid currentColor; color: var(--ink-2); }
+
+/* полка: линейки одного бренда в ряд */
+.shelf { margin-top: 28px; }
+.shelf-h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; padding-bottom: 12px; border-bottom: 2px solid var(--ink); }
+.shelf-h h3 { font-size: clamp(24px, 3vw, 34px); font-weight: 800; letter-spacing: -.035em; }
+.shelf-h a { margin-left: auto; font-weight: 700; font-size: 15px; text-underline-offset: 4px; white-space: nowrap; }
+.row { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(220px, 1fr); gap: 14px; overflow-x: auto; padding: 16px 2px 8px; scroll-snap-type: x mandatory; scrollbar-width: thin; }
+.row > * { scroll-snap-align: start; }
+
+/* ---------- карточка товара в списке ---------- */
+.card { display: flex; flex-direction: column; background: var(--paper); border: 1px solid var(--line-2); border-radius: var(--r); overflow: hidden; transition: border-color .18s, box-shadow .18s; }
+.card:hover { border-color: var(--ink); box-shadow: 0 10px 24px rgba(22,21,15,.07); }
+.card-img { position: relative; aspect-ratio: 1; background: #fff; display: grid; place-items: center; }
+.card-img img { width: 100%; height: 100%; object-fit: contain; }
+.card-img .noimg { color: var(--ink-3); font-size: 14px; text-align: center; padding: 16px; }
+.card-line { position: absolute; left: 10px; top: 10px; padding: 3px 9px; border-radius: 99px; background: var(--bg); font-size: 13px; font-weight: 700; color: var(--ink-2); max-width: calc(100% - 20px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.card-body { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px 16px; flex: 1; }
+.card-brand { font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
+.card-name { font-weight: 600; font-size: 16px; line-height: 1.35; text-decoration: none; }
+.card-name::after { content: ''; position: absolute; inset: 0; }
+.card { position: relative; }
+.card-vol { font-size: 14px; color: var(--ink-3); }
+.card-foot { margin-top: auto; padding-top: 10px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.price { font-weight: 800; font-size: 19px; letter-spacing: -.02em; white-space: nowrap; }
+.add { position: relative; z-index: 2; height: 40px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--ink); background: transparent; font-weight: 700; font-size: 14px; white-space: nowrap; }
+.add:hover { background: var(--ink); color: #fff; }
+
+/* ---------- каталог ---------- */
+.cat { display: grid; grid-template-columns: 260px 1fr; gap: 32px; padding-block: 28px 64px; }
+.side { position: sticky; top: 140px; align-self: start; max-height: calc(100vh - 160px); overflow: auto; padding-right: 6px; }
+.side h2 { font-size: 15px; text-transform: uppercase; letter-spacing: .08em; margin: 0 0 10px; color: var(--ink-2); }
+.side fieldset { border: 0; padding: 0; margin: 0 0 24px; }
+.opt { display: flex; align-items: center; gap: 10px; padding: 7px 4px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+.opt:hover { background: var(--paper); }
+.opt input { width: 18px; height: 18px; accent-color: var(--ink); }
+.opt em { margin-left: auto; font-style: normal; font-size: 14px; color: var(--ink-3); font-weight: 500; }
+.opt.is-zero { opacity: .5; }
+.cat-top { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: end; justify-content: space-between; margin-bottom: 18px; }
+.cat-top h1 { font-size: clamp(30px, 4vw, 48px); font-weight: 800; letter-spacing: -.04em; }
+.found { margin-top: 6px; color: var(--ink-3); font-size: 15px; }
+.sort { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; }
+.sort select { height: 42px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--paper); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--ink); background: var(--paper); font-size: 14px; font-weight: 700; text-decoration: none; }
+.chip.ghost { border-color: transparent; background: transparent; text-decoration: underline; text-underline-offset: 3px; }
+.group { margin-bottom: 34px; }
+.group-h { display: flex; align-items: baseline; gap: 12px; padding-bottom: 10px; border-bottom: 2px solid var(--ink); margin-bottom: 16px; }
+.group-h h2 { font-size: 26px; font-weight: 800; letter-spacing: -.03em; }
+.group-h span { color: var(--ink-3); font-size: 15px; }
+.lines { display: flex; flex-wrap: wrap; gap: 8px; margin: -4px 0 16px; }
+.lines a { font-size: 14px; font-weight: 700; padding: 5px 11px; border-radius: 99px; background: var(--paper); border: 1px solid var(--line); text-decoration: none; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+.empty { padding: 40px 24px; border: 1.5px dashed var(--line); border-radius: var(--r); text-align: center; }
+.empty h2 { font-size: 24px; margin-bottom: 8px; }
+.filters-toggle { display: none; }
+
+/* ---------- карточка ---------- */
+.crumbs { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 22px; font-size: 14px; color: var(--ink-3); }
+.crumbs a { color: var(--ink-2); text-underline-offset: 3px; }
+.pdp { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 56px); padding-block: 20px 40px; }
+.gallery { position: sticky; top: 140px; align-self: start; background: #fff; border-radius: 20px; border: 1px solid var(--line-2); padding: 24px; }
+.gallery img { width: 100%; aspect-ratio: 1; object-fit: contain; }
+.gallery .lowres { margin: 12px 0 0; font-size: 14px; color: var(--ink-3); }
+.pdp-brand { display: inline-flex; gap: 10px; align-items: baseline; text-decoration: none; }
+.pdp-brand b { font-size: clamp(30px, 4vw, 52px); font-weight: 800; letter-spacing: -.045em; line-height: 1; }
+.pdp-brand span { font-size: 18px; font-weight: 700; color: var(--blue); }
+.pdp h1 { margin-top: 14px; font-size: clamp(22px, 2.4vw, 30px); font-weight: 700; letter-spacing: -.02em; line-height: 1.25; }
+.vols { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+.vols a { min-width: 92px; padding: 10px 14px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--paper); text-decoration: none; font-weight: 700; text-align: center; }
+.vols a span { display: block; font-size: 14px; font-weight: 500; color: var(--ink-3); }
+.vols a[aria-current="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.buy { margin-top: 22px; padding: 20px; border-radius: 16px; background: var(--paper); border: 1px solid var(--line-2); }
+.buy .price { font-size: 34px; }
+.note { margin: 6px 0 0; font-size: 14px; color: var(--ink-3); }
+.buy-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+.btn { height: 52px; padding: 0 26px; border-radius: 999px; border: 0; background: var(--blue); color: var(--blue-ink); font-weight: 800; font-size: 16px; }
+.btn:hover { filter: brightness(1.1); }
+.qty { display: inline-flex; align-items: center; border: 1.5px solid var(--line); border-radius: 999px; height: 52px; }
+.qty button { width: 44px; height: 100%; border: 0; background: transparent; font-size: 20px; font-weight: 700; }
+.qty output { min-width: 28px; text-align: center; font-weight: 800; }
+.ways { margin: 18px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; font-size: 15px; }
+.ways li { display: flex; gap: 10px; justify-content: space-between; padding-top: 8px; border-top: 1px solid var(--line-2); }
+.ways li span:last-child { color: var(--ink-3); text-align: right; }
+.block { margin-top: 26px; }
+.block h2 { font-size: 20px; font-weight: 800; margin-bottom: 10px; }
+.block p { margin: 0 0 10px; color: var(--ink-2); }
+.missing { padding: 12px 14px; border-radius: 12px; background: #f0ede4; color: var(--ink-2); font-size: 15px; }
+.ids { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; margin: 0; font-size: 15px; }
+.ids dt { color: var(--ink-3); }
+.ids dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+
+/* ---------- корзина ---------- */
+dialog.cart { width: min(440px, 100vw); max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0 0 0 auto; padding: 0; border: 0; background: var(--paper); color: var(--ink); }
+dialog.cart::backdrop { background: rgba(22,21,15,.45); }
+dialog.cart[open] { animation: slide .22s ease-out; }
+@keyframes slide { from { transform: translateX(30px); opacity: 0; } }
+.cart-in { display: flex; flex-direction: column; height: 100%; }
+.cart-h { display: flex; align-items: center; justify-content: space-between; padding: 20px; border-bottom: 1px solid var(--line-2); }
+.cart-h h2 { font-size: 22px; }
+.x { width: 42px; height: 42px; border-radius: 99px; border: 1px solid var(--line); background: transparent; font-size: 22px; line-height: 1; }
+.cart-list { flex: 1; overflow: auto; padding: 8px 20px; }
+.cart-item { display: grid; grid-template-columns: 64px 1fr; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line-2); }
+.cart-item img { width: 64px; height: 64px; object-fit: contain; border-radius: 8px; border: 1px solid var(--line-2); }
+.cart-item a { font-weight: 600; font-size: 15px; line-height: 1.35; text-decoration: none; }
+.cart-item .ci-row { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; gap: 8px; }
+.cart-item .qty { height: 38px; }
+.cart-item .qty button { width: 34px; }
+.cart-f { padding: 18px 20px 22px; border-top: 1px solid var(--line-2); }
+.cart-total { display: flex; justify-content: space-between; font-weight: 800; font-size: 20px; }
+.cart-f .btn { width: 100%; margin-top: 14px; }
+.btn[aria-disabled="true"] { background: #d9d6cc; color: #4b4940; cursor: not-allowed; filter: none; }
+
+footer { margin-top: 64px; padding-block: 32px 48px; border-top: 1px solid var(--line); font-size: 15px; color: var(--ink-2); }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 32px; justify-content: space-between; }
+
+@media (max-width: 1060px) {
+  .hero { grid-template-columns: 1fr; }
+  .cat { grid-template-columns: 1fr; }
+  .side { position: static; max-height: none; display: none; }
+  .side.is-open { display: block; padding: 16px; background: var(--paper); border-radius: var(--r); border: 1px solid var(--line-2); }
+  .filters-toggle { display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 16px; border-radius: 999px; border: 1.5px solid var(--ink); background: var(--paper); font-weight: 700; }
+  .pdp { grid-template-columns: 1fr; }
+  .gallery { position: static; max-width: 520px; }
+}
+@media (max-width: 760px) {
+  .hdr-row { grid-template-columns: 1fr auto; gap: 12px; }
+  .search { grid-column: 1 / -1; grid-row: 2; }
+  .search input { height: 46px; }
+  .cart-btn { height: 44px; padding: 0 14px; }
+  .cart-btn .lbl { display: none; }
+  .brand-tile.is-big { grid-column: auto; }
+  .wall { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .brand-tile { min-height: 110px; padding: 14px; }
+  .row { grid-auto-columns: 72%; }
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .card-body { padding: 10px 12px 12px; }
+  .card-name { font-size: 15px; }
+  .card-foot { flex-direction: column; align-items: stretch; }
+  .add { width: 100%; }
+  .facts b { font-size: 22px; }
+}
+@media (max-width: 360px) {
+  .grid { grid-template-columns: 1fr; }
+  .wall { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<a class="tc-skip" href="#main">К содержанию</a>
+<header class="hdr">
+  <div class="wrap">
+    <div class="hdr-row">
+      <a class="logo" href="#home">TOP <span>Cosmetics</span></a>
+      <form class="search" role="search" id="search">
+        <label class="visually-hidden" for="q">Поиск по каталогу</label>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" name="q" type="search" placeholder="Бренд, линейка, средство или артикул" autocomplete="off">
+      </form>
+      <button class="cart-btn" type="button" id="cartOpen" aria-haspopup="dialog"><span class="lbl">Корзина</span> <b id="cartCount">0</b><span class="visually-hidden"> товаров в демо-корзине</span></button>
+    </div>
+    <nav class="nav" aria-label="Разделы" id="nav"></nav>
+  </div>
+</header>
+<main id="main"></main>
+<footer>
+  <div class="wrap">
+    <div><b>TOP Cosmetics</b><br><span id="storeAddr"></span></div>
+    <div><a id="storePhone"></a><br><span id="storeHours"></span></div>
+    <div class="muted">Прототип A1 «Бренд-полка». Тексты, цены и фото — из публичного каталога сайта на 15.11.2026.</div>
+  </div>
+</footer>
+<dialog class="cart" id="cart" aria-labelledby="cartTitle">
+  <div class="cart-in">
+    <div class="cart-h"><h2 id="cartTitle">Демо-корзина</h2><button class="x" type="button" id="cartClose" aria-label="Закрыть корзину">×</button></div>
+    <div class="cart-list" id="cartList"></div>
+    <div class="cart-f">
+      <div class="cart-total"><span>Итого</span><span id="cartTotal">0 ₽</span></div>
+      <p class="note">Сумма по ценам снимка 15.11.2026. Доставка, оплата и итог считаются при оформлении на сайте.</p>
+      <button class="btn" type="button" aria-disabled="true" id="checkout">Оформление недоступно в прототипе</button>
+    </div>
+  </div>
+</dialog>
+<script src="shared/data.js"></script>
+<script src="shared/engine.js"></script>
+<script>
+(function () {
+  const { esc, money, img, href } = TC
+  const $ = (s, el = document) => el.querySelector(s)
+  const main = $('#main')
+  TC.ribbon('A1 «Бренд-полка»')
+
+  // Сколько позиций каждого бренда показывает фильтр сайта (публичные данные на 15.11.2026).
+  const siteCount = new Map(TC.data.meta.brands)
+  const inSnap = (b) => TC.products.filter((p) => p.brand === b).length
+  const allBrands = TC.data.meta.brands.map(([b]) => b)
+  const brandKey = (b) => b.toLowerCase().replace(/[^a-zа-я0-9]/g, '')
+  const findBrand = (b) => allBrands.find((x) => brandKey(x) === brandKey(b)) || b
+
+  // ---------- шапка ----------
+  function renderNav(r) {
+    $('#nav').innerHTML = `<a href="#home" ${r.page === 'home' ? 'aria-current="page"' : ''}>Бренды</a>` +
+      TC.tree.map((t) => `<a href="${href('catalog', { root: t.id })}" ${r.page === 'catalog' && String(r.params.root) === String(t.id) ? 'aria-current="page"' : ''}>${esc(t.name)}</a>`).join('') +
+      `<a href="${href('catalog', { kind: 'sample' })}">Пробники</a><a href="${href('catalog', { kind: 'set' })}">Наборы</a>`
+  }
+  $('#search').addEventListener('submit', (e) => { e.preventDefault(); TC.go('catalog', { q: $('#q').value.trim() }) })
+  const st = TC.store
+  $('#storeAddr').textContent = st.address
+  $('#storePhone').textContent = st.phone; $('#storePhone').href = st.phoneHref
+  $('#storeHours').textContent = st.hours
+
+  // ---------- карточка в списке ----------
+  function card(p, q) {
+    const src = img(p)
+    return `<article class="card">
+      <div class="card-img">${src ? `<img src="${src}" alt="${esc(p.brand + ' ' + p.kind + ' ' + p.volume)}" loading="lazy" width="360" height="360">` : '<span class="noimg">Фото нет на сайте</span>'}
+        ${p.line ? `<span class="card-line">${esc(p.line)}</span>` : ''}</div>
+      <div class="card-body">
+        <span class="card-brand">${esc(p.brand)}</span>
+        <a class="card-name" href="${href('product', {}, p.id)}">${TC.mark(p.kind, q)}</a>
+        <span class="card-vol">${esc(p.volume)}</span>
+        <div class="card-foot"><span class="price">${money(p.price)}</span><button class="add" type="button" data-add="${p.id}" aria-label="В корзину: ${esc(p.name)}">В корзину</button></div>
+      </div></article>`
+  }
+
+  // ---------- главная ----------
+  function home() {
+    const snapBrands = new Set(TC.products.map((p) => p.brand))
+    const tiles = allBrands.map((b, i) => {
+      const n = siteCount.get(b), here = snapBrands.has(b)
+      const cls = i < 2 ? 'is-big' : here ? '' : 'is-empty'
+      return `<a class="brand-tile ${cls}" href="${here ? href('catalog', { brand: b }) : href('catalog', { q: b })}">
+        ${here ? '' : '<span class="tag">нет в прототипе</span>'}
+        <strong>${esc(b)}</strong><span>${n} ${TC.plural(n, 'позиция', 'позиции', 'позиций')} на сайте</span></a>`
+    }).join('')
+    const shelves = ['KLAPP', 'BOUTICLE', 'LISAP', 'Yu.R'].map((b) => {
+      const list = TC.products.filter((p) => p.brand === b)
+      const lines = [...new Set(list.map((p) => p.line).filter(Boolean))]
+      return `<section class="shelf" aria-labelledby="sh-${brandKey(b)}">
+        <div class="shelf-h"><h3 id="sh-${brandKey(b)}">${esc(b)}</h3><span class="muted small">${lines.length ? esc(lines.join(' · ')) : ''}</span><a href="${href('catalog', { brand: b })}">Вся полка</a></div>
+        <div class="row">${list.map((p) => card(p)).join('')}</div></section>`
+    }).join('')
+    main.innerHTML = `<div class="wrap">
+      <section class="hero">
+        <div><h1>Косметика по&nbsp;брендам</h1>
+          <p>Выберите бренд — дальше линейка и средство. Названия собраны по одному правилу: бренд, линейка, что это и объём.</p></div>
+        <div class="facts" aria-label="Каталог сайта на 15.11.2026">
+          <div><b>${TC.catalogTotal}</b><span>товаров в каталоге сайта</span></div>
+          <div><b>${allBrands.length}</b><span>брендов в фильтре сайта</span></div>
+          <div><b>${TC.tree.length}</b><span>корневых раздела</span></div>
+          <div><b>${TC.products.length}</b><span>товара в этом прототипе</span></div>
+        </div>
+      </section>
+      <div class="sec-h" id="brands"><h2>Все бренды</h2><span class="muted small">Число позиций — фильтр сайта на 15.11.2026</span></div>
+      <div class="wall">${tiles}</div>
+      <div class="sec-h"><h2>Полки брендов</h2><a href="#catalog">Весь каталог прототипа</a></div>
+      ${shelves}
+    </div>`
+  }
+
+  // ---------- каталог ----------
+  function catalog(r) {
+    const prm = r.params
+    const list = TC.filter(prm)
+    const fc = TC.facets(prm)
+    const chosen = [].concat(prm.brand || [])
+    const title = prm.q ? `Поиск: «${prm.q}»` : chosen.length === 1 ? findBrand(chosen[0]) : prm.root ? TC.rootName(prm.root) : prm.kind === 'sample' ? 'Пробники' : prm.kind === 'set' ? 'Наборы' : 'Каталог'
+    const chips = []
+    if (prm.q) chips.push(['Поиск: ' + prm.q, { ...prm, q: '' }])
+    if (prm.root) chips.push([TC.rootName(prm.root), { ...prm, root: '' }])
+    chosen.forEach((b) => chips.push([b, { ...prm, brand: chosen.filter((x) => x !== b) }]))
+    if (prm.kind) chips.push([prm.kind === 'sample' ? 'Пробники' : 'Наборы', { ...prm, kind: '' }])
+    // Группировка: бренд → линейка, как полки в магазине.
+    const groups = new Map()
+    for (const p of list) { if (!groups.has(p.brand)) groups.set(p.brand, []); groups.get(p.brand).push(p) }
+    const body = list.length ? [...groups].map(([b, items]) => {
+      const lines = [...new Set(items.map((p) => p.line).filter(Boolean))]
+      return `<section class="group" aria-labelledby="g-${brandKey(b)}">
+        <div class="group-h"><h2 id="g-${brandKey(b)}">${esc(b)}</h2><span>${TC.countLabel(items.length)}</span></div>
+        ${lines.length > 1 ? `<div class="lines" aria-label="Линейки ${esc(b)}">${lines.map((l) => `<a href="${href('catalog', { ...prm, q: l })}">${esc(l)}</a>`).join('')}</div>` : ''}
+        <div class="grid">${items.map((p) => card(p, prm.q)).join('')}</div></section>`
+    }).join('') : `<div class="empty"><h2>Ничего не нашли</h2><p class="muted">В прототипе 32 товара из ${TC.catalogTotal}. Попробуйте бренд, например «KLAPP», или тип средства — «шампунь».</p><a class="chip" href="#catalog">Сбросить поиск и фильтры</a></div>`
+    main.innerHTML = `<div class="wrap"><div class="cat">
+      <aside class="side" id="side" aria-label="Фильтры">
+        <form id="filters">
+          <fieldset><legend class="visually-hidden">Бренд</legend><h2>Бренд</h2>
+          ${TC.brands.map((b) => { const n = fc.brand.get(b) || 0; return `<label class="opt ${n ? '' : 'is-zero'}"><input type="checkbox" name="brand" value="${esc(b)}" ${chosen.includes(b) ? 'checked' : ''}> ${esc(b)} <em>${n}</em></label>` }).join('')}</fieldset>
+          <fieldset><legend class="visually-hidden">Раздел</legend><h2>Раздел</h2>
+          <label class="opt"><input type="radio" name="root" value="" ${prm.root ? '' : 'checked'}> Все разделы</label>
+          ${TC.tree.map((t) => { const n = fc.root.get(t.id) || 0; return `<label class="opt ${n ? '' : 'is-zero'}"><input type="radio" name="root" value="${t.id}" ${String(prm.root) === String(t.id) ? 'checked' : ''}> ${esc(t.name)} <em>${n}</em></label>` }).join('')}</fieldset>
+        </form>
+      </aside>
+      <section aria-labelledby="catTitle">
+        <div class="cat-top">
+          <div><h1 id="catTitle">${esc(title)}</h1><p class="found" aria-live="polite">Найдено ${TC.countLabel(list.length)} в прототипе · всего на сайте ${TC.catalogTotal}</p></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+            <button class="filters-toggle" type="button" aria-controls="side" aria-expanded="false" id="ft">Фильтры${chosen.length + (prm.root ? 1 : 0) ? ' · ' + (chosen.length + (prm.root ? 1 : 0)) : ''}</button>
+            <label class="sort">Порядок <select id="sort">${Object.entries(TC.SORTS).map(([k, s]) => `<option value="${k}" ${prm.sort === k ? 'selected' : ''}>${s.label}</option>`).join('')}</select></label>
+          </div>
+        </div>
+        ${chips.length ? `<div class="chips">${chips.map(([t, p]) => `<a class="chip" href="${href('catalog', p)}" aria-label="Убрать фильтр ${esc(t)}">${esc(t)} <span aria-hidden="true">×</span></a>`).join('')}<a class="chip ghost" href="#catalog">Сбросить всё</a></div>` : ''}
+        ${body}
+      </section></div></div>`
+    $('#filters').addEventListener('change', () => {
+      const f = new FormData($('#filters'))
+      TC.go('catalog', { ...prm, brand: f.getAll('brand'), root: f.get('root') })
+    })
+    $('#sort').addEventListener('change', (e) => TC.go('catalog', { ...prm, sort: e.target.value }))
+    $('#ft').addEventListener('click', (e) => { const s = $('#side'); const on = s.classList.toggle('is-open'); e.currentTarget.setAttribute('aria-expanded', on) })
+    $('#q').value = prm.q || ''
+  }
+
+  // ---------- товар ----------
+  let qty = 1
+  function product(r) {
+    const p = TC.byId.get(r.id)
+    if (!p) { main.innerHTML = `<div class="wrap"><div class="empty" style="margin-top:40px"><h1>Товар не найден</h1><p><a href="#catalog">В каталог</a></p></div></div>`; return }
+    qty = 1
+    const src = img(p)
+    const sameLine = TC.products.filter((x) => x.id !== p.id && x.brand === p.brand && p.line && x.line === p.line)
+    const sameBrand = TC.products.filter((x) => x.id !== p.id && x.brand === p.brand && !sameLine.includes(x))
+    const vols = p.volumeGroup ? p.volumeGroup.map((id) => TC.byId.get(id)) : null
+    const paras = p.description ? p.description.split('\n').filter(Boolean).map((t) => `<p>${esc(t)}</p>`).join('') : ''
+    main.innerHTML = `<div class="wrap">
+      <nav class="crumbs" aria-label="Навигация"><a href="#home">Бренды</a><span aria-hidden="true">/</span><a href="${href('catalog', { brand: p.brand })}">${esc(p.brand)}</a>${p.line ? `<span aria-hidden="true">/</span><a href="${href('catalog', { brand: p.brand, q: p.line })}">${esc(p.line)}</a>` : ''}</nav>
+      <div class="pdp">
+        <div class="gallery">${src ? `<img src="${src}" alt="${esc(p.name)}" width="720" height="720">` : '<p class="missing">Фото нет на сайте</p>'}
+          ${p.lowRes ? '<p class="lowres">Фото на сайте низкого разрешения — нужна замена от бренда или съёмка.</p>' : ''}</div>
+        <div>
+          <a class="pdp-brand" href="${href('catalog', { brand: p.brand })}"><b>${esc(p.brand)}</b>${p.line ? `<span>${esc(p.line)}</span>` : ''}</a>
+          <h1>${esc(p.kind)}, ${esc(p.volume)}</h1>
+          ${vols ? `<div class="vols" role="group" aria-label="Объём">${vols.map((v) => `<a href="${href('product', {}, v.id)}" aria-current="${v.id === p.id}">${esc(v.volume)}<span>${money(v.price)}</span></a>`).join('')}</div>` : ''}
+          <div class="buy">
+            <div class="price">${money(p.price)}</div>
+            <p class="note">${TC.PRICE_NOTE}. ${TC.STOCK_NOTE}.</p>
+            <div class="buy-row">
+              <div class="qty" role="group" aria-label="Количество"><button type="button" data-q="-1" aria-label="Меньше">−</button><output id="qty" aria-live="polite">1</output><button type="button" data-q="1" aria-label="Больше">+</button></div>
+              <button class="btn" type="button" id="buyBtn">В корзину</button>
+            </div>
+            <ul class="ways" aria-label="Способы получения">${TC.delivery.map((d) => `<li><span>${esc(d)}</span><span>стоимость и срок — при оформлении</span></li>`).join('')}</ul>
+          </div>
+          <div class="block"><h2>Описание</h2>${paras || '<p class="missing">Описания на сайте нет.</p>'}</div>
+          <div class="block"><h2>Состав</h2><p class="missing">${p.hasComposition ? 'Списком на сайте не указан, упоминание есть в тексте описания.' : 'На сайте состав отдельно не указан.'} Полный состав нужен от бренда или из 1С.</p></div>
+          <div class="block"><h2>Применение</h2><p class="missing">${p.hasUsage ? 'Отдельным блоком на сайте не выделено, есть в тексте описания.' : 'Способ применения на сайте отдельно не указан.'}</p></div>
+          <div class="block"><h2>Данные товара</h2><dl class="ids">
+            <dt>ID в Битрикс</dt><dd>${p.id}</dd><dt>Артикул</dt><dd>${esc(p.article || 'не указан')}</dd><dt>XML_ID</dt><dd>не опубликован на сайте</dd>
+            <dt>Название на сайте</dt><dd>${esc(p.sourceName)}</dd><dt>Раздел</dt><dd>${esc(p.root)}${p.section ? ' / ' + esc(p.section) : ''}</dd></dl></div>
+        </div>
+      </div>
+      ${sameLine.length ? `<section class="shelf"><div class="shelf-h"><h2 style="font-size:28px">Ещё из линейки ${esc(p.line)}</h2></div><div class="row">${sameLine.map((x) => card(x)).join('')}</div></section>` : ''}
+      ${sameBrand.length ? `<section class="shelf"><div class="shelf-h"><h2 style="font-size:28px">Другие средства ${esc(p.brand)}</h2><a href="${href('catalog', { brand: p.brand })}">Вся полка</a></div><div class="row">${sameBrand.map((x) => card(x)).join('')}</div></section>` : ''}
+    </div>`
+    main.querySelectorAll('[data-q]').forEach((b) => b.addEventListener('click', () => { qty = Math.max(1, Math.min(99, qty + Number(b.dataset.q))); $('#qty').textContent = qty }))
+    $('#buyBtn').addEventListener('click', () => TC.cart.add(p.id, qty))
+  }
+
+  // ---------- корзина ----------
+  const dlg = $('#cart')
+  $('#cartOpen').addEventListener('click', () => dlg.showModal())
+  $('#cartClose').addEventListener('click', () => dlg.close())
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close() })
+  $('#checkout').addEventListener('click', () => TC.toast('Это прототип: заказ не оформляется, оплата не проводится.'))
+  TC.cart.on((s) => {
+    $('#cartCount').textContent = s.count
+    $('#cartTotal').textContent = money(s.total)
+    $('#cartList').innerHTML = s.items.length ? s.items.map(({ product: p, qty: n }) => `<div class="cart-item">
+      ${img(p) ? `<img src="${img(p)}" alt="" width="64" height="64">` : '<span></span>'}
+      <div><a href="${href('product', {}, p.id)}">${esc(p.name)}</a>
+      <div class="ci-row"><div class="qty" role="group" aria-label="Количество"><button type="button" data-cq="${p.id}" data-d="-1" aria-label="Меньше">−</button><output>${n}</output><button type="button" data-cq="${p.id}" data-d="1" aria-label="Больше">+</button></div><b>${money(p.price * n)}</b></div></div></div>`).join('') :
+      '<p class="muted" style="padding:20px 0">Пока пусто. Добавьте товар — заказ всё равно не оформится, это прототип.</p>'
+  })
+  $('#cartList').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-cq]'); if (!b) return
+    const id = Number(b.dataset.cq), it = TC.cart.state().items.find((x) => x.id === id)
+    TC.cart.set(id, it.qty + Number(b.dataset.d))
+  })
+  $('#cartList').addEventListener('click', (e) => { if (e.target.closest('a')) dlg.close() })
+  document.addEventListener('click', (e) => { const b = e.target.closest('[data-add]'); if (b) TC.cart.add(Number(b.dataset.add)) })
+
+  TC.onRoute((r) => {
+    renderNav(r)
+    if (r.page !== 'catalog') $('#q').value = ''
+    if (r.page === 'catalog') catalog(r)
+    else if (r.page === 'product') product(r)
+    else home()
+    document.title = (r.page === 'product' && TC.byId.get(r.id) ? TC.byId.get(r.id).name + ' — ' : r.page === 'catalog' ? 'Каталог — ' : '') + 'A1 · Бренд-полка — прототип TOP Cosmetics'
+  })
+})()
+</script>
+</body>
+</html>

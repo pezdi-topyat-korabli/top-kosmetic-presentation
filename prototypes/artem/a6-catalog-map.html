@@ -1,0 +1,670 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>A6 · Карта каталога — прототип TOP Cosmetics</title>
+<link rel="stylesheet" href="shared/base.css">
+<style>
+@font-face { font-family: 'Inter'; src: url(fonts/inter-cyrillic-wght-normal.woff2) format('woff2'); font-weight: 100 900; font-display: swap; unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: 'Inter'; src: url(fonts/inter-latin-wght-normal.woff2) format('woff2'); font-weight: 100 900; font-display: swap; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD, U+20BD; }
+:root {
+  --bg: #fff; --ink: #0b0b0d; --ink-2: #33343a; --ink-3: #5c5c66; --line: #e2e3e8; --line-2: #eef0f3; --soft: #f4f5f7;
+  --acc: #0047ff; --acc-ink: #fff; --acc-soft: #eef3ff; --acc-text: #0040e8;
+  --tc-focus: #0047ff; --tc-mark: #d6e2ff;
+  --wrap: 1360px; --pad: clamp(16px, 3.2vw, 40px); --r: 10px;
+}
+body { background: var(--bg); color: var(--ink); font: 400 16px/1.5 Inter, system-ui, sans-serif; font-feature-settings: 'cv11', 'ss01'; }
+.wrap { max-width: var(--wrap); margin: 0 auto; padding-inline: var(--pad); }
+h1, h2, h3 { margin: 0; line-height: 1.1; letter-spacing: -.025em; }
+.num { font-variant-numeric: tabular-nums; }
+.muted { color: var(--ink-3); }
+
+/* ---------- шапка ---------- */
+.hdr { position: sticky; top: 0; z-index: 30; background: #fff; border-bottom: 1px solid var(--line); }
+.hdr-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 20px; align-items: center; padding-block: 12px; }
+.logo { display: inline-flex; align-items: baseline; gap: 10px; text-decoration: none; white-space: nowrap; }
+.logo b { font-weight: 800; font-size: 19px; letter-spacing: -.03em; }
+.logo span { font-size: 13px; font-weight: 600; color: var(--ink-3); padding-left: 10px; border-left: 1px solid var(--line); }
+.search { position: relative; max-width: 560px; width: 100%; }
+.search input { width: 100%; height: 44px; padding: 0 14px 0 42px; border: 1px solid #c9cbd3; border-radius: 8px; background: var(--soft); font-size: 15px; }
+.search input:hover { border-color: var(--ink-3); }
+.search input:focus { background: #fff; border-color: var(--acc); }
+.search svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--ink-3); }
+.cart-btn { display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 14px 0 16px; border: 1px solid var(--ink); border-radius: 8px; background: var(--ink); color: #fff; font-weight: 600; font-size: 15px; }
+.cart-btn:hover { background: #26272d; }
+.cart-btn b { min-width: 24px; height: 24px; padding: 0 6px; display: inline-grid; place-items: center; border-radius: 6px; background: #fff; color: var(--ink); font-size: 13px; }
+.nav { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; margin-bottom: -1px; }
+.nav a { flex: none; display: inline-flex; align-items: center; gap: 8px; padding: 10px 12px 11px; text-decoration: none; font-weight: 600; font-size: 14px; color: var(--ink-2); border-bottom: 2px solid transparent; }
+.nav a em { font-style: normal; font-weight: 500; color: var(--ink-3); font-size: 13px; }
+.nav a:hover { color: var(--ink); border-bottom-color: var(--line); }
+.nav a[aria-current="page"] { color: var(--acc-text); border-bottom-color: var(--acc); }
+.nav a[aria-current="page"] em { color: var(--acc-text); }
+.nav a:focus-visible { outline-offset: -3px; }
+
+/* ---------- адрес раздела ---------- */
+.addr { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 22px; }
+.url { display: inline-flex; align-items: center; gap: 8px; max-width: 100%; padding: 7px 12px; border-radius: 8px; background: var(--soft); border: 1px solid var(--line); font-size: 14px; line-height: 1.35; overflow-wrap: anywhere; }
+.url svg { flex: none; color: var(--ink-3); }
+.url .dom { color: var(--ink-3); }
+.url .path { color: var(--ink); font-weight: 600; }
+.url .seg { color: var(--acc-text); }
+.addr-note { font-size: 13px; color: var(--ink-3); }
+.addr-note code.nw, .cmp code { white-space: nowrap; }
+.addr-note code, .cmp code { font: 600 13px/1.4 Inter, system-ui, sans-serif; color: var(--ink-2); background: var(--soft); border: 1px solid var(--line); padding: 1px 6px; border-radius: 5px; overflow-wrap: anywhere; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 5px; font-size: 13px; font-weight: 600; background: var(--acc-soft); color: var(--acc-text); }
+
+.crumbs { display: flex; flex-wrap: wrap; gap: 4px 8px; margin-top: 14px; font-size: 14px; color: var(--ink-3); }
+.crumbs a { color: var(--ink-2); text-underline-offset: 3px; text-decoration-color: #b8bac2; }
+.crumbs a:hover { color: var(--acc-text); text-decoration-color: currentColor; }
+.crumbs [aria-current] { color: var(--ink); font-weight: 600; }
+
+/* ---------- главная ---------- */
+.hero { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 32px 56px; align-items: end; padding-block: clamp(28px, 5vw, 64px) clamp(24px, 3vw, 36px); border-bottom: 1px solid var(--line); }
+.hero h1 { font-size: clamp(38px, 6.2vw, 84px); font-weight: 800; letter-spacing: -.05em; line-height: .98; }
+.hero h1 span { color: var(--acc); }
+.hero p { margin: 18px 0 0; max-width: 560px; font-size: 18px; color: var(--ink-2); }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 2px solid var(--ink); }
+.stats div { padding: 12px 12px 0 0; }
+.stats b { display: block; font-size: clamp(26px, 3vw, 40px); font-weight: 750; letter-spacing: -.04em; line-height: 1.1; }
+.stats span { display: block; margin-top: 4px; font-size: 13px; color: var(--ink-3); line-height: 1.35; }
+.sec-h { display: flex; flex-wrap: wrap; gap: 6px 20px; align-items: baseline; justify-content: space-between; margin: clamp(32px, 5vw, 56px) 0 18px; }
+.sec-h h2 { font-size: clamp(24px, 3vw, 34px); font-weight: 750; }
+.sec-h p { margin: 0; font-size: 14px; color: var(--ink-3); }
+
+.map { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: auto; gap: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.map-col { border-right: 1px solid var(--line); min-width: 0; display: grid; grid-row: span 2; grid-template-rows: subgrid; }
+.map-col:last-child { border-right: 0; }
+.map-root { position: relative; display: block; padding: 18px 18px 16px; text-decoration: none; border-bottom: 1px solid var(--line); background: #fff; }
+.map-root:hover { background: var(--acc-soft); }
+.map-root:hover h3 { color: var(--acc-text); }
+.map-root h3 { font-size: clamp(22px, 2vw, 28px); font-weight: 750; letter-spacing: -.035em; }
+.map-root .cnt { display: block; margin-top: 8px; font-size: 14px; color: var(--ink-2); }
+.map-root .sub { display: block; font-size: 13px; color: var(--ink-3); margin-top: 2px; }
+.map-root .cnt b { font-size: 20px; font-weight: 700; color: var(--ink); }
+.map-root .slug { display: block; margin-top: 6px; font-size: 13px; color: var(--ink-3); overflow-wrap: anywhere; }
+.map-root:focus-visible, .map-list a:focus-visible { outline-offset: -3px; }
+.map-list { list-style: none; margin: 0; padding: 6px 0 10px; }
+.map-list a { display: flex; gap: 12px; align-items: baseline; justify-content: space-between; padding: 7px 18px; text-decoration: none; font-size: 15px; line-height: 1.35; color: var(--ink); }
+.map-list a:hover { background: var(--acc-soft); color: var(--acc-text); }
+.map-list a em { flex: none; font-style: normal; font-size: 14px; font-weight: 600; min-width: 22px; text-align: right; }
+.map-list a.is-zero { color: var(--ink-2); }
+.map-list a.is-zero em { color: var(--ink-3); font-weight: 500; }
+.map-none { margin: 0; padding: 14px 18px; font-size: 14px; color: var(--ink-3); }
+.map-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 12px; font-size: 13px; color: var(--ink-3); }
+
+.seo { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 24px 48px; padding: clamp(22px, 3vw, 36px); border-radius: 12px; background: var(--soft); }
+.seo h2 { font-size: clamp(22px, 2.6vw, 30px); font-weight: 750; }
+.seo > div > p { margin: 12px 0 0; color: var(--ink-2); }
+.cmp { display: grid; gap: 10px; }
+.cmp-row { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 12px; align-items: start; padding: 14px 16px; border-radius: 10px; background: #fff; border: 1px solid var(--line); }
+.cmp-row.is-new { border-color: var(--acc); box-shadow: inset 3px 0 0 var(--acc); }
+.cmp-row > span { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-3); padding-top: 2px; }
+.cmp-row.is-new > span { color: var(--acc-text); }
+.cmp-row p { margin: 6px 0 0; font-size: 14px; color: var(--ink-2); }
+.cmp ul { margin: 8px 0 0; padding-left: 18px; font-size: 14px; color: var(--ink-2); }
+.cmp li + li { margin-top: 3px; }
+
+/* ---------- каталог ---------- */
+.cat-head { padding-bottom: 22px; border-bottom: 1px solid var(--line); }
+.cat-head h1 { margin-top: 14px; font-size: clamp(30px, 4.2vw, 54px); font-weight: 800; letter-spacing: -.045em; line-height: 1.02; }
+.cat-head h1 small { display: block; margin-bottom: 6px; font-size: 15px; font-weight: 600; letter-spacing: 0; color: var(--ink-3); }
+.intro { margin-top: 14px; max-width: 760px; padding: 12px 14px; border: 1.5px dashed #b9bcc6; border-radius: 10px; font-size: 15px; color: var(--ink-2); }
+.intro .tag { display: table; margin-bottom: 6px; }
+
+.cat { display: grid; grid-template-columns: 464px minmax(0, 1fr); gap: 0; padding-bottom: 64px; }
+.miller { position: sticky; top: 112px; align-self: start; display: grid; grid-template-columns: 1fr 1fr; height: calc(100vh - 132px); min-height: 420px; border-right: 1px solid var(--line); }
+.mcol { min-width: 0; overflow-y: auto; border-right: 1px solid var(--line-2); padding: 14px 8px 20px 0; }
+.mcol + .mcol { padding-left: 8px; }
+.mcol:last-child { border-right: 0; }
+.mcol h2 { padding: 4px 10px 8px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-3); }
+.mcol ul { list-style: none; margin: 0; padding: 0; }
+.mi { display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 7px 10px; border-radius: 7px; text-decoration: none; font-size: 15px; line-height: 1.3; color: var(--ink); }
+.mi:hover { background: var(--soft); }
+.mi:focus-visible { outline-offset: -3px; }
+.mi .t { flex: 1; min-width: 0; }
+.mi em { flex: none; font-style: normal; font-size: 13px; font-weight: 600; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.mi svg { flex: none; color: var(--ink-3); }
+.mi.is-zero .t { color: var(--ink-2); }
+.mi.is-zero em { color: var(--ink-3); font-weight: 500; }
+.mi.is-path { background: var(--acc-soft); color: var(--acc-text); font-weight: 600; }
+.mi.is-path em, .mi.is-path svg { color: var(--acc-text); }
+.mi[aria-current="page"] { background: var(--acc); color: var(--acc-ink); font-weight: 600; }
+.mi[aria-current="page"] em, .mi[aria-current="page"] svg, .mi[aria-current="page"] .t { color: var(--acc-ink); }
+.mi[aria-current="page"]:focus-visible { outline-color: var(--ink); }
+.mi.all { margin-bottom: 6px; border-bottom: 1px solid var(--line-2); border-radius: 7px 7px 0 0; }
+.mhint { margin: 6px 10px; padding: 12px; border-radius: 8px; background: var(--soft); font-size: 14px; color: var(--ink-2); }
+
+.list { min-width: 0; padding: 18px 0 0 28px; }
+.drill { display: none; }
+.tools { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: center; justify-content: space-between; }
+.found { font-size: 15px; color: var(--ink-2); }
+.found b { color: var(--ink); }
+.sort { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--ink-2); }
+.sort select { height: 38px; padding: 0 10px; border-radius: 8px; border: 1px solid #c9cbd3; background: #fff; font-size: 14px; color: var(--ink); }
+.brands-f { min-width: 0; margin: 14px 0 0; padding: 0; border: 0; }
+.brands-f legend { float: left; margin-right: 6px; padding: 7px 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-3); }
+.brands { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+.bchip { display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 10px 0 8px; border-radius: 7px; border: 1px solid var(--line); background: #fff; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.bchip:hover { border-color: var(--ink-3); }
+.bchip input { width: 16px; height: 16px; margin: 0; accent-color: var(--acc); }
+.bchip em { font-style: normal; font-weight: 500; color: var(--ink-3); font-size: 13px; }
+.bchip:has(input:checked) { border-color: var(--acc); background: var(--acc-soft); color: var(--acc-text); }
+.bchip:has(input:checked) em { color: var(--acc-text); }
+.bchip.is-zero { color: var(--ink-3); border-style: dashed; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 10px; border-radius: 6px; background: var(--ink); color: #fff; font-size: 13px; font-weight: 600; text-decoration: none; }
+.chip:hover { background: #2c2d33; }
+.chip.ghost { background: transparent; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.pnote { margin: 14px 0 0; font-size: 13px; color: var(--ink-3); }
+
+.rows { list-style: none; margin: 10px 0 0; padding: 0; border-top: 1px solid var(--line); }
+.pfoot { display: flex; align-items: center; gap: 18px; }
+.prow { position: relative; display: grid; grid-template-columns: 76px minmax(0, 1fr) auto; gap: 18px; align-items: center; padding: 12px 10px 12px 4px; border-bottom: 1px solid var(--line); transition: background-color .15s; }
+.prow:hover { background: var(--soft); }
+.prow.is-here { background: var(--acc-soft); box-shadow: inset 3px 0 0 var(--acc); }
+.pth { width: 76px; height: 76px; border-radius: 8px; background: #fff; border: 1px solid var(--line-2); display: grid; place-items: center; overflow: hidden; }
+.pth img { width: 100%; height: 100%; object-fit: contain; }
+.pth .noimg { font-size: 13px; color: var(--ink-3); text-align: center; padding: 4px; line-height: 1.2; }
+.pinfo { min-width: 0; }
+.pmeta { display: flex; flex-wrap: wrap; gap: 2px 10px; font-size: 13px; color: var(--ink-3); }
+.pmeta b { color: var(--ink); font-weight: 700; letter-spacing: .02em; }
+.pname { display: block; margin-top: 2px; font-size: 16px; font-weight: 600; line-height: 1.3; text-decoration: none; }
+.pname::after { content: ''; position: absolute; inset: 0; }
+.pname:hover { color: var(--acc-text); }
+.pname:focus-visible { outline-offset: 2px; border-radius: 2px; }
+.prow:has(.pname:focus-visible) { background: var(--acc-soft); }
+.pvol { display: block; margin-top: 3px; font-size: 14px; color: var(--ink-2); }
+.pprice { font-weight: 700; font-size: 17px; letter-spacing: -.01em; white-space: nowrap; font-variant-numeric: tabular-nums; text-align: right; }
+.add { position: relative; z-index: 2; height: 38px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--ink); background: #fff; font-weight: 600; font-size: 14px; white-space: nowrap; }
+.add:hover { background: var(--ink); color: #fff; }
+.here { display: inline-block; margin-left: 6px; font-size: 13px; font-weight: 700; color: var(--acc-text); }
+.empty { margin-top: 18px; padding: 32px 24px; border: 1.5px dashed #b9bcc6; border-radius: 12px; }
+.empty h2 { font-size: 22px; font-weight: 750; }
+.empty p { margin: 8px 0 16px; color: var(--ink-2); max-width: 560px; }
+.empty .acts { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn-line { display: inline-flex; align-items: center; height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--ink); font-weight: 600; font-size: 14px; text-decoration: none; background: #fff; }
+.btn-line:hover { background: var(--ink); color: #fff; }
+
+/* ---------- товар ---------- */
+.pdp { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(24px, 4vw, 64px); padding-block: 26px 20px; }
+.gallery { position: sticky; top: 124px; align-self: start; border: 1px solid var(--line); border-radius: 12px; padding: clamp(16px, 3vw, 36px); background: #fff; }
+.gallery img { width: 100%; aspect-ratio: 1; object-fit: contain; }
+.gallery .lowres { margin: 14px 0 0; padding: 10px 12px; border-radius: 8px; background: var(--soft); font-size: 14px; color: var(--ink-2); }
+.noimg-big { aspect-ratio: 1; display: grid; place-items: center; background: var(--soft); border-radius: 8px; color: var(--ink-2); }
+.pdp h1 { font-size: clamp(26px, 3vw, 40px); font-weight: 750; letter-spacing: -.035em; line-height: 1.12; }
+.pdp h1 .b { display: block; margin-bottom: 8px; font-size: 15px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--acc-text); }
+.where { margin-top: 12px; font-size: 14px; color: var(--ink-2); }
+.where a { color: var(--ink); font-weight: 600; text-underline-offset: 3px; }
+.buy { margin-top: 22px; padding: 20px; border-radius: 12px; border: 1px solid var(--line); }
+.buy .price { font-size: 34px; font-weight: 750; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.note { margin: 4px 0 0; font-size: 13px; color: var(--ink-3); }
+.buy-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.btn { height: 50px; padding: 0 26px; border-radius: 8px; border: 0; background: var(--acc); color: var(--acc-ink); font-weight: 700; font-size: 16px; }
+.btn:hover { background: #0036c4; }
+.btn:focus-visible { outline-color: var(--ink); }
+.qty { display: inline-flex; align-items: center; border: 1px solid #c9cbd3; border-radius: 8px; height: 50px; }
+.qty button { width: 44px; height: 100%; border: 0; background: transparent; font-size: 20px; font-weight: 600; border-radius: 8px; }
+.qty button:hover { background: var(--soft); }
+.qty output { min-width: 30px; text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
+.ways { list-style: none; margin: 18px 0 0; padding: 0; font-size: 14px; }
+.ways li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 12px; padding: 8px 0; border-top: 1px solid var(--line-2); }
+.ways li span:first-child { font-weight: 600; }
+.ways li span:last-child { color: var(--ink-3); }
+.also { margin-top: 12px; font-size: 14px; }
+.also a { font-weight: 600; color: var(--acc-text); text-underline-offset: 3px; }
+.block { margin-top: 28px; }
+.block h2 { font-size: 19px; font-weight: 750; margin-bottom: 10px; }
+.block p { margin: 0 0 10px; color: var(--ink-2); }
+.missing { padding: 10px 12px; border-radius: 8px; background: var(--soft); color: var(--ink-2); font-size: 15px; }
+.ids { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 18px; margin: 0; font-size: 15px; }
+.ids dt { color: var(--ink-3); }
+.ids dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.nbr { margin-top: 36px; padding-bottom: 48px; }
+.nbr-h { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; }
+.nbr-h h2 { font-size: clamp(22px, 2.6vw, 30px); font-weight: 750; }
+.nbr-h p { margin: 0; font-size: 13px; color: var(--ink-3); }
+
+/* ---------- корзина ---------- */
+dialog.cart { width: min(440px, 100vw); max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0 0 0 auto; padding: 0; border: 0; border-left: 1px solid var(--line); background: #fff; color: var(--ink); }
+dialog.cart::backdrop { background: rgba(11,11,13,.4); }
+dialog.cart[open] { animation: slide .2s ease-out; }
+@keyframes slide { from { transform: translateX(24px); opacity: 0; } }
+.cart-in { display: flex; flex-direction: column; height: 100%; }
+.cart-h { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid var(--line); }
+.cart-h h2 { font-size: 20px; font-weight: 750; }
+.x { width: 40px; height: 40px; border-radius: 8px; border: 1px solid var(--line); background: #fff; font-size: 22px; line-height: 1; }
+.cart-list { flex: 1; overflow: auto; padding: 4px 20px; }
+.cart-item { display: grid; grid-template-columns: 60px minmax(0, 1fr); gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line-2); }
+.cart-item img { width: 60px; height: 60px; object-fit: contain; border-radius: 6px; border: 1px solid var(--line-2); }
+.cart-item a { font-weight: 600; font-size: 15px; line-height: 1.35; text-decoration: none; }
+.ci-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
+.cart-item .qty { height: 36px; }
+.cart-item .qty button { width: 34px; }
+.cart-f { padding: 16px 20px 22px; border-top: 1px solid var(--line); }
+.cart-total { display: flex; justify-content: space-between; font-weight: 750; font-size: 20px; }
+.cart-f .btn { width: 100%; margin-top: 14px; }
+.btn[aria-disabled="true"] { background: #e4e5ea; color: #3a3b41; cursor: not-allowed; }
+
+footer { margin-top: 24px; padding-block: 28px 44px; border-top: 1px solid var(--line); font-size: 14px; color: var(--ink-2); }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 32px; justify-content: space-between; }
+footer a { color: var(--ink); }
+
+@media (max-width: 1180px) {
+  .map { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .map-col:nth-child(2) { border-right: 0; }
+  .map-col:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+  .cat { grid-template-columns: 400px minmax(0, 1fr); }
+  .pth { width: 68px; height: 68px; }
+  .prow { grid-template-columns: 68px minmax(0, 1fr) auto; }
+  .pfoot { flex-direction: column; align-items: flex-end; gap: 8px; }
+}
+@media (max-width: 1023px) {
+  .hero, .seo { grid-template-columns: 1fr; }
+  .cat { grid-template-columns: 1fr; }
+  .miller { display: none; }
+  .list { padding: 16px 0 0; }
+  .drill { display: block; margin-bottom: 18px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .drill-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px 8px 6px; background: var(--soft); border-bottom: 1px solid var(--line); }
+  .drill-back { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 10px; border-radius: 7px; font-weight: 600; font-size: 15px; text-decoration: none; color: var(--acc-text); }
+  .drill-back:hover { background: #fff; }
+  .drill-lvl { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-3); padding-left: 10px; }
+  .drill ul { list-style: none; margin: 0; padding: 4px; }
+  .drill .mi { min-height: 48px; }
+  .drill .rail { position: relative; display: flex; gap: 6px; overflow-x: auto; padding: 10px; scrollbar-width: thin; }
+  .drill .rail a { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 38px; padding: 0 12px; border-radius: 7px; border: 1px solid var(--line); font-size: 14px; font-weight: 600; text-decoration: none; white-space: nowrap; }
+  .drill .rail a em { font-style: normal; font-weight: 500; color: var(--ink-3); font-size: 13px; }
+  .drill .rail a[aria-current="page"] { background: var(--acc); border-color: var(--acc); color: #fff; }
+  .drill .rail a[aria-current="page"] em { color: #fff; }
+  .pdp { grid-template-columns: 1fr; }
+  .gallery { position: static; max-width: 520px; }
+}
+@media (max-width: 760px) {
+  .hdr-row { grid-template-columns: minmax(0, 1fr) auto; gap: 10px; padding-block: 10px; }
+  .search { grid-column: 1 / -1; grid-row: 2; max-width: none; }
+  .logo span { display: none; }
+  .cart-btn .lbl { display: none; }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 14px; }
+  .map { grid-template-columns: 1fr; }
+  .map-col { border-right: 0; border-bottom: 1px solid var(--line); }
+  .map-col:last-child { border-bottom: 0; }
+  .cmp-row { grid-template-columns: 1fr; gap: 4px; }
+  .brands-f legend { float: none; padding: 0 0 6px; }
+  .brands { flex-wrap: nowrap; overflow-x: auto; margin-inline: calc(var(--pad) * -1); padding: 2px var(--pad) 6px; scrollbar-width: thin; }
+  .prow { grid-template-columns: 64px minmax(0, 1fr); gap: 12px; align-items: start; }
+  .pth { width: 64px; height: 64px; }
+  .pfoot { grid-column: 2; flex-direction: row; align-items: center; justify-content: space-between; gap: 10px; }
+  .pname { font-size: 15px; }
+  .tools { align-items: flex-start; }
+}
+@media (max-width: 360px) {
+  .stats b { font-size: 24px; }
+  .pfoot { flex-wrap: wrap; }
+}
+</style>
+</head>
+<body>
+<a class="tc-skip" href="#main">К содержанию</a>
+<header class="hdr">
+  <div class="wrap">
+    <div class="hdr-row">
+      <a class="logo" href="#home"><b>TOP Cosmetics</b><span>Карта каталога</span></a>
+      <form class="search" role="search" id="search">
+        <label class="visually-hidden" for="q">Поиск по каталогу</label>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" name="q" type="search" placeholder="Название, бренд или артикул" autocomplete="off">
+      </form>
+      <button class="cart-btn" type="button" id="cartOpen" aria-haspopup="dialog"><span class="lbl">Корзина</span><b id="cartCount">0</b><span class="visually-hidden"> товаров в демо-корзине</span></button>
+    </div>
+    <nav class="nav" aria-label="Корневые разделы" id="nav"></nav>
+  </div>
+</header>
+<main id="main"></main>
+<footer>
+  <div class="wrap">
+    <div><b>TOP Cosmetics</b><br><span id="storeAddr"></span></div>
+    <div><a id="storePhone"></a><br><span id="storeHours"></span></div>
+    <div class="muted" style="max-width:460px">Прототип A6 «Карта каталога». Адреса разделов и карточек — предложение, не действующие страницы сайта. Данные — публичный каталог на 15.11.2026.</div>
+  </div>
+</footer>
+<dialog class="cart" id="cart" aria-labelledby="cartTitle">
+  <div class="cart-in">
+    <div class="cart-h"><h2 id="cartTitle">Демо-корзина</h2><button class="x" type="button" id="cartClose" aria-label="Закрыть корзину">×</button></div>
+    <div class="cart-list" id="cartList"></div>
+    <div class="cart-f">
+      <div class="cart-total"><span>Итого</span><span id="cartTotal" class="num">0 ₽</span></div>
+      <p class="note">Сумма по ценам снимка 15.11.2026. Доставка, оплата и итог считаются при оформлении на сайте.</p>
+      <button class="btn" type="button" aria-disabled="true" id="checkout">Оформление недоступно в прототипе</button>
+    </div>
+  </div>
+</dialog>
+<script src="shared/data.js"></script>
+<script src="shared/engine.js"></script>
+<script>
+(function () {
+  const { esc, money, img, href } = TC
+  const $ = (s, el = document) => el.querySelector(s)
+  const main = $('#main')
+  TC.ribbon('A6 «Карта каталога»')
+
+  // ---------- предлагаемые адреса (ЧПУ) ----------
+  // Символьные коды разделов транслитерированы вручную и сокращены там, где родитель уже в адресе
+  // («Для волос / Маски» → /dlya-volos/maski/). Итоговые коды утверждает заказчик.
+  const SLUG = {
+    169: 'dlya-volos', 170: 'dozatory', 171: 'dopolnitelnyy-ukhod', 172: 'konditsionery-i-balzamy', 173: 'lechebnyy-ukhod', 174: 'maski',
+    175: 'muzhskie-sredstva', 176: 'okrashivanie', 177: 'probniki', 178: 'rascheski', 179: 'ukladka-i-fiksatsiya', 180: 'termozashchita', 181: 'shampuni',
+    182: 'dlya-litsa', 183: 'dekorativnaya-kosmetika', 235: 'dlya-gub', 184: 'maski-i-patchi', 185: 'muzhskoy-ukhod', 186: 'nabory', 187: 'skraby-i-pilingi',
+    188: 'solntsezashchitnye-sredstva', 189: 'snyatie-makiyazha', 190: 'umyvanie', 191: 'ukhod-vokrug-glaz', 192: 'ukhod-za-kozhey', 193: 'sheya-i-dekolte',
+    194: 'dlya-tela', 195: 'massazhnye-sredstva', 198: 'solntsezashchitnye-sredstva', 199: 'ukhod-za-rukami', 200: 'ukhod-za-telom', 201: 'ukhodovye-masla',
+    307: 'vitaminy-i-bady',
+  }
+  const TR = { а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'e', ж: 'zh', з: 'z', и: 'i', й: 'y', к: 'k', л: 'l', м: 'm', н: 'n', о: 'o', п: 'p', р: 'r', с: 's', т: 't', у: 'u', ф: 'f', х: 'kh', ц: 'ts', ч: 'ch', ш: 'sh', щ: 'shch', ъ: '', ы: 'y', ь: '', э: 'e', ю: 'yu', я: 'ya' }
+  const translit = (s) => String(s).toLowerCase().replace(/×/g, ' x ').replace(/\+/g, ' ').split('').map((c) => TR[c] ?? c).join('').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+  const productSlug = (p) => translit([p.brand, p.line, p.kind, p.volume].filter(Boolean).join(' '))
+  const DOMAIN = 'top-cosmetics.shop'
+
+  // ---------- дерево ----------
+  const parentOf = new Map()
+  for (const r of TC.tree) for (const c of r.children) parentOf.set(String(c.id), r)
+  const rootById = (id) => TC.tree.find((r) => String(r.id) === String(id))
+  // Нормализуем параметры: раздел всегда вместе со своим корнем.
+  function norm(prm) {
+    const p = { ...prm }
+    if (p.section && parentOf.has(String(p.section))) p.root = String(parentOf.get(String(p.section)).id)
+    else delete p.section
+    if (p.root && !rootById(p.root)) delete p.root
+    return p
+  }
+  // Сколько товаров даст каждый узел при текущем поиске и бренде.
+  function nodeCounts(prm) {
+    const base = TC.filter({ q: prm.q, brand: prm.brand })
+    const root = new Map(), sect = new Map()
+    for (const p of base) { root.set(p.rootId, (root.get(p.rootId) || 0) + 1); if (p.sectionId) sect.set(p.sectionId, (sect.get(p.sectionId) || 0) + 1) }
+    return { all: base.length, root, sect }
+  }
+  const keep = (prm) => ({ q: prm.q, brand: prm.brand, sort: prm.sort })
+  const chev = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>'
+  const back = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg>'
+  const globe = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg>'
+
+  function urlBar(segs, lastLabel) {
+    const path = '/catalog/' + segs.map((s, i) => `<span class="${i === segs.length - 1 ? 'seg' : ''}">${esc(s)}</span>/`).join('')
+    return `<span class="url" aria-label="${esc(lastLabel)}">${globe}<span><span class="dom">${DOMAIN}</span><span class="path">${path}</span></span></span>`
+  }
+
+  // ---------- шапка ----------
+  function renderNav(r) {
+    const prm = r.page === 'catalog' ? norm(r.params) : {}
+    const cur = r.page === 'product' && TC.byId.get(r.id) ? String(TC.byId.get(r.id).rootId) : prm.root
+    const total = TC.products.length
+    $('#nav').innerHTML = `<a href="#home" ${r.page === 'home' ? 'aria-current="page"' : ''}>Карта разделов</a>` +
+      `<a href="#catalog" ${r.page === 'catalog' && !prm.root && !prm.q ? 'aria-current="page"' : ''}>Весь каталог <em>${total}</em></a>` +
+      TC.tree.map((t) => `<a href="${href('catalog', { root: t.id })}" ${String(cur) === String(t.id) ? 'aria-current="page"' : ''}>${esc(t.name)} <em>${TC.products.filter((p) => p.rootId === t.id).length}</em></a>`).join('')
+  }
+  $('#search').addEventListener('submit', (e) => { e.preventDefault(); TC.go('catalog', { q: $('#q').value.trim() }) })
+  const st = TC.store
+  $('#storeAddr').textContent = st.address
+  $('#storePhone').textContent = st.phone; $('#storePhone').href = st.phoneHref
+  $('#storeHours').textContent = st.hours
+
+  // ---------- строка товара ----------
+  function row(p, q, opts = {}) {
+    const src = img(p)
+    const here = opts.here === p.id
+    return `<li class="prow ${here ? 'is-here' : ''}">
+      <div class="pth">${src ? `<img src="${src}" alt="" loading="lazy" width="152" height="152">` : '<span class="noimg">Фото нет на сайте</span>'}</div>
+      <div class="pinfo">
+        <div class="pmeta"><b>${TC.mark(p.brand, q)}</b>${opts.showSection ? `<span>${esc(p.section || p.root)}</span>` : ''}<span>Арт. ${TC.mark(p.article || '—', q)}</span></div>
+        <a class="pname" href="${href('product', {}, p.id)}" ${here ? 'aria-current="page"' : ''}>${TC.mark((p.line ? p.line + ' · ' : '') + p.kind, q)}</a>
+        <span class="pvol">${esc(p.volume)}${here ? '<span class="here">· вы здесь</span>' : ''}${p.lowRes ? ' · фото низкого разрешения' : ''}</span>
+      </div>
+      <div class="pfoot"><span class="pprice">${money(p.price)}</span>
+      <button class="add" type="button" data-add="${p.id}" aria-label="В корзину: ${esc(p.name)}">В корзину</button></div>
+    </li>`
+  }
+
+  // ---------- главная ----------
+  function home() {
+    const sub = TC.tree.reduce((n, r) => n + r.children.length, 0)
+    const cnt = nodeCounts({})
+    const cols = TC.tree.map((r) => {
+      const n = cnt.root.get(r.id) || 0
+      return `<section class="map-col" aria-labelledby="m-${r.id}">
+        <a class="map-root" href="${href('catalog', { root: r.id })}">
+          <h3 id="m-${r.id}">${esc(r.name)}</h3>
+          <span class="cnt"><b class="num">${n}</b> ${TC.plural(n, 'товар', 'товара', 'товаров')} в прототипе</span><span class="sub">${r.children.length ? r.children.length + ' ' + TC.plural(r.children.length, 'подраздел', 'подраздела', 'подразделов') : 'без подразделов'}</span>
+          <span class="slug">/catalog/${SLUG[r.id]}/</span>
+        </a>
+        ${r.children.length ? `<ul class="map-list">${r.children.map((c) => { const k = cnt.sect.get(c.id) || 0; return `<li><a class="${k ? '' : 'is-zero'}" href="${href('catalog', { section: c.id })}"><span>${esc(c.name)}</span><em class="num">${k}</em></a></li>` }).join('')}</ul>` : '<p class="map-none">Подразделов нет — товары лежат прямо в разделе.</p>'}
+      </section>`
+    }).join('')
+    main.innerHTML = `<div class="wrap">
+      <section class="hero">
+        <div><h1>Весь каталог <span>на&nbsp;одной карте</span></h1>
+          <p>Выберите тип средства: раздел → подраздел → товар. У каждого раздела — свой адрес, заголовок и число товаров, а не фильтр поверх общего списка.</p></div>
+        <div class="stats" aria-label="Каталог в цифрах">
+          <div><b class="num">${TC.tree.length}</b><span>корневых раздела</span></div>
+          <div><b class="num">${sub}</b><span>подразделов на сайте</span></div>
+          <div><b class="num">${TC.products.length}</b><span>товара в прототипе</span></div>
+          <div><b class="num">${TC.catalogTotal}</b><span>товаров на сайте всего</span></div>
+        </div>
+      </section>
+      <div class="sec-h"><h2>Разделы и подразделы</h2><p>Число рядом с разделом — товары в прототипе. Сколько товаров в каждом подразделе на сайте, в снимок не попало.</p></div>
+      <div class="map">${cols}</div>
+      <div class="map-legend"><span>«0» — подраздел есть на сайте, но его товаров нет в прототипе</span><span>Адрес под названием — предлагаемый</span></div>
+      <div class="sec-h"><h2>Почему у раздела свой адрес</h2></div>
+      <section class="seo" aria-label="Адреса разделов">
+        <div>
+          <span class="tag">Замечание SEO-аудита</span>
+          <p>«Разделы каталога — не отдельные страницы, а фильтры». Поисковик видит один каталог с параметрами, и раздел нельзя найти по запросу вроде «средства для умывания».</p>
+          <p>Здесь показано, как это может выглядеть после переноса в Битрикс. Итоговые адреса и переадресацию со старых ссылок утверждает заказчик.</p>
+        </div>
+        <div class="cmp">
+          <div class="cmp-row"><span>Сейчас</span><div>Раздел открывается фильтром <code>?tcsect[]=190</code><p>Один адрес каталога на все разделы, заголовок и текст не меняются.</p></div></div>
+          <div class="cmp-row is-new"><span>Предлагаем</span><div>${urlBar([SLUG[182], SLUG[190]], 'Предлагаемый адрес раздела')}
+            <ul><li>заголовок H1 — название раздела</li><li>вводный текст раздела — пишет заказчик</li><li>хлебные крошки по дереву</li><li>фильтр бренда и сортировка работают внутри раздела</li></ul>
+            <p><a href="${href('catalog', { section: 190 })}">Открыть пример: «Средства для умывания»</a></p></div></div>
+        </div>
+      </section>
+    </div>`
+  }
+
+  // ---------- каталог ----------
+  function catalog(r) {
+    const prm = norm(r.params)
+    const list = TC.filter(prm)
+    const cnt = nodeCounts(prm)
+    const fc = TC.facets(prm)
+    const chosen = [].concat(prm.brand || []).filter(Boolean)
+    const root = prm.root ? rootById(prm.root) : null
+    const sect = prm.section ? root.children.find((c) => String(c.id) === String(prm.section)) : null
+    const k = keep(prm)
+
+    // адрес, крошки, заголовок
+    let addr = '', title, kicker = ''
+    if (sect) {
+      addr = `${urlBar([SLUG[root.id], SLUG[sect.id]], 'Предлагаемый адрес раздела')}<span class="addr-note"><span class="tag">Предлагаемый адрес раздела</span> сейчас раздел открывается фильтром <code class="nw">?tcsect[]=${sect.id}</code></span>`
+      title = sect.name; kicker = root.name
+    } else if (root) {
+      addr = `${urlBar([SLUG[root.id]], 'Предлагаемый адрес раздела')}<span class="addr-note"><span class="tag">Предлагаемый адрес раздела</span> сейчас раздел открывается фильтром <code class="nw">?tcsect[]=${root.id}</code></span>`
+      title = root.name
+    } else if (prm.q) {
+      title = `Поиск: «${prm.q}»`
+    } else {
+      addr = `${urlBar([], 'Адрес каталога')}<span class="addr-note">Адрес каталога на сайте уже есть</span>`
+      title = 'Весь каталог'
+    }
+    if (prm.q && (root || sect)) kicker = (kicker ? kicker + ' · ' : '') + `поиск «${prm.q}»`
+    const crumbs = [['Карта', '#home'], ['Каталог', '#catalog']]
+    if (root) crumbs.push([root.name, href('catalog', { ...k, root: root.id })])
+    if (sect) crumbs.push([sect.name])
+    if (!root && prm.q) crumbs.push(['Поиск'])
+    crumbs[crumbs.length - 1] = [crumbs[crumbs.length - 1][0]]
+    const crumbsHtml = `<nav class="crumbs" aria-label="Хлебные крошки">${crumbs.map(([t, h], i) => (i ? '<span aria-hidden="true">/</span>' : '') + (h ? `<a href="${h}">${esc(t)}</a>` : `<span aria-current="page">${esc(t)}</span>`)).join('')}</nav>`
+    const intro = (root || sect) ? `<p class="intro"><span class="tag">Текст раздела для SEO — пишет заказчик</span>Здесь будет 2–3 предложения о разделе «${esc((sect || root).name)}»: какие средства в нём собраны и чем они отличаются. В прототипе текст-заглушка.</p>` : ''
+
+    // колонки дерева (десктоп)
+    const rootItems = TC.tree.map((t) => {
+      const n = cnt.root.get(t.id) || 0
+      const on = root && root.id === t.id
+      const cur = on && !sect
+      return `<li><a class="mi ${n ? '' : 'is-zero'} ${on && sect ? 'is-path' : ''}" href="${href('catalog', { ...k, root: t.id })}" ${cur ? 'aria-current="page"' : ''}><span class="t">${esc(t.name)}</span><em>${n}</em>${t.children.length ? chev : ''}</a></li>`
+    }).join('')
+    const subItems = root ? (root.children.length ? root.children.map((c) => {
+      const n = cnt.sect.get(c.id) || 0
+      return `<li><a class="mi ${n ? '' : 'is-zero'}" href="${href('catalog', { ...k, section: c.id })}" ${sect && sect.id === c.id ? 'aria-current="page"' : ''}><span class="t">${esc(c.name)}</span><em>${n}</em></a></li>`
+    }).join('') : '') : ''
+    const miller = `<nav class="miller" aria-label="Дерево разделов">
+      <div class="mcol"><h2>Раздел</h2><ul>
+        <li><a class="mi all" href="${href('catalog', k)}" ${!root ? 'aria-current="page"' : ''}><span class="t">Весь каталог</span><em>${cnt.all}</em></a></li>${rootItems}</ul></div>
+      <div class="mcol"><h2>${root ? esc(root.name) : 'Подраздел'}</h2>
+        ${!root ? '<p class="mhint">Выберите раздел слева — здесь появятся его подразделы.</p>'
+          : root.children.length ? `<ul><li><a class="mi all ${sect ? '' : ''}" href="${href('catalog', { ...k, root: root.id })}" ${!sect ? 'aria-current="page"' : ''}><span class="t">Все товары раздела</span><em>${cnt.root.get(root.id) || 0}</em></a></li>${subItems}</ul>`
+          : '<p class="mhint">Подразделов нет — все товары раздела в списке справа.</p>'}
+      </div>
+    </nav>`
+
+    // пошаговое погружение (мобильный и планшет)
+    let drill
+    if (!root) {
+      drill = `<nav class="drill" aria-label="Разделы каталога"><div class="drill-top"><span class="drill-lvl">Шаг 1 · выберите раздел</span></div>
+        <ul>${TC.tree.map((t) => { const n = cnt.root.get(t.id) || 0; return `<li><a class="mi ${n ? '' : 'is-zero'}" href="${href('catalog', { ...k, root: t.id })}"><span class="t">${esc(t.name)}</span><em>${n}</em>${chev}</a></li>` }).join('')}</ul></nav>`
+    } else if (!sect) {
+      drill = `<nav class="drill" aria-label="Подразделы: ${esc(root.name)}"><div class="drill-top"><a class="drill-back" href="${href('catalog', k)}">${back} Все разделы</a><span class="drill-lvl">Шаг 2</span></div>
+        ${root.children.length ? `<ul>${root.children.map((c) => { const n = cnt.sect.get(c.id) || 0; return `<li><a class="mi ${n ? '' : 'is-zero'}" href="${href('catalog', { ...k, section: c.id })}"><span class="t">${esc(c.name)}</span><em>${n}</em>${chev}</a></li>` }).join('')}</ul>` : '<p class="mhint">Подразделов нет — товары раздела ниже.</p>'}</nav>`
+    } else {
+      drill = `<nav class="drill" aria-label="Соседние подразделы"><div class="drill-top"><a class="drill-back" href="${href('catalog', { ...k, root: root.id })}">${back} ${esc(root.name)}</a><span class="drill-lvl">Шаг 3</span></div>
+        <div class="rail">${root.children.map((c) => `<a href="${href('catalog', { ...k, section: c.id })}" ${c.id === sect.id ? 'aria-current="page"' : ''}>${esc(c.name)} <em>${cnt.sect.get(c.id) || 0}</em></a>`).join('')}</div></nav>`
+    }
+
+    // активные условия
+    const chips = []
+    if (prm.q) chips.push(['Поиск: ' + prm.q, { ...prm, q: '' }])
+    chosen.forEach((b) => chips.push([b, { ...prm, brand: chosen.filter((x) => x !== b) }]))
+    const scope = sect ? `в подразделе «${sect.name}»` : root ? `в разделе «${root.name}»` : 'во всём прототипе'
+    const body = list.length ? `<ul class="rows" aria-label="Товары">${list.map((p) => row(p, prm.q, { showSection: !sect })).join('')}</ul>`
+      : `<div class="empty"><h2>${!prm.q && !chosen.length && (sect || root) ? 'В прототипе нет товаров этого раздела' : 'Ничего не нашли'}</h2>
+        <p>${!prm.q && !chosen.length && (sect || root) ? 'Раздел на сайте есть, но его товары не попали в снимок из 32 позиций. Сколько их на сайте, мы не знаем.' : `По этим условиям ${esc(scope)} ничего нет. В прототипе ${TC.products.length} товара из ${TC.catalogTotal}. Попробуйте бренд, например «KLAPP», или тип средства — «шампунь».`}</p>
+        <div class="acts">${prm.q || chosen.length ? `<a class="btn-line" href="${href('catalog', { root: prm.root, section: prm.section })}">Сбросить поиск и бренд</a>` : ''}<a class="btn-line" href="#catalog">Весь каталог</a><a class="btn-line" href="#home">Карта разделов</a></div></div>`
+
+    main.innerHTML = `<div class="wrap">
+      <div class="cat-head">
+        <div class="addr">${addr}</div>
+        ${crumbsHtml}
+        <h1 id="catTitle">${kicker ? `<small>${esc(kicker)}</small>` : ''}${esc(title)}</h1>
+        ${intro}
+      </div>
+      <div class="cat">
+        ${miller}
+        <section class="list" aria-labelledby="catTitle">
+          ${drill}
+          <div class="tools">
+            <p class="found" aria-live="polite" style="margin:0"><b>${TC.countLabel(list.length)}</b> ${esc(scope)}</p>
+            <label class="sort">Порядок <select id="sort">${Object.entries(TC.SORTS).map(([key, s]) => `<option value="${key}" ${prm.sort === key ? 'selected' : ''}>${s.label}</option>`).join('')}</select></label>
+          </div>
+          <form id="filters"><fieldset class="brands-f"><legend>Бренд</legend><div class="brands" data-scroll-x>
+            ${TC.brands.map((b) => { const n = fc.brand.get(b) || 0; return `<label class="bchip ${n ? '' : 'is-zero'}"><input type="checkbox" name="brand" value="${esc(b)}" ${chosen.includes(b) ? 'checked' : ''}>${esc(b)} <em>${n}</em></label>` }).join('')}
+          </div></fieldset></form>
+          ${chips.length ? `<div class="chips">${chips.map(([t, p]) => `<a class="chip" href="${href('catalog', p)}" aria-label="Убрать условие ${esc(t)}">${esc(t)} <span aria-hidden="true">×</span></a>`).join('')}<a class="chip ghost" href="${href('catalog', { root: prm.root, section: prm.section })}">Сбросить поиск и бренд</a></div>` : ''}
+          <p class="pnote">${TC.PRICE_NOTE}. ${TC.STOCK_NOTE}.</p>
+          ${body}
+        </section>
+      </div>
+    </div>`
+    $('#filters').addEventListener('change', () => TC.go('catalog', { ...prm, brand: new FormData($('#filters')).getAll('brand') }))
+    $('#sort').addEventListener('change', (e) => TC.go('catalog', { ...prm, sort: e.target.value }))
+    const railCur = main.querySelector('.drill .rail [aria-current]')
+    if (railCur) railCur.parentElement.scrollLeft = railCur.offsetLeft - 10
+    $('#q').value = prm.q || ''
+  }
+
+  // ---------- товар ----------
+  let qty = 1
+  function product(r) {
+    const p = TC.byId.get(r.id)
+    if (!p) { main.innerHTML = `<div class="wrap"><div class="empty" style="margin-top:40px"><h1>Товар не найден</h1><p>Такого товара нет в прототипе.</p><div class="acts"><a class="btn-line" href="#home">Карта разделов</a></div></div></div>`; return }
+    qty = 1
+    const src = img(p)
+    const root = rootById(p.rootId)
+    const segs = [SLUG[p.rootId]].concat(p.sectionId ? [SLUG[p.sectionId]] : []).concat([productSlug(p)])
+    const nbr = TC.products.filter((x) => p.sectionId ? x.sectionId === p.sectionId : x.rootId === p.rootId)
+    const scopeName = p.section || p.root
+    const paras = p.description ? p.description.split('\n').filter(Boolean).map((t) => `<p>${esc(t)}</p>`).join('') : ''
+    const sample = p.sampleId && TC.byId.get(p.sampleId), full = p.fullSizeId && TC.byId.get(p.fullSizeId)
+    const currentUrl = p.url.replace(/^https?:\/\//, '')
+    main.innerHTML = `<div class="wrap">
+      <div class="addr">${urlBar(segs, 'Предлагаемый адрес карточки')}<span class="addr-note"><span class="tag">Предлагаемый адрес карточки (ЧПУ)</span> сейчас: <code>${esc(currentUrl)}</code></span></div>
+      <nav class="crumbs" aria-label="Хлебные крошки"><a href="#home">Карта</a><span aria-hidden="true">/</span><a href="#catalog">Каталог</a><span aria-hidden="true">/</span><a href="${href('catalog', { root: p.rootId })}">${esc(p.root)}</a>${p.sectionId ? `<span aria-hidden="true">/</span><a href="${href('catalog', { section: p.sectionId })}">${esc(p.section)}</a>` : ''}<span aria-hidden="true">/</span><span aria-current="page">${esc(p.kind)}</span></nav>
+      <div class="pdp">
+        <div class="gallery">${src ? `<img src="${src}" alt="${esc(p.name)}" width="720" height="720">` : '<div class="noimg-big">Фото нет на сайте</div>'}
+          ${p.lowRes ? '<p class="lowres">Фото на сайте низкого разрешения — нужна замена от бренда или съёмка.</p>' : ''}</div>
+        <div>
+          <h1><span class="b">${esc(p.brand)}${p.line ? ' · ' + esc(p.line) : ''}</span>${esc(p.kind)}, ${esc(p.volume)}</h1>
+          <p class="where">Лежит в разделе <a href="${href('catalog', { root: p.rootId })}">${esc(p.root)}</a>${p.sectionId ? ` → <a href="${href('catalog', { section: p.sectionId })}">${esc(p.section)}</a>` : ''}</p>
+          <div class="buy">
+            <div class="price">${money(p.price)}</div>
+            <p class="note">${TC.PRICE_NOTE}. ${TC.STOCK_NOTE}.</p>
+            <div class="buy-row">
+              <div class="qty" role="group" aria-label="Количество"><button type="button" data-q="-1" aria-label="Меньше">−</button><output id="qty" aria-live="polite">1</output><button type="button" data-q="1" aria-label="Больше">+</button></div>
+              <button class="btn" type="button" id="buyBtn">В корзину</button>
+            </div>
+            <ul class="ways" aria-label="Способы получения">${TC.delivery.map((d) => `<li><span>${esc(d)}</span><span>стоимость и срок — при оформлении</span></li>`).join('')}</ul>
+          </div>
+          ${sample ? `<p class="also">Есть пробник: <a href="${href('product', {}, sample.id)}">${esc(sample.kind)}, ${esc(sample.volume)}</a></p>` : ''}
+          ${full ? `<p class="also">Полный объём: <a href="${href('product', {}, full.id)}">${esc(full.kind)}, ${esc(full.volume)}</a></p>` : ''}
+          <div class="block"><h2>Описание</h2>${paras || '<p class="missing">Описания на сайте нет.</p>'}</div>
+          ${!p.hasComposition ? '<div class="block"><h2>Состав</h2><p class="missing">На сайте отдельно не указано. Нужен от бренда или из 1С.</p></div>' : ''}
+          ${!p.hasUsage ? '<div class="block"><h2>Применение</h2><p class="missing">На сайте отдельно не указано.</p></div>' : ''}
+          <div class="block"><h2>Данные товара</h2><dl class="ids">
+            <dt>ID в Битрикс</dt><dd class="num">${p.id}</dd><dt>Артикул</dt><dd>${esc(p.article || 'не указан')}</dd><dt>XML_ID</dt><dd>не опубликован на сайте</dd>
+            <dt>Название на сайте</dt><dd>${esc(p.sourceName)}</dd><dt>Раздел</dt><dd>${esc(p.root)}${p.section ? ' / ' + esc(p.section) : ''}</dd></dl></div>
+        </div>
+      </div>
+      <section class="nbr" aria-labelledby="nbrTitle">
+        <div class="nbr-h"><h2 id="nbrTitle">Соседи по разделу «${esc(scopeName)}»</h2><p>${TC.countLabel(nbr.length)} в прототипе, порядок как в каталоге · <a href="${href('catalog', p.sectionId ? { section: p.sectionId } : { root: p.rootId })}">Открыть раздел</a></p></div>
+        <ul class="rows">${nbr.map((x) => row(x, '', { here: p.id })).join('')}</ul>
+        ${nbr.length < 2 ? '<p class="pnote">Других товаров этого раздела в прототипе нет.</p>' : ''}
+      </section>
+    </div>`
+    main.querySelectorAll('[data-q]').forEach((b) => b.addEventListener('click', () => { qty = Math.max(1, Math.min(99, qty + Number(b.dataset.q))); $('#qty').textContent = qty }))
+    $('#buyBtn').addEventListener('click', () => TC.cart.add(p.id, qty))
+  }
+
+  // ---------- корзина ----------
+  const dlg = $('#cart')
+  $('#cartOpen').addEventListener('click', () => dlg.showModal())
+  $('#cartClose').addEventListener('click', () => dlg.close())
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close() })
+  $('#checkout').addEventListener('click', () => TC.toast('Это прототип: заказ не оформляется, оплата не проводится.'))
+  TC.cart.on((s) => {
+    $('#cartCount').textContent = s.count
+    $('#cartTotal').textContent = money(s.total)
+    $('#cartList').innerHTML = s.items.length ? s.items.map(({ product: p, qty: n }) => `<div class="cart-item">
+      ${img(p) ? `<img src="${img(p)}" alt="" width="60" height="60">` : '<span></span>'}
+      <div><a href="${href('product', {}, p.id)}">${esc(p.name)}</a>
+      <div class="ci-row"><div class="qty" role="group" aria-label="Количество"><button type="button" data-cq="${p.id}" data-d="-1" aria-label="Меньше">−</button><output>${n}</output><button type="button" data-cq="${p.id}" data-d="1" aria-label="Больше">+</button></div><b class="num">${money((p.price || 0) * n)}</b></div></div></div>`).join('') :
+      '<p class="muted" style="padding:20px 0">Пока пусто. Добавьте товар — заказ всё равно не оформится, это прототип.</p>'
+  })
+  $('#cartList').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-cq]')
+    if (b) { const id = Number(b.dataset.cq), it = TC.cart.state().items.find((x) => x.id === id); TC.cart.set(id, it.qty + Number(b.dataset.d)); return }
+    if (e.target.closest('a')) dlg.close()
+  })
+  document.addEventListener('click', (e) => { const b = e.target.closest('[data-add]'); if (b) TC.cart.add(Number(b.dataset.add)) })
+
+  TC.onRoute((r) => {
+    renderNav(r)
+    if (r.page !== 'catalog') $('#q').value = ''
+    if (r.page === 'catalog') catalog(r)
+    else if (r.page === 'product') product(r)
+    else home()
+    const p = r.page === 'product' && TC.byId.get(r.id)
+    const prm = r.page === 'catalog' ? norm(r.params) : {}
+    const sec = prm.section ? TC.sectionName(prm.section) : prm.root ? TC.rootName(prm.root) : ''
+    document.title = (p ? p.name + ' — ' : r.page === 'catalog' ? (sec || 'Каталог') + ' — ' : '') + 'A6 · Карта каталога — прототип TOP Cosmetics'
+  })
+})()
+</script>
+</body>
+</html>

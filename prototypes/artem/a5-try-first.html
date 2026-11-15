@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>A5 · Сначала пробник — прототип TOP Cosmetics</title>
+<link rel="stylesheet" href="shared/base.css">
+<style>
+@font-face { font-family: 'Commissioner'; src: url(fonts/commissioner-cyrillic-wght-normal.woff2) format('woff2'); font-weight: 100 900; font-display: swap; unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: 'Commissioner'; src: url(fonts/commissioner-latin-wght-normal.woff2) format('woff2'); font-weight: 100 900; font-display: swap; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD, U+20BD; }
+:root {
+  --paper: #f3ecdf; --tag: #fbf7ef; --tag-2: #f7f1e6; --ink: #2a2118; --ink-2: #554839; --ink-3: #6a5b4a; --line: #dacdb8; --line-2: #e8dfcf;
+  --acc: #a8361a; --acc-deep: #87290f; --acc-soft: #f6e0d5; --acc-ink: #fff;
+  --tc-focus: #a8361a; --tc-mark: #ffd98a;
+  --wrap: 1280px; --pad: clamp(16px, 4vw, 40px); --r: 10px;
+}
+body { background: var(--paper); color: var(--ink); font: 400 16px/1.5 Commissioner, system-ui, sans-serif; font-variant-numeric: tabular-nums; }
+h1, h2, h3 { margin: 0; line-height: 1.1; letter-spacing: -.02em; }
+p { margin: 0; }
+.wrap { max-width: var(--wrap); margin: 0 auto; padding-inline: var(--pad); }
+.muted { color: var(--ink-3); }
+.ast { color: var(--acc); font-weight: 800; }
+
+/* ---------- шапка ---------- */
+.hdr { border-bottom: 1.5px solid var(--ink); background: var(--paper); }
+.hdr-row { display: grid; grid-template-columns: auto auto 1fr auto; align-items: center; gap: 12px 28px; padding-block: 14px; }
+.logo { display: inline-flex; align-items: baseline; gap: 10px; text-decoration: none; white-space: nowrap; }
+.logo b { font-size: 21px; font-weight: 800; letter-spacing: -.03em; }
+.logo span { font-size: 13px; font-weight: 700; color: var(--acc-deep); border: 1.5px solid currentColor; border-radius: 99px; padding: 1px 8px; }
+.nav { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+.nav a { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 12px; border-radius: 8px; font-weight: 650; font-size: 15px; text-decoration: none; color: var(--ink-2); }
+.nav a:hover { background: var(--tag); color: var(--ink); }
+.nav a[aria-current="page"] { color: var(--ink); box-shadow: inset 0 -3px 0 var(--acc); border-radius: 8px 8px 0 0; }
+.nav a em { font-style: normal; font-size: 13px; color: var(--acc-deep); font-weight: 800; }
+.search { position: relative; justify-self: end; width: min(100%, 420px); }
+.search input { width: 100%; height: 46px; padding: 0 92px 0 16px; border: 1.5px solid var(--ink); border-radius: 8px; background: var(--tag); font-size: 16px; }
+.search input::placeholder { color: var(--ink-3); opacity: 1; }
+.search button { position: absolute; right: 4px; top: 4px; height: 38px; padding: 0 14px; border: 0; border-radius: 6px; background: var(--ink); color: #fff; font-weight: 700; font-size: 14px; }
+.cart-btn { display: inline-flex; align-items: center; gap: 10px; height: 46px; padding: 0 16px; border: 1.5px solid var(--ink); border-radius: 8px; background: var(--ink); color: #fff; font-weight: 700; white-space: nowrap; }
+.cart-btn:hover { background: #000; }
+.cart-btn b { min-width: 24px; height: 24px; padding: 0 6px; display: inline-grid; place-items: center; border-radius: 99px; background: var(--tag); color: var(--ink); font-size: 13px; }
+
+/* ---------- лесенка объёмов ---------- */
+.ladder { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr)); gap: 10px; align-items: end; height: var(--lh, 300px); position: relative; }
+.ladder::after { content: ''; position: absolute; left: -6px; right: -6px; bottom: -1px; height: 1.5px; background: var(--ink); }
+.step { height: 100%; display: flex; flex-direction: column; justify-content: flex-end; min-width: 0; }
+.step a, .step > div { position: relative; height: var(--h); min-height: 122px; display: flex; flex-direction: column; justify-content: flex-start; gap: 2px; padding: 12px 14px; border: 1.5px solid var(--ink); border-bottom: 0; border-radius: 8px 8px 0 0; background: var(--tag); text-decoration: none; color: var(--ink); transition: background-color .18s, transform .18s; transform-origin: bottom; }
+.step a:hover { background: #fff; }
+.step a[aria-current="true"] { background: var(--acc); border-color: var(--acc); color: #fff; }
+.step a[aria-current="true"] .per, .step a[aria-current="true"] .cap, .step a[aria-current="true"] .ast { color: #fff; }
+.step .v { font-size: clamp(22px, 3vw, 30px); font-weight: 800; letter-spacing: -.03em; line-height: 1; }
+.step .pr { font-size: 16px; font-weight: 700; margin-top: 4px; }
+.step .per { font-size: 13px; color: var(--ink-2); line-height: 1.3; }
+.step .cap { margin-top: auto; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-2); }
+.ticks { display: grid; grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr)); gap: 10px; margin-top: 8px; font-size: 13px; color: var(--ink-2); }
+.notes { margin-top: 12px; display: grid; gap: 4px; font-size: 13px; color: var(--ink-3); }
+
+/* ---------- главная ---------- */
+.hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(28px, 5vw, 72px); align-items: end; padding-block: clamp(32px, 6vw, 72px) clamp(28px, 4vw, 48px); }
+.kicker { display: inline-block; font-size: 13px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--acc-deep); }
+.hero h1 { margin-top: 14px; font-size: clamp(36px, 5.6vw, 72px); font-weight: 800; letter-spacing: -.045em; line-height: .98; }
+.hero h1 em { font-style: normal; color: var(--acc); }
+.hero .lead { margin-top: 18px; max-width: 520px; font-size: 18px; color: var(--ink-2); }
+.cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 50px; padding: 0 22px; border: 0; border-radius: 8px; background: var(--acc); color: var(--acc-ink); font-weight: 750; font-size: 16px; text-decoration: none; white-space: nowrap; transition: background-color .15s, transform .12s; }
+.btn:hover { background: var(--acc-deep); }
+.btn:active { transform: scale(.98); }
+.btn.ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink); }
+.btn.ghost:hover { background: var(--tag); }
+.hero-l { margin: 0; padding: 22px 22px 18px; background: var(--tag-2); border: 1.5px solid var(--ink); border-radius: 12px; }
+.hero-l figcaption { margin-bottom: 18px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px 16px; flex-wrap: wrap; }
+.hero-l figcaption b { font-size: 17px; font-weight: 750; }
+.hero-l figcaption span { font-size: 14px; color: var(--ink-2); }
+.sec-h { display: flex; justify-content: space-between; align-items: end; gap: 8px 20px; flex-wrap: wrap; margin: clamp(40px, 6vw, 72px) 0 18px; padding-bottom: 12px; border-bottom: 1.5px solid var(--ink); }
+.sec-h h2 { font-size: clamp(26px, 3.2vw, 40px); font-weight: 800; letter-spacing: -.035em; }
+.sec-h p { font-size: 14px; color: var(--ink-2); max-width: 520px; }
+.sec-h a { font-weight: 700; text-underline-offset: 4px; }
+.samples { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.sample { position: relative; display: grid; grid-template-rows: auto 1fr; background: var(--tag); border: 1.5px solid var(--ink); border-radius: 12px; overflow: hidden; }
+.sample-ph { position: relative; aspect-ratio: 4 / 3; background: #fff; border-bottom: 1.5px dashed var(--line); }
+.sample-ph img { position: absolute; left: 10%; top: 30%; width: 80%; height: 64%; object-fit: contain; }
+.sample-ph .big { position: absolute; z-index: 1; left: 16px; top: 12px; right: 16px; white-space: nowrap; font-size: clamp(40px, 5vw, 60px); font-weight: 850; letter-spacing: -.05em; line-height: 1; color: var(--acc); }
+.sample-ph .big.long { font-size: clamp(32px, 3.6vw, 44px); }
+.sample-b { display: flex; flex-direction: column; gap: 6px; padding: 16px 18px 18px; }
+.brand { font-size: 13px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+.sample-b h3 { font-size: 19px; font-weight: 700; line-height: 1.25; letter-spacing: -.01em; }
+.sample-b h3 a { text-decoration: none; }
+.sample-b h3 a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.sample-price { display: flex; align-items: baseline; gap: 6px 12px; flex-wrap: wrap; margin-top: 4px; }
+.sample-price .price { font-size: 30px; }
+.price { font-size: 20px; font-weight: 800; letter-spacing: -.02em; white-space: nowrap; }
+.per { font-size: 13px; color: var(--ink-2); }
+.pair-l { margin-top: auto; padding-top: 12px; border-top: 1.5px dashed var(--line); font-size: 14px; }
+.pair-l a { font-weight: 700; color: var(--acc-deep); text-underline-offset: 3px; }
+.pair-l .nf { color: var(--ink-2); }
+.sample-b .btn { margin-top: 12px; height: 46px; }
+.pairs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.pair { padding: 20px 20px 18px; background: var(--tag); border: 1.5px solid var(--ink); border-radius: 12px; --lh: 260px; }
+.pair h3 { font-size: 20px; font-weight: 750; line-height: 1.25; }
+.pair .how { margin: 4px 0 18px; font-size: 14px; color: var(--ink-2); }
+.roots { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.root { position: relative; display: flex; flex-direction: column; gap: 6px; min-height: 124px; padding: 18px 18px 16px 34px; background: var(--tag); border: 1.5px solid var(--ink); border-radius: 10px 10px 10px 10px; text-decoration: none; transition: transform .18s; }
+.root::before { content: ''; position: absolute; left: 12px; top: 20px; width: 10px; height: 10px; border-radius: 50%; background: var(--paper); box-shadow: inset 0 0 0 1.5px var(--ink); }
+.root:hover { transform: translateY(-2px) rotate(-.4deg); }
+.root b { font-size: 22px; font-weight: 800; letter-spacing: -.03em; line-height: 1.1; }
+.root span { margin-top: auto; font-size: 14px; color: var(--ink-2); }
+.how3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border: 1.5px solid var(--ink); border-radius: 12px; overflow: hidden; background: var(--tag); }
+.how3 div { padding: 20px; }
+.how3 div + div { border-left: 1.5px dashed var(--line); }
+.how3 b { display: block; font-size: 18px; font-weight: 750; margin-bottom: 6px; }
+.how3 p { font-size: 15px; color: var(--ink-2); }
+
+/* ---------- каталог: бирки ---------- */
+.cat-h { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 10px 24px; padding-top: clamp(24px, 4vw, 44px); }
+.cat-h h1 { font-size: clamp(32px, 4.4vw, 56px); font-weight: 800; letter-spacing: -.045em; }
+.found { font-size: 15px; color: var(--ink-2); }
+.found b { color: var(--ink); }
+.tools { display: flex; flex-wrap: wrap; align-items: end; gap: 12px 14px; margin-top: 18px; padding: 14px 16px; background: var(--tag); border: 1.5px solid var(--ink); border-radius: 12px; }
+.tools label.f { display: grid; gap: 4px; font-size: 13px; font-weight: 700; color: var(--ink-2); min-width: 0; }
+.tools select { height: 44px; min-width: 0; max-width: 100%; padding: 0 10px; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; font-size: 15px; font-weight: 600; color: var(--ink); }
+.tools select:hover { border-color: var(--ink); }
+.switch { display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 14px 0 8px; border-radius: 8px; background: var(--acc-soft); font-weight: 750; cursor: pointer; white-space: nowrap; }
+.switch em { font-style: normal; font-size: 14px; color: var(--acc-deep); }
+.sw { appearance: none; -webkit-appearance: none; position: relative; flex: none; width: 46px; height: 28px; margin: 0; border-radius: 99px; background: #fff; box-shadow: inset 0 0 0 1.5px var(--ink); cursor: pointer; transition: background-color .18s; }
+.sw::before { content: ''; position: absolute; left: 4px; top: 4px; width: 20px; height: 20px; border-radius: 50%; background: var(--ink); transition: transform .18s; }
+.sw:checked { background: var(--acc); box-shadow: none; }
+.sw:checked::before { transform: translateX(18px); background: #fff; }
+.tools .sp { flex: 1; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-radius: 99px; border: 1.5px solid var(--ink); background: var(--tag); font-size: 14px; font-weight: 700; text-decoration: none; }
+.chip:hover { background: #fff; }
+.chip.ghost { border-color: transparent; background: transparent; text-decoration: underline; text-underline-offset: 3px; }
+.list-note { margin: 16px 0 14px; font-size: 13px; color: var(--ink-3); }
+.tags { display: grid; grid-template-columns: repeat(auto-fill, minmax(232px, 1fr)); gap: 16px 14px; }
+.tg { position: relative; display: flex; flex-direction: column; padding: 34px 16px 16px; background: var(--tag); border: 1.5px solid var(--ink); border-radius: 6px 6px 12px 12px; transition: transform .18s, box-shadow .18s; }
+.tg:hover { transform: translateY(-3px) rotate(-.5deg); box-shadow: 0 10px 0 -4px var(--line); }
+.tg::before { content: ''; position: absolute; left: 50%; top: 11px; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; background: var(--paper); box-shadow: inset 0 0 0 1.5px var(--ink); }
+.tg.is-sample { background: var(--acc-soft); }
+.tg-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; padding-bottom: 10px; border-bottom: 1.5px dashed var(--line); }
+.tg-vol { font-size: 40px; font-weight: 850; letter-spacing: -.05em; line-height: .95; overflow-wrap: anywhere; }
+.tg-vol.long { font-size: 27px; line-height: 1.05; }
+.badge { flex: none; display: inline-flex; align-items: center; height: 26px; padding: 0 9px; border-radius: 99px; font-size: 13px; font-weight: 750; white-space: nowrap; border: 1.5px solid var(--ink); background: #fff; color: var(--ink); }
+.badge.s { background: var(--acc); border-color: var(--acc); color: #fff; }
+.tg-ph { position: relative; height: 150px; margin: 12px 0 10px; }
+.tg-ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; }
+.noimg { display: grid; place-items: center; height: 100%; border: 1.5px dashed var(--line); border-radius: 8px; font-size: 14px; color: var(--ink-2); text-align: center; padding: 10px; }
+.tg h2 { margin-top: 2px; font-size: 16px; font-weight: 650; line-height: 1.3; letter-spacing: 0; }
+.tg h2 a { text-decoration: none; }
+.tg h2 a::after { content: ''; position: absolute; inset: 0; }
+.tg h2 a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.tg .pair-tag { margin-top: 8px; font-size: 13px; font-weight: 700; color: var(--acc-deep); }
+.tg-foot { margin-top: auto; padding-top: 12px; display: flex; align-items: end; justify-content: space-between; gap: 8px; }
+.tg-foot .per { display: block; }
+.add { position: relative; z-index: 2; flex: none; height: 42px; padding: 0 14px; border-radius: 8px; border: 1.5px solid var(--ink); background: transparent; font-weight: 750; font-size: 14px; white-space: nowrap; }
+.add:hover { background: var(--ink); color: #fff; }
+.lowres { margin-top: 6px; font-size: 13px; color: var(--ink-2); }
+.empty { margin-top: 20px; padding: 44px 24px; border: 1.5px dashed var(--ink); border-radius: 12px; text-align: center; display: grid; justify-items: center; gap: 10px; }
+.empty h2 { font-size: 26px; font-weight: 800; }
+.empty p { color: var(--ink-2); max-width: 32em; }
+
+/* ---------- карточка товара ---------- */
+.crumbs { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 20px; font-size: 14px; color: var(--ink-2); }
+.crumbs a { text-underline-offset: 3px; }
+.pdp { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(24px, 4vw, 56px); padding-block: 18px 8px; align-items: start; }
+.pdp-ph { position: sticky; top: 16px; padding: 22px; background: #fff; border: 1.5px solid var(--ink); border-radius: 12px; }
+.pdp-ph img { width: 100%; aspect-ratio: 1; object-fit: contain; }
+.pdp-ph .big { position: absolute; left: 18px; top: 14px; font-size: 26px; font-weight: 850; color: var(--acc); letter-spacing: -.04em; }
+.pdp-i .brand a { text-underline-offset: 3px; }
+.pdp-i h1 { margin-top: 8px; font-size: clamp(26px, 3vw, 38px); font-weight: 750; letter-spacing: -.03em; line-height: 1.12; }
+.pdp-vol { margin-top: 12px; font-size: clamp(44px, 6vw, 72px); font-weight: 850; letter-spacing: -.055em; line-height: .95; }
+.pdp-vol.long { font-size: clamp(32px, 4vw, 48px); }
+.scale-box { margin-top: 22px; padding: 18px 18px 16px; background: var(--tag); border: 1.5px solid var(--ink); border-radius: 12px; --lh: 280px; }
+.scale-box h2 { font-size: 18px; font-weight: 750; margin-bottom: 14px; }
+.nf-box { margin-top: 22px; padding: 16px 18px; border: 1.5px dashed var(--ink); border-radius: 12px; display: grid; gap: 6px; }
+.nf-box b { font-size: 17px; }
+.nf-box p { font-size: 15px; color: var(--ink-2); }
+.nf-box a { font-weight: 700; color: var(--acc-deep); }
+.buy { margin-top: 18px; padding: 18px; background: var(--tag); border: 1.5px solid var(--ink); border-radius: 12px; }
+.buy-top { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 4px 16px; }
+.buy .price { font-size: 34px; }
+.note { margin-top: 6px; font-size: 13px; color: var(--ink-3); }
+.buy-row { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.buy-row .btn { flex: 1; min-width: 170px; }
+.qty { display: inline-flex; align-items: center; height: 50px; border: 1.5px solid var(--ink); border-radius: 8px; background: #fff; }
+.qty button { width: 44px; height: 100%; border: 0; background: transparent; font-size: 20px; font-weight: 700; }
+.qty button:hover { background: var(--tag); }
+.qty output { min-width: 28px; text-align: center; font-weight: 800; }
+.ways { margin: 14px 0 0; padding: 0; list-style: none; display: grid; font-size: 15px; }
+.ways li { display: flex; justify-content: space-between; gap: 4px 12px; flex-wrap: wrap; padding: 8px 0; border-top: 1.5px dashed var(--line); }
+.ways li span:last-child { color: var(--ink-2); font-size: 14px; }
+.label { margin-top: clamp(32px, 5vw, 56px); border: 1.5px solid var(--ink); border-radius: 12px; background: var(--tag); }
+.label section { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 8px 28px; padding: 20px 22px; }
+.label section + section { border-top: 1.5px dashed var(--line); }
+.label h2 { font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--ink); }
+.label .txt { display: grid; gap: 10px; color: var(--ink-2); max-width: 70ch; }
+.label .txt h3 { font-size: 15px; font-weight: 750; color: var(--ink); }
+.label .txt ul { margin: 0; padding-left: 20px; }
+.missing { padding: 10px 12px; border-radius: 8px; background: var(--line-2); color: var(--ink-2); font-size: 15px; }
+.ids { display: grid; grid-template-columns: auto 1fr; gap: 6px 18px; margin: 0; font-size: 15px; }
+.ids dt { color: var(--ink-3); }
+.ids dd { margin: 0; font-weight: 650; color: var(--ink); overflow-wrap: anywhere; }
+.rail { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(232px, 1fr); gap: 14px; overflow-x: auto; padding: 4px 2px 10px; scroll-snap-type: x mandatory; }
+.rail > * { scroll-snap-align: start; }
+
+/* ---------- корзина-чек ---------- */
+dialog.cart { width: min(440px, 100vw); max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0 0 0 auto; padding: 0; border: 0; border-left: 1.5px solid var(--ink); background: var(--tag); color: var(--ink); }
+dialog.cart::backdrop { background: rgba(42,33,24,.45); }
+dialog.cart[open] { animation: slide .22s ease-out; }
+@keyframes slide { from { transform: translateX(28px); opacity: 0; } }
+.cart-in { display: flex; flex-direction: column; height: 100%; }
+.cart-h { display: flex; align-items: center; justify-content: space-between; padding: 20px; border-bottom: 1.5px dashed var(--line); }
+.cart-h h2 { font-size: 22px; font-weight: 800; }
+.x { width: 44px; height: 44px; border-radius: 8px; border: 1.5px solid var(--ink); background: transparent; font-size: 22px; line-height: 1; }
+.x:hover { background: #fff; }
+.cart-list { flex: 1; overflow: auto; padding: 4px 20px; }
+.ci { display: grid; grid-template-columns: 60px 1fr; gap: 12px; padding: 14px 0; border-bottom: 1.5px dashed var(--line); }
+.ci img { width: 60px; height: 60px; object-fit: contain; background: #fff; border-radius: 6px; border: 1px solid var(--line); }
+.ci a { font-weight: 650; font-size: 15px; line-height: 1.3; text-decoration: none; }
+.ci a:hover { text-decoration: underline; }
+.ci-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
+.ci .qty { height: 38px; }
+.ci .qty button { width: 34px; }
+.cart-f { padding: 16px 20px 22px; border-top: 1.5px solid var(--ink); }
+.cart-total { display: flex; justify-content: space-between; font-weight: 800; font-size: 22px; }
+.cart-f .btn { width: 100%; margin-top: 14px; }
+.btn[aria-disabled="true"] { background: var(--line-2); color: var(--ink-2); cursor: not-allowed; }
+
+footer { margin-top: 72px; padding-block: 28px 44px; border-top: 1.5px solid var(--ink); font-size: 15px; color: var(--ink-2); }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 32px; justify-content: space-between; }
+footer b { color: var(--ink); }
+
+@media (max-width: 1100px) {
+  .hdr-row { grid-template-columns: auto 1fr auto; }
+  .nav { grid-column: 1 / -1; grid-row: 2; }
+  .search { justify-self: stretch; width: auto; }
+  .roots { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; }
+  .samples { grid-template-columns: 1fr; }
+  .sample { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); grid-template-rows: none; }
+  .sample-ph { aspect-ratio: auto; min-height: 220px; border-bottom: 0; border-right: 1.5px dashed var(--line); }
+  .pairs { grid-template-columns: 1fr; }
+  .pdp { grid-template-columns: 1fr; }
+  .pdp-ph { position: relative; top: 0; max-width: 460px; }
+  .label section { grid-template-columns: 1fr; }
+  .how3 { grid-template-columns: 1fr; }
+  .how3 div + div { border-left: 0; border-top: 1.5px dashed var(--line); }
+}
+@media (max-width: 640px) {
+  .hdr-row { grid-template-columns: 1fr auto; gap: 10px; padding-block: 12px 0; }
+  .search { grid-column: 1 / -1; grid-row: 2; }
+  .nav { grid-row: 3; margin-inline: calc(var(--pad) * -1); padding-inline: var(--pad); }
+  .cart-btn { height: 44px; padding: 0 12px; }
+  .cart-btn .lbl { display: none; }
+  .logo span { display: none; }
+  .hero .lead { font-size: 16px; }
+  .hero-l { padding: 16px 14px 14px; --lh: 250px; }
+  .sample { grid-template-columns: 1fr; }
+  .sample-ph { min-height: 0; aspect-ratio: 4 / 3; border-right: 0; border-bottom: 1.5px dashed var(--line); }
+  .pair { padding: 16px 14px; --lh: 240px; }
+  .tools { display: grid; grid-template-columns: 1fr 1fr; padding: 12px; }
+  .tools .switch { grid-column: 1 / -1; justify-content: flex-start; }
+  .tools .sp { display: none; }
+  .tools select { width: 100%; }
+  .tags { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 10px; }
+  .tg { padding: 30px 12px 12px; }
+  .tg-vol { font-size: 30px; }
+  .tg-vol.long { font-size: 21px; }
+  .tg-top { flex-direction: column; gap: 6px; }
+  .tg-ph { height: 120px; }
+  .tg h2 { font-size: 15px; }
+  .tg-foot { flex-direction: column; align-items: stretch; }
+  .add { width: 100%; }
+  .step a, .step > div { padding: 10px; }
+  .step .v { font-size: 22px; }
+  .buy .price { font-size: 30px; }
+  .rail { grid-auto-columns: 72%; }
+}
+@media (max-width: 380px) {
+  .tags { grid-template-columns: 1fr; }
+  .tg-top { flex-direction: row; }
+  .tools { grid-template-columns: 1fr; }
+  .roots { grid-template-columns: 1fr; }
+  .root { min-height: 0; }
+  .ladder, .ticks { gap: 6px; }
+}
+</style>
+</head>
+<body>
+<a class="tc-skip" href="#main">К содержанию</a>
+<header class="hdr">
+  <div class="wrap hdr-row">
+    <a class="logo" href="#home"><b>TOP Cosmetics</b><span>сначала пробник</span></a>
+    <nav class="nav" aria-label="Основная навигация" id="nav"></nav>
+    <form class="search" role="search" id="search">
+      <label class="visually-hidden" for="q">Поиск по каталогу</label>
+      <input id="q" name="q" type="search" placeholder="Бренд, средство или артикул" autocomplete="off" enterkeyhint="search">
+      <button type="submit">Найти</button>
+    </form>
+    <button class="cart-btn" type="button" id="cartOpen" aria-haspopup="dialog"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg><span class="lbl">Корзина</span> <b id="cartCount">0</b><span class="visually-hidden"> товаров в демо-корзине</span></button>
+  </div>
+</header>
+<main id="main"></main>
+<footer>
+  <div class="wrap">
+    <div><b>TOP Cosmetics</b><br><span id="storeAddr"></span></div>
+    <div><a id="storePhone"></a><br><span id="storeHours"></span></div>
+    <div class="muted">Прототип A5 «Сначала пробник». Тексты, цены и фото — из публичного каталога сайта на 15.11.2026.</div>
+  </div>
+</footer>
+<dialog class="cart" id="cart" aria-labelledby="cartTitle">
+  <div class="cart-in">
+    <div class="cart-h"><h2 id="cartTitle">Демо-корзина</h2><button class="x" type="button" id="cartClose" aria-label="Закрыть корзину">×</button></div>
+    <div class="cart-list" id="cartList"></div>
+    <div class="cart-f">
+      <div class="cart-total"><span>Итого</span><span id="cartTotal">0 ₽</span></div>
+      <p class="note">Сумма по ценам снимка 15.11.2026. Доставка, оплата и итог считаются при оформлении на сайте.</p>
+      <button class="btn" type="button" aria-disabled="true" id="checkout">Оформление недоступно в прототипе</button>
+    </div>
+  </div>
+</dialog>
+<script src="shared/data.js"></script>
+<script src="shared/engine.js"></script>
+<script>
+(function () {
+  const { esc, money, img, href } = TC
+  const $ = (s, el = document) => el.querySelector(s)
+  const main = $('#main')
+  TC.ribbon('A5 «Сначала пробник»')
+  const st = TC.store
+  const samples = TC.filter({ kind: 'sample' })
+  const isSample = (p) => /пробник/i.test(p.kind)
+
+  // ---------- объём и цена за 100 мл (расчёт прототипа) ----------
+  // Только если объём однозначно в мл или л: «15 мл», «5 л». «15 + 15 мл», «40 мл · 1 шт.», «60 г» — не считаем.
+  function ml(p) {
+    const m = String(p.volume || '').trim().match(/^(\d+(?:[.,]\d+)?)\s*(мл|л)$/i)
+    if (!m) return null
+    const v = parseFloat(m[1].replace(',', '.'))
+    return m[2].toLowerCase() === 'л' ? v * 1000 : v
+  }
+  const per100 = (p) => { const v = ml(p); return v && p.price != null ? Math.round((p.price / v) * 100) : null }
+  const perText = (p) => { const x = per100(p); return x ? `≈ ${money(x)} за 100 мл<span class="ast" aria-hidden="true">*</span>` : '' }
+  const PER_NOTE = '* Цена за 100 мл — расчёт прототипа из цен снимка 15.11.2026, не цена магазина. Считаем только для объёма в мл или л.'
+  const PAIR_NOTE = 'Пара определена прототипом по совпадению названия на сайте; это не данные магазина о линейке.'
+
+  // Пара/группа объёмов одного средства: sampleId/fullSizeId или volumeGroup.
+  function group(p) {
+    let ids = null
+    if (p.volumeGroup) ids = p.volumeGroup
+    else if (p.sampleId) ids = [p.sampleId, p.id]
+    else if (p.fullSizeId) ids = [p.id, p.fullSizeId]
+    if (!ids) return null
+    const list = ids.map((id) => TC.byId.get(id)).filter(Boolean)
+    if (list.length < 2) return null
+    return list.sort((a, b) => (ml(a) || 0) - (ml(b) || 0))
+  }
+  function pairTag(p) {
+    const g = group(p); if (!g) return ''
+    const others = g.filter((x) => x.id !== p.id)
+    if (isSample(p)) return `есть полный объём ${esc(others.map((x) => x.volume).join(', '))}`
+    if (others.some(isSample)) return `есть пробник ${esc(others.filter(isSample).map((x) => x.volume).join(', '))}`
+    return `есть объём ${esc(others.map((x) => x.volume).join(', '))}`
+  }
+
+  // Лесенка: высота ступени условная — корень из доли объёма, чтобы 15 мл было видно рядом с 1000 мл.
+  function ladder(list, curId, linkAll = true) {
+    const max = Math.max(...list.map((x) => ml(x) || 1))
+    const kindPair = list.some(isSample)
+    return `<ol class="ladder" style="--n:${list.length}">${list.map((x) => {
+      const h = Math.round(38 + 62 * Math.sqrt((ml(x) || 1) / max))
+      const cap = isSample(x) ? 'пробник' : kindPair ? 'полный объём' : ''
+      const inner = `<span class="v">${esc(x.volume)}</span><span class="pr">${money(x.price)}</span><span class="per">${perText(x)}</span>${cap ? `<span class="cap">${cap}</span>` : ''}`
+      return `<li class="step" style="--h:${h}%"><a href="${href('product', {}, x.id)}" aria-current="${x.id === curId}" aria-label="${esc(x.volume + ', ' + money(x.price) + (x.id === curId ? ', открыт сейчас' : ''))}">${inner}</a></li>`
+    }).join('')}</ol>`
+  }
+  const ladderNotes = () => `<div class="notes"><p>Высота ступени условная. ${PAIR_NOTE}</p><p>${PER_NOTE}</p></div>`
+
+  // ---------- описание ----------
+  const JUNK = new Set(['Описание', 'Характеристики', 'Доставка', 'Оплата', 'Режим работы'])
+  const USAGE_RE = /^(способ применения|применение)(?=[\s:,.]|$)/i
+  function lines2html(lines) {
+    let out = '', list = []
+    const flush = () => { if (list.length) { out += '<ul>' + list.map((x) => `<li>${esc(x)}</li>`).join('') + '</ul>'; list = [] } }
+    lines.forEach((l, i) => {
+      const m = l.match(/^[-•]\s*(.+)/)
+      if (m) { list.push(m[1]); return }
+      flush()
+      const head = l.length <= 40 && !/[.!;]$/.test(l) && i < lines.length - 1
+      out += head ? `<h3>${esc(l.replace(/:$/, ''))}</h3>` : `<p>${esc(l)}</p>`
+    })
+    flush()
+    return out
+  }
+  function parseDesc(text) {
+    const lines = String(text || '').split('\n').map((s) => s.trim()).filter((l) => l && !JUNK.has(l))
+    const ui = lines.findIndex((l) => USAGE_RE.test(l))
+    const about = ui >= 0 ? lines.slice(0, ui) : lines
+    let usage = ui >= 0 ? lines.slice(ui) : []
+    if (usage.length && /^(способ применения|применение)\s*:?\s*$/i.test(usage[0])) usage = usage.slice(1)
+    return { about: lines2html(about), usage: usage.length ? lines2html(usage) : '' }
+  }
+
+  // ---------- шапка ----------
+  function renderNav(r) {
+    const prm = r.params || {}
+    const cur = (c) => (c ? 'aria-current="page"' : '')
+    $('#nav').innerHTML = `<a href="#home" ${cur(r.page === 'home')}>Главная</a>
+      <a href="${href('catalog', { kind: 'sample' })}" ${cur(r.page === 'catalog' && prm.kind === 'sample')}>Пробники <em>${samples.length}</em></a>
+      <a href="#catalog" ${cur(r.page === 'catalog' && prm.kind !== 'sample')}>Каталог</a>`
+  }
+  $('#search').addEventListener('submit', (e) => {
+    e.preventDefault()
+    const r = TC.parse(), q = $('#q').value.trim()
+    TC.go('catalog', r.page === 'catalog' ? { ...r.params, q } : { q })
+  })
+  $('#storeAddr').textContent = st.address
+  $('#storePhone').textContent = st.phone; $('#storePhone').href = st.phoneHref
+  $('#storeHours').textContent = st.hours
+
+  // ---------- бирка в каталоге ----------
+  const photo = (p, lazy = true) => img(p) ? `<img src="${img(p)}" alt="${esc(p.brand + ', ' + p.kind + ', ' + p.volume)}" ${lazy ? 'loading="lazy"' : ''} width="360" height="360">` : '<span class="noimg">Фото на сайте нет</span>'
+  function tagCard(p, q) {
+    const pt = pairTag(p)
+    return `<article class="tg ${isSample(p) ? 'is-sample' : ''}">
+      <div class="tg-top"><span class="tg-vol ${p.volume.length > 7 ? 'long' : ''}">${esc(p.volume)}</span>${isSample(p) ? '<span class="badge s">пробник</span>' : ''}</div>
+      <div class="tg-ph">${photo(p)}</div>
+      <span class="brand">${esc(p.brand)}${p.line ? ' · ' + esc(p.line) : ''}</span>
+      <h2><a href="${href('product', {}, p.id)}">${TC.mark(p.kind, q)}</a></h2>
+      ${pt ? `<span class="pair-tag">${pt}</span>` : ''}
+      ${p.lowRes ? '<span class="lowres">Фото на сайте низкого разрешения</span>' : ''}
+      <div class="tg-foot"><div><span class="price">${money(p.price)}</span><span class="per">${perText(p)}</span></div>
+        <button class="add" type="button" data-add="${p.id}" aria-label="В корзину: ${esc(p.name)}">В корзину</button></div>
+    </article>`
+  }
+
+  // ---------- главная ----------
+  function sampleCard(p) {
+    const g = group(p)
+    const full = g ? g.filter((x) => x.id !== p.id) : []
+    return `<article class="sample">
+      <div class="sample-ph"><span class="big ${p.volume.length > 6 ? 'long' : ''}" aria-hidden="true">${esc(p.volume)}</span>${photo(p)}</div>
+      <div class="sample-b">
+        <span class="brand">${esc(p.brand)}${p.line ? ' · ' + esc(p.line) : ''}</span>
+        <h3><a href="${href('product', {}, p.id)}">${esc(p.kind.replace(/^Пробник:\s*/i, ''))}</a></h3>
+        <span class="muted">Пробник, ${esc(p.volume)}</span>
+        <div class="sample-price"><span class="price">${money(p.price)}</span><span class="per">${perText(p)}</span></div>
+        <div class="pair-l">${full.length ? `Полный объём: ${full.map((x) => `<a href="${href('product', {}, x.id)}">${esc(x.volume)} · ${money(x.price)}</a>`).join(', ')}` : '<span class="nf">Полный объём этого средства в каталоге прототипа не найден.</span>'}</div>
+        <button class="btn" type="button" data-add="${p.id}" aria-label="В корзину: ${esc(p.name)}">В корзину</button>
+      </div></article>`
+  }
+  function home() {
+    const lisap = group(TC.byId.get(10862)) || []
+    const bout = group(TC.byId.get(8082)) || []
+    const roots = TC.tree.map((t) => ({ t, n: TC.filter({ root: t.id }).length, s: TC.filter({ root: t.id, kind: 'sample' }).length }))
+    main.innerHTML = `<div class="wrap">
+      <section class="hero">
+        <div>
+          <span class="kicker">Сначала попробовать</span>
+          <h1>Сначала <em>15&nbsp;мл</em>. Потом — полный объём.</h1>
+          <p class="lead">Дорогое средство не обязательно брать сразу большим флаконом. Найдите пробник, попробуйте его и решите. На шкале — сколько стоит каждый объём и сколько выходит за 100&nbsp;мл.</p>
+          <div class="cta"><a class="btn" href="${href('catalog', { kind: 'sample' })}">Пробники · ${samples.length}</a><a class="btn ghost" href="#catalog">Весь каталог</a></div>
+        </div>
+        ${lisap.length ? `<figure class="hero-l">
+          <figcaption><b>LISAP Lisaplex Bond Saver, кондиционер</b><span>лесенка объёмов</span></figcaption>
+          ${ladder(lisap, null)}
+          ${ladderNotes()}
+        </figure>` : ''}
+      </section>
+
+      <div class="sec-h"><h2>Пробники</h2><p>${TC.PRICE_NOTE}. ${TC.STOCK_NOTE}.</p></div>
+      <div class="samples">${samples.map(sampleCard).join('')}</div>
+
+      <div class="sec-h"><h2>Лесенки объёмов</h2><p>${PAIR_NOTE}</p></div>
+      <div class="pairs">
+        ${lisap.length ? `<section class="pair" aria-labelledby="pr1"><h3 id="pr1">LISAP Lisaplex Bond Saver — восстанавливающий кондиционер</h3><p class="how">Пробник и полный объём: ${lisap.map((x) => esc(x.volume)).join(' → ')}</p>${ladder(lisap, null)}</section>` : ''}
+        ${bout.length ? `<section class="pair" aria-labelledby="pr2"><h3 id="pr2">BOUTICLE Reconstruction — коллагеновый кондиционер</h3><p class="how">Два объёма одного средства: ${bout.map((x) => esc(x.volume)).join(' → ')}. Пробника в прототипе нет.</p>${ladder(bout, null)}</section>` : ''}
+      </div>
+      <p class="notes" style="margin-top:12px">${PER_NOTE} Высота ступени условная.</p>
+
+      <div class="sec-h"><h2>Разделы</h2><a href="#catalog">Весь каталог прототипа</a></div>
+      <div class="roots">${roots.map(({ t, n, s }) => `<a class="root" href="${href('catalog', { root: t.id })}"><b>${esc(t.name)}</b><span>${TC.countLabel(n)}${s ? ` · пробников: ${s}` : ''}</span></a>`).join('')}</div>
+
+      <div class="sec-h"><h2>Как читать шкалу</h2></div>
+      <div class="how3">
+        <div><b>Ступень — это объём</b><p>Слева пробник, справа полный объём того же средства. Ступень ведёт на карточку.</p></div>
+        <div><b>Цена — снимок сайта</b><p>Цены взяты с сайта 15.11.2026, их актуальность не подтверждена.</p></div>
+        <div><b>«За 100 мл» — наш расчёт</b><p>Прототип делит цену на объём. Магазин такую цену не публикует; для штук и граммов не считаем.</p></div>
+      </div>
+    </div>`
+  }
+
+  // ---------- каталог ----------
+  function catalog(r) {
+    const prm = r.params
+    const list = TC.filter(prm)
+    const fc = TC.facets(prm)
+    const brands = [].concat(prm.brand || [])
+    const title = prm.q ? `Поиск: «${prm.q}»` : prm.kind === 'sample' && !prm.root && !brands.length ? 'Пробники' : brands.length === 1 && !prm.root ? brands[0] : prm.root ? TC.rootName(prm.root) : prm.section ? TC.sectionName(prm.section) : 'Каталог'
+    const sampleN = TC.filter({ ...prm, kind: 'sample' }).length
+    const chips = []
+    if (prm.q) chips.push(['Поиск: ' + prm.q, { ...prm, q: '' }])
+    if (prm.kind === 'sample') chips.push(['Только пробники', { ...prm, kind: '' }])
+    if (prm.kind === 'set') chips.push(['Наборы', { ...prm, kind: '' }])
+    if (prm.root) chips.push([TC.rootName(prm.root), { ...prm, root: '' }])
+    if (prm.section) chips.push([TC.sectionName(prm.section), { ...prm, section: '' }])
+    brands.forEach((b) => chips.push([b, { ...prm, brand: brands.filter((x) => x !== b) }]))
+    main.innerHTML = `<div class="wrap">
+      <div class="cat-h"><h1>${esc(title)}</h1><p class="found" aria-live="polite">Найдено <b>${TC.countLabel(list.length)}</b> в прототипе · на сайте всего ${TC.catalogTotal}</p></div>
+      <form class="tools" id="tools" aria-label="Фильтры и сортировка">
+        <label class="switch"><input class="sw" type="checkbox" role="switch" name="kind" value="sample" ${prm.kind === 'sample' ? 'checked' : ''}> Только пробники <em>${sampleN}</em></label>
+        <label class="f">Раздел<select name="root"><option value="">Все разделы</option>${TC.tree.map((t) => `<option value="${t.id}" ${String(prm.root) === String(t.id) ? 'selected' : ''}>${esc(t.name)} — ${fc.root.get(t.id) || 0}</option>`).join('')}</select></label>
+        <label class="f">Бренд<select name="brand"><option value="">Все бренды</option>${TC.brands.map((b) => `<option value="${esc(b)}" ${brands[0] === b ? 'selected' : ''}>${esc(b)} — ${fc.brand.get(b) || 0}</option>`).join('')}</select></label>
+        <span class="sp"></span>
+        <label class="f">Порядок<select name="sort">${Object.entries(TC.SORTS).map(([k, s]) => `<option value="${k}" ${prm.sort === k ? 'selected' : ''}>${s.label}</option>`).join('')}<option value="per100" ${prm.sort === 'per100' ? 'selected' : ''}>Дешевле за 100 мл*</option></select></label>
+      </form>
+      ${chips.length ? `<div class="chips">${chips.map(([t, p]) => `<a class="chip" href="${href('catalog', p)}" aria-label="Убрать фильтр: ${esc(t)}">${esc(t)} <span aria-hidden="true">×</span></a>`).join('')}<a class="chip ghost" href="#catalog">Сбросить всё</a></div>` : ''}
+      ${list.length ? `<p class="list-note">${TC.PRICE_NOTE}. ${TC.STOCK_NOTE}. ${PER_NOTE}</p>
+        <div class="tags">${sortList(list, prm.sort).map((p) => tagCard(p, prm.q)).join('')}</div>` :
+        `<div class="empty"><h2>Ничего не нашли</h2><p>В прототипе ${TC.products.length} товара из ${TC.catalogTotal}. Попробуйте бренд, например «KLAPP», или тип средства — «шампунь».</p><a class="btn ghost" href="#catalog">Сбросить поиск и фильтры</a></div>`}
+    </div>`
+    $('#q').value = prm.q || ''
+    $('#tools').addEventListener('change', () => {
+      const f = new FormData($('#tools'))
+      TC.go('catalog', { ...prm, kind: f.get('kind') || (prm.kind === 'set' ? 'set' : ''), root: f.get('root'), section: f.get('root') ? '' : prm.section, brand: f.get('brand') || [], sort: f.get('sort') === 'popular' ? '' : f.get('sort') })
+    })
+    $('#tools').addEventListener('submit', (e) => e.preventDefault())
+  }
+  // Сортировка «дешевле за 100 мл»: товары без однозначного объёма — в конце.
+  function sortList(list, sort) {
+    if (sort !== 'per100') return list
+    return list.slice().sort((a, b) => (per100(a) ?? 1e9) - (per100(b) ?? 1e9))
+  }
+
+  // ---------- товар ----------
+  let qty = 1
+  function product(r) {
+    const p = TC.byId.get(r.id)
+    if (!p) { main.innerHTML = `<div class="wrap"><div class="empty"><h1>Товар не найден</h1><p><a href="#catalog">В каталог</a></p></div></div>`; return }
+    qty = 1
+    const g = group(p)
+    const d = parseDesc(p.description)
+    const usage = d.usage || `<p class="missing">${p.hasUsage ? 'Отдельным блоком на сайте не выделено — упоминание есть в тексте описания.' : 'На сайте отдельно не указано.'}</p>`
+    const comp = p.hasComposition ? '<p class="missing">Списком на сайте не указан. Отдельные компоненты упоминаются в описании.</p>' : '<p class="missing">На сайте отдельно не указано.</p>'
+    const others = samples.filter((x) => x.id !== p.id)
+    const nf = isSample(p)
+      ? `<div class="nf-box"><b>Полный объём этого средства в каталоге прототипа не найден</b><p>В снимке нет товара с тем же названием и большим объёмом. Возможно, он есть на сайте — среди ${TC.catalogTotal} позиций.</p></div>`
+      : `<div class="nf-box"><b>Пробник этого средства в каталоге прототипа не найден</b><p>Пробники в прототипе: ${samples.length}. <a href="${href('catalog', { kind: 'sample' })}">Посмотреть все пробники</a></p></div>`
+    main.innerHTML = `<div class="wrap">
+      <nav class="crumbs" aria-label="Навигация"><a href="#home">Главная</a><span aria-hidden="true">/</span><a href="${href('catalog', { root: p.rootId })}">${esc(p.root)}</a>${isSample(p) ? `<span aria-hidden="true">/</span><a href="${href('catalog', { kind: 'sample' })}">Пробники</a>` : p.section ? `<span aria-hidden="true">/</span><a href="${href('catalog', { section: p.sectionId })}">${esc(p.section)}</a>` : ''}</nav>
+      <div class="pdp">
+        <div class="pdp-ph">${img(p) ? `<img src="${img(p)}" alt="${esc(p.name)}" width="720" height="720">` : '<p class="missing">Фото этого товара на сайте нет</p>'}
+          ${p.lowRes ? '<p class="lowres">Фото на сайте низкого разрешения — нужна замена от бренда или съёмка.</p>' : ''}</div>
+        <div class="pdp-i">
+          <span class="brand"><a href="${href('catalog', { brand: p.brand })}">${esc(p.brand)}</a>${p.line ? ' · ' + esc(p.line) : ''}</span>
+          <h1>${esc(p.kind)}</h1>
+          <div class="pdp-vol ${p.volume.length > 7 ? 'long' : ''}">${esc(p.volume)}</div>
+          ${g ? `<section class="scale-box" aria-labelledby="scaleH"><h2 id="scaleH">Объёмы этого средства</h2>${ladder(g, p.id)}${ladderNotes()}</section>` : nf}
+          <div class="buy">
+            <div class="buy-top"><span class="price">${money(p.price)}</span><span class="per">${perText(p)}</span></div>
+            <p class="note">${TC.PRICE_NOTE}. ${TC.STOCK_NOTE}.${per100(p) ? ' ' + PER_NOTE : ''}</p>
+            <div class="buy-row">
+              <div class="qty" role="group" aria-label="Количество"><button type="button" data-q="-1" aria-label="Меньше">−</button><output id="qty" aria-live="polite">1</output><button type="button" data-q="1" aria-label="Больше">+</button></div>
+              <button class="btn" type="button" id="buyBtn">В корзину</button>
+            </div>
+            <ul class="ways" aria-label="Способы получения">${TC.delivery.map((x) => `<li><span>${esc(x)}</span><span>стоимость и срок — при оформлении</span></li>`).join('')}</ul>
+          </div>
+        </div>
+      </div>
+      <div class="label">
+        <section aria-labelledby="dDesc"><h2 id="dDesc">Описание</h2><div class="txt">${d.about || '<p class="missing">Описания на сайте нет.</p>'}</div></section>
+        <section aria-labelledby="dComp"><h2 id="dComp">Состав</h2><div class="txt">${comp}</div></section>
+        <section aria-labelledby="dUse"><h2 id="dUse">Применение</h2><div class="txt">${usage}</div></section>
+        <section aria-labelledby="dIds"><h2 id="dIds">Данные товара</h2><div class="txt"><dl class="ids">
+          <dt>ID в Битрикс</dt><dd>${p.id}</dd><dt>Артикул</dt><dd>${esc(p.article || 'не указан')}</dd><dt>XML_ID</dt><dd>не опубликован на сайте</dd>
+          <dt>Название на сайте</dt><dd>${esc(p.sourceName)}</dd><dt>Раздел</dt><dd>${esc(p.root)}${p.section ? ' / ' + esc(p.section) : ''}</dd></dl></div></section>
+        <section aria-labelledby="dGet"><h2 id="dGet">Магазин</h2><div class="txt"><p>${esc(st.address)}. ${esc(st.hours)}. <a href="${st.phoneHref}">${esc(st.phone)}</a></p></div></section>
+      </div>
+      ${others.length ? `<div class="sec-h"><h2>${isSample(p) ? 'Другие пробники' : 'Начать с пробника'}</h2><a href="${href('catalog', { kind: 'sample' })}">Все пробники</a></div>
+        <div class="rail">${others.map((x) => tagCard(x)).join('')}</div>` : ''}
+    </div>`
+    main.querySelectorAll('[data-q]').forEach((b) => b.addEventListener('click', () => { qty = Math.max(1, Math.min(99, qty + Number(b.dataset.q))); $('#qty').textContent = qty }))
+    $('#buyBtn').addEventListener('click', () => TC.cart.add(p.id, qty))
+  }
+
+  // ---------- корзина ----------
+  const dlg = $('#cart')
+  let opener = null
+  $('#cartOpen').addEventListener('click', (e) => { opener = e.currentTarget; dlg.showModal() })
+  $('#cartClose').addEventListener('click', () => dlg.close())
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); else if (e.target.closest('a')) { opener = null; dlg.close() } })
+  dlg.addEventListener('close', () => { if (opener && opener.isConnected) opener.focus() })
+  $('#checkout').addEventListener('click', () => TC.toast('Оформление недоступно в прототипе: заказ не создаётся, оплата не проводится.'))
+  TC.cart.on((s) => {
+    $('#cartCount').textContent = s.count
+    $('#cartTotal').textContent = money(s.total)
+    $('#cartList').innerHTML = s.items.length ? s.items.map(({ product: p, qty: n }) => `<div class="ci">
+      ${img(p) ? `<img src="${img(p)}" alt="" width="60" height="60">` : '<span></span>'}
+      <div><a href="${href('product', {}, p.id)}">${esc(p.name)}</a>
+      <div class="ci-row"><div class="qty" role="group" aria-label="Количество: ${esc(p.kind)}"><button type="button" data-cq="${p.id}" data-d="-1" aria-label="Меньше">−</button><output>${n}</output><button type="button" data-cq="${p.id}" data-d="1" aria-label="Больше">+</button></div><b>${money((p.price || 0) * n)}</b></div></div></div>`).join('') :
+      '<p class="muted" style="padding:20px 0">Пока пусто. Добавьте пробник — заказ всё равно не оформится, это прототип.</p>'
+  })
+  $('#cartList').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-cq]'); if (!b) return
+    const id = Number(b.dataset.cq), it = TC.cart.state().items.find((x) => x.id === id)
+    if (it) TC.cart.set(id, it.qty + Number(b.dataset.d))
+  })
+  document.addEventListener('click', (e) => { const b = e.target.closest('[data-add]'); if (b) TC.cart.add(Number(b.dataset.add)) })
+
+  TC.onRoute((r) => {
+    if (dlg.open) { opener = null; dlg.close() }
+    renderNav(r)
+    if (r.page !== 'catalog') $('#q').value = ''
+    if (r.page === 'catalog') catalog(r)
+    else if (r.page === 'product') product(r)
+    else home()
+    const p = r.page === 'product' && TC.byId.get(r.id)
+    document.title = (p ? p.name + ' — ' : r.page === 'catalog' ? 'Каталог — ' : '') + 'A5 · Сначала пробник — прототип TOP Cosmetics'
+  })
+})()
+</script>
+</body>
+</html>

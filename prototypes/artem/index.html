@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Семь направлений дизайна TOP Cosmetics — прототипы Артёма</title>
+<link rel="stylesheet" href="shared/base.css">
+<style>
+@font-face { font-family: 'Inter'; font-style: normal; font-weight: 100 900; font-display: swap; src: url(fonts/inter-cyrillic-wght-normal.woff2) format('woff2'); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: 'Inter'; font-style: normal; font-weight: 100 900; font-display: swap; src: url(fonts/inter-latin-wght-normal.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+:root { --bg: #f7f7f5; --card: #fff; --ink: #121212; --ink-2: #4a4a4a; --line: #dcdcd6; --accent: #0b4fb3; --tc-focus: #0b4fb3; }
+body { background: var(--bg); color: var(--ink); font: 400 16px/1.55 Inter, system-ui, sans-serif; }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 0 24px; }
+header.top { padding: 48px 0 32px; }
+.eyebrow { font-size: 14px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-2); margin: 0 0 12px; }
+h1 { font-size: clamp(32px, 5vw, 56px); line-height: 1.05; letter-spacing: -.02em; margin: 0 0 20px; font-weight: 700; max-width: 16ch; }
+.lead { font-size: 19px; max-width: 64ch; margin: 0 0 16px; color: var(--ink-2); }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 10px; margin: 20px 0 0; padding: 0; list-style: none; }
+.facts li { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-size: 14px; }
+h2 { font-size: clamp(24px, 3vw, 32px); letter-spacing: -.01em; margin: 56px 0 8px; line-height: 1.15; }
+.sub { color: var(--ink-2); margin: 0 0 24px; max-width: 70ch; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr)); gap: 20px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; }
+.shots { display: grid; grid-template-columns: 1fr 92px; gap: 10px; align-items: end; padding: 14px 14px 0; background: #ececea; }
+.shots img { width: 100%; height: auto; border-radius: 8px 8px 0 0; border: 1px solid var(--line); border-bottom: 0; background: #fff; object-fit: contain; }
+.shots .noshot { aspect-ratio: 16/10; display: grid; place-items: center; font-size: 14px; color: var(--ink-2); }
+.body { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.code { font-size: 14px; font-weight: 700; color: var(--accent); margin: 0; }
+.card h3 { margin: 0; font-size: 22px; line-height: 1.2; }
+.card p { margin: 0; }
+.who { font-size: 15px; color: var(--ink-2); }
+dl.pros { margin: 4px 0 0; display: grid; gap: 6px; font-size: 15px; }
+dl.pros dt { font-weight: 600; }
+dl.pros dd { margin: 0 0 4px; color: var(--ink-2); }
+.links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; padding-top: 8px; }
+.links a { display: inline-flex; align-items: center; min-height: 40px; padding: 8px 14px; border-radius: 10px; border: 1px solid var(--line); text-decoration: none; font-weight: 600; font-size: 15px; }
+.links a:first-child { background: var(--accent); border-color: var(--accent); color: #fff; }
+.links a:hover { border-color: var(--ink); }
+.links a:first-child:hover { background: #083c88; }
+.tablewrap { overflow-x: auto; background: var(--card); border: 1px solid var(--line); border-radius: 16px; }
+table { border-collapse: collapse; width: 100%; min-width: 980px; font-size: 15px; }
+th, td { text-align: left; vertical-align: top; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+thead th { font-size: 14px; background: #f1f1ee; position: sticky; top: 0; }
+tbody th { font-weight: 600; white-space: nowrap; }
+tbody tr:last-child > * { border-bottom: 0; }
+.notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 20px; }
+.note { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
+.note h3 { margin: 0 0 8px; font-size: 18px; }
+.note ul { margin: 0; padding-left: 20px; }
+.note li { margin: 4px 0; }
+code { font-size: 14px; background: #ececea; padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+footer { margin: 56px 0 40px; color: var(--ink-2); font-size: 15px; }
+@media (max-width: 520px) {
+  .wrap { padding: 0 16px; }
+  header.top { padding: 32px 0 20px; }
+  .lead { font-size: 17px; }
+  .shots { grid-template-columns: 1fr 70px; }
+}
+</style>
+</head>
+<body>
+<a class="tc-skip" href="#main">К содержанию</a>
+<main id="main" class="wrap">
+  <header class="top">
+    <p class="eyebrow">TOP Cosmetics · прототипы для выбора заказчиком · Артём</p>
+    <h1>Семь направлений дизайна магазина</h1>
+    <p class="lead">Каждый вариант по-своему отвечает на один вопрос: как покупатель находит нужное средство. В каждом есть связанные главная, каталог и карточка товара, версии для компьютера и телефона, рабочий поиск, фильтры и демо-корзина.</p>
+    <p class="lead">Во всех вариантах одни и те же 32 товара. Их цены и описания взяты со снимка сайта от 15.11.2026. Цены и наличие не подтверждены, заказ не оформляется. Скидок, отзывов, рейтингов и сроков доставки нет, потому что их нет в данных.</p>
+    <ul class="facts">
+      <li>32 товара из 663 на сайте</li><li>12 брендов из 14 в фильтре сайта</li><li>4 раздела</li><li>Ширины 1440 · 768 · 390 · 320 px</li><li>Без внешних сервисов и счётчиков</li>
+    </ul>
+  </header>
+
+  <section aria-labelledby="variants">
+    <h2 id="variants">Варианты</h2>
+    <p class="sub">Можно сравнивать одинаковые страницы: у каждого варианта есть ссылки на главную, каталог бренда KLAPP и карточку одного и того же крема.</p>
+    <div class="grid" id="cards"></div>
+  </section>
+
+  <section aria-labelledby="compare">
+    <h2 id="compare">Сравнение</h2>
+    <p class="sub">Таблицу можно прокручивать по горизонтали. Номера замечаний — из реестра аудита <code>ARTEM_DESIGN_AUDIT_REGISTRY.md</code>.</p>
+    <div class="tablewrap" data-scroll-x tabindex="0" role="region" aria-label="Таблица сравнения вариантов">
+      <table id="table"></table>
+    </div>
+  </section>
+
+  <section aria-labelledby="how">
+    <h2 id="how">Как выбирать</h2>
+    <div class="notes">
+      <div class="note"><h3>Что общее у всех</h3><ul><li>Полные названия без обрезки, объём виден сразу.</li><li>Фильтры видны, у каждого значения есть число товаров.</li><li>Одна заметная главная кнопка, контраст текста не ниже 4.5:1.</li><li>Работа с клавиатуры, видимый фокус, без прокрутки страницы вбок.</li></ul></div>
+      <div class="note"><h3>Что можно сочетать</h3><ul><li>Основу берём из одного варианта: сетку, шапку, типографику.</li><li>Отдельные блоки берём из других. Например, дерево разделов из A6, прайс для специалистов из A2, панель шоурума из A7.</li><li>Сочетание лучше выбрать до оценки работ.</li></ul></div>
+      <div class="note"><h3>Что нужно от магазина</h3><ul><li>Подтвердить наличие, акции и условия доставки.</li><li>Логотип и фото шоурума.</li><li>Решить, где править названия: в 1С или на витрине.</li><li>Полный список вопросов — в <code>ARTEM_DESIGN_BITRIX_TRANSFER.md</code>.</li></ul></div>
+    </div>
+  </section>
+
+  <footer>Прототипы не связаны с рабочим сайтом и не меняют его. Материалы и права на фото описаны в <code>ARTEM_DESIGN_MATERIALS.md</code>.</footer>
+</main>
+<script>
+const V = [
+  { code: 'A1', file: 'a1-brand-shelf.html', name: 'Бренд-полка', who: 'Тем, кто знает бренд и ищет его линейку.',
+    idea: 'Путь «бренд → линейка → средство». На главной стена из 14 брендов с числом позиций на сайте и полки брендов. Каталог сгруппирован по брендам.',
+    plus: 'Профессиональную косметику часто ищут по бренду. Это готовая основа для страниц брендов: важно для SEO.', minus: 'Новичку, который не знает брендов, сложнее. Нужны логотипы брендов и право их показывать.' },
+  { code: 'A2', file: 'a2-pro-desk.html', name: 'Кабинет', who: 'Косметологам и салонам, которые закупают повторно.',
+    idea: 'Плотный прайс вместо витрины: артикул, объём, цена и количество прямо в строке. Есть быстрый поиск по артикулу и заявка, которая собирается сбоку.',
+    plus: 'Сразу показывает главный актив магазина — работу с профессионалами. На одном экране помещается много позиций.', minus: 'Для розничного покупателя суховат. Условия для специалистов нужно подтвердить у магазина.' },
+  { code: 'A3', file: 'a3-care-steps.html', name: 'Шаги ухода', who: 'Тем, кто собирает уход для лица.',
+    idea: 'Лента шагов: очищение → тонизирование → сыворотка → глаза → крем → маска. На главной конструктор, где на каждом шаге выбирается одно средство.',
+    plus: 'Помогает выбрать и увеличивает корзину. Шрифт с засечками в паре с гротеском, как предлагает аудит.', minus: 'Шаги определены по типу средства, это не рекомендация косметолога. Для волос, тела и витаминов нужна своя логика.' },
+  { code: 'A4', file: 'a4-feed.html', name: 'Лента', who: 'Тем, кто пришёл с телефона из соцсетей.',
+    idea: 'Сначала телефон: крупные карточки на весь экран, нижняя панель под большим пальцем, фильтры в шторке снизу. На компьютере лента идёт в центре между двумя боковыми колонками.',
+    plus: 'Самый удобный вариант для телефона. Сохраняет нижнюю панель, которую аудит хвалит.', minus: 'Мало товаров на экране, поэтому сравнивать неудобно. Нужны хорошие фото: слабые фото здесь заметнее.' },
+  { code: 'A5', file: 'a5-try-first.html', name: 'Сначала пробник', who: 'Тем, кто хочет попробовать до покупки дорогого объёма.',
+    idea: 'Пробники как точка входа и «лесенка объёмов» от пробника к полному объёму. Цена за 100 мл рассчитана из цен снимка.',
+    plus: 'Снимает страх дорогой покупки. Пробники за 97–218 ₽ — то, что аудит предлагает для допродаж.', minus: 'Пары «пробник — полный объём» найдены по названию на сайте. Для всего каталога их нужно разметить в 1С или в Битриксе.' },
+  { code: 'A6', file: 'a6-catalog-map.html', name: 'Карта каталога', who: 'Тем, кто ищет тип средства, а не бренд.',
+    idea: 'Дерево разделов колонками, как в файловом менеджере. У каждого раздела свой адрес, H1 и место для текста. На телефоне разделы открываются по шагам.',
+    plus: 'Прямо отвечает на главное SEO-замечание аудита: разделы сейчас работают как фильтры. Наглядно показывает весь ассортимент.', minus: 'Самый «служебный» по виду. Нужны тексты разделов и карта адресов с редиректами.' },
+  { code: 'A7', file: 'a7-showroom.html', name: 'Шоурум', who: 'Покупателям из Севастополя и Крыма.',
+    idea: 'Постоянная панель магазина: адрес, телефон, часы и способы получения. Главная начинается с вопроса «как получить заказ», в каждой карточке видно, как забрать товар.',
+    plus: 'Отвечает на замечание аудита, что доставка отпугивает местных. Подчёркивает, что у магазина есть живой шоурум.', minus: 'Тарифы и сроки доставки пока неизвестны, вместо них пометка «при оформлении». Нужны фото шоурума.' },
+]
+const ROWS = [
+  ['Главный путь к товару', ['Бренд → линейка', 'Поиск по артикулу и прайс', 'Шаг ухода', 'Лента и шторка с фильтрами', 'Пробник → полный объём', 'Дерево разделов', 'Как получить заказ']],
+  ['Сильнее всего', ['Компьютер и телефон', 'Компьютер', 'Компьютер и телефон', 'Телефон', 'Компьютер и телефон', 'Компьютер', 'Компьютер и телефон']],
+  ['Шапка и навигация', ['Липкая шапка с поиском и бренд-чипами', 'Строгая рабочая панель с поиском', 'Лента шагов', 'Нижняя панель, без верхнего меню', 'Шкала объёмов', 'Колонки дерева', 'Боковая панель магазина']],
+  ['Подача товара', ['Карточки на полках брендов', 'Строки прайса', 'Вертикальные карточки с шагом', 'Полноэкранные карточки', 'Карточки-бирки с объёмом', 'Список рядом с деревом', 'Горизонтальные карточки']],
+  ['Замечания аудита, которые закрывает сильнее других', ['2, 9, 36', '13, 41', '10, 40', '31–33', '29', '12, 35', '20, 26, 27']],
+  ['Что нужно от магазина', ['Логотипы брендов', 'Условия для специалистов', 'Разметка шагов', 'Хорошие фото', 'Разметка пар пробников', 'Тексты разделов, карта адресов', 'Тарифы доставки, фото шоурума']],
+  ['Шрифты', ['Manrope', 'IBM Plex Sans и Mono', 'Lora и Golos Text', 'Onest', 'Commissioner', 'Inter', 'PT Serif и PT Sans']],
+]
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c])
+document.getElementById('cards').innerHTML = V.map((v) => {
+  const tag = v.file.replace('.html', '')
+  return `<article class="card" aria-labelledby="t-${v.code}">
+    <div class="shots"><img src="previews/${tag}-1440.webp" alt="${esc(v.name)}: главная на компьютере" width="640" height="400" loading="lazy" onerror="this.outerHTML='<div class=noshot>Превью нет</div>'"><img src="previews/${tag}-390.webp" alt="${esc(v.name)}: главная на телефоне" width="92" height="199" loading="lazy" onerror="this.remove()"></div>
+    <div class="body">
+      <p class="code">${v.code}</p>
+      <h3 id="t-${v.code}">${esc(v.name)}</h3>
+      <p class="who">${esc(v.who)}</p>
+      <p>${esc(v.idea)}</p>
+      <dl class="pros"><dt>Сильная сторона</dt><dd>${esc(v.plus)}</dd><dt>Ограничение</dt><dd>${esc(v.minus)}</dd></dl>
+      <div class="links"><a href="${v.file}#home">Открыть главную</a><a href="${v.file}#catalog?brand=KLAPP">Каталог KLAPP</a><a href="${v.file}#product/11053">Карточка</a></div>
+    </div></article>`
+}).join('')
+document.getElementById('table').innerHTML = `<thead><tr><th scope="col">Критерий</th>${V.map((v) => `<th scope="col">${v.code} ${esc(v.name)}</th>`).join('')}</tr></thead>
+  <tbody>${ROWS.map(([k, vals]) => `<tr><th scope="row">${esc(k)}</th>${vals.map((x) => `<td>${esc(x)}</td>`).join('')}</tr>`).join('')}</tbody>`
+</script>
+</body>
+</html>

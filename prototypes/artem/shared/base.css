@@ -1,0 +1,30 @@
+/* Общий минимум для всех вариантов: сброс, фокус, плашка прототипа, уведомление.
+   Цвета и шрифты каждый вариант задаёт сам через --tc-* переменные. */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { margin: 0; overflow-x: hidden; }
+img { max-width: 100%; height: auto; display: block; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: inherit; }
+mark { background: var(--tc-mark, #ffe58a); color: inherit; border-radius: 2px; padding: 0 1px; }
+.visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Видимый фокус для клавиатуры во всех вариантах. */
+:focus-visible { outline: 3px solid var(--tc-focus, #1a4fd8); outline-offset: 2px; }
+[tabindex="-1"]:focus { outline: none; }
+
+.tc-skip { position: absolute; left: 8px; top: -60px; z-index: 1000; background: #111; color: #fff; padding: 10px 14px; border-radius: 6px; text-decoration: none; }
+.tc-skip:focus { top: 8px; }
+
+.tc-ribbon { position: relative; z-index: 50; display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 7px 16px; background: #1d1d1f; color: #f2f2f2; font: 500 13px/1.4 system-ui, -apple-system, 'Segoe UI', sans-serif; }
+.tc-ribbon a { color: #fff; text-underline-offset: 3px; white-space: nowrap; }
+.tc-ribbon b { font-weight: 700; }
+
+.tc-toast { position: fixed; left: 50%; bottom: 20px; z-index: 1000; max-width: min(92vw, 460px); transform: translate(-50%, 20px); opacity: 0; pointer-events: none; padding: 12px 16px; border-radius: 10px; background: #1d1d1f; color: #fff; font: 500 14px/1.4 system-ui, -apple-system, 'Segoe UI', sans-serif; box-shadow: 0 8px 30px rgba(0,0,0,.25); transition: opacity .2s, transform .2s; }
+.tc-toast.is-on { opacity: 1; transform: translate(-50%, 0); }
+@media (max-width: 760px) { .tc-toast { bottom: 84px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
