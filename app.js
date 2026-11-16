@@ -7,6 +7,7 @@ const concepts = [
   ['semyon','journal','Journal','Beauty Journal','Редакционная подача объединяет средства и вдохновение.'],
   ['semyon','garden','Garden','Сад ухода','Мягкие органические формы создают спокойное настроение.'],
   ['semyon','precise','Precise','Точный выбор','Плотные фильтры помогают ориентироваться в ассортименте.'],
+  ['semyon','signature','Signature','Фирменный синий','Фирменная палитра TOP, акцент на карточках товаров и плавное движение.'],
   ['artem','a1-brand-shelf','A1','Бренд-полка','Путь от бренда через линейку к конкретному средству.'],
   ['artem','a2-pro-desk','A2','Кабинет','Сценарий повторных закупок для специалистов: артикул и количество.'],
   ['artem','a3-care-steps','A3','Шаги ухода','Каталог организован вокруг шести последовательных шагов ухода.'],
@@ -17,7 +18,7 @@ const concepts = [
 ].map(([author,id,code,title,description], index) => ({author,id,code,title,description,number:String(index+1).padStart(2,'0')}));
 const authorName = item => item.author === 'semyon' ? 'Семён' : 'Артём';
 const preview = (item, size) => item.author === 'semyon' ? `./prototypes/semyon/previews/${item.id}-${size}.png` : `./prototypes/artem/previews/${item.id}-${size}.webp`;
-const prototype = item => item.author === 'semyon' ? `./prototypes/semyon/#/${item.id}/home` : `./prototypes/artem/${item.id}.html#home`;
+const prototype = item => item.author === 'semyon' ? `./prototypes/semyon/#/${item.id}/${item.id === 'signature' ? 'catalog' : 'home'}` : `./prototypes/artem/${item.id}.html#home`;
 const selected = new Set();
 const cards = document.querySelector('#cards');
 const detailDialog = document.querySelector('#detail-dialog');
