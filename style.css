@@ -9,3 +9,7 @@
 :root{--muted:#626d5c}
 .eyebrow,.card-meta,.hero-foot,.hero-kicker span:last-child,.filter span{color:#626d5c}
 .filter.active span{color:#f8f8f3}
+
+.latest{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center;background:#e7ecdc;padding:54px;margin-bottom:100px}.latest h2{font-size:clamp(38px,4vw,58px);line-height:1.1;margin:0}.latest-copy{max-width:490px;justify-self:end;font-size:16px;line-height:1.8}.latest-copy p{margin-bottom:24px}
+@media(max-width:800px){.latest{grid-template-columns:1fr;gap:25px;padding:32px 24px;margin-bottom:70px}.latest-copy{justify-self:start}}
+@media print{.latest{display:block;padding:16px;margin:0 0 20px;border:1px solid #626d5c;break-inside:avoid}.latest h2{font-size:24px}.latest .eyebrow{margin-bottom:8px}.latest-copy{font-size:10px}.latest-copy p{margin:8px 0}.latest .round-link{padding:0;background:none;color:#262b25;text-decoration:underline}.latest .round-link::after{content:" (creative-ten-2026-11-19/)"}}
