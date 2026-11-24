@@ -16,7 +16,7 @@ const concepts = [
   ['artem','a6-catalog-map','A6','Карта каталога','Дерево разделов в колонках показывает структуру ассортимента.'],
   ['artem','a7-showroom','A7','Шоурум','Локальный магазин в Севастополе и сценарий получения заказа.']
 ].map(([author,id,code,title,description], index) => ({author,id,code,title,description,number:String(index+1).padStart(2,'0')}));
-const authorName = item => item.author === 'semyon' ? 'Семён' : 'Артём';
+const authorName = item => item.author === 'semyon' ? 'Олеся' : 'Артём';
 const preview = (item, size) => item.author === 'semyon' ? `./prototypes/semyon/previews/${item.id}-${size}.png` : `./prototypes/artem/previews/${item.id}-${size}.webp`;
 const prototype = item => item.author === 'semyon' ? `./prototypes/semyon/#/${item.id}/${item.id === 'signature' ? 'catalog' : 'home'}` : `./prototypes/artem/${item.id}.html#home`;
 const selected = new Set();
