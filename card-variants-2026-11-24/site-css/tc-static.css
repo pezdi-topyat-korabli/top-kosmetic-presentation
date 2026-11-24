@@ -1,0 +1,831 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   СТАТИЧНЫЕ СТРАНИЦЫ — /about/ и юридические, /contacts/, /delivery_and_pay/.
+
+   Было: содержимое лежало на белом «листе» с рамкой и тенью, а внутри листа
+   каждый раздел оборачивался в свою коробку. На «Доставке и оплате» это дало
+   три белых прямоугольника друг в друге и вложенность в шесть уровней —
+   ровно то, от чего уходим. Плюс текст тянулся на 1240 px: строка такой длины
+   не читается, глаз теряет начало следующей.
+
+   Стало: страница — это текст на холсте. Коробка остаётся ровно одна и только
+   там, где она что-то значит (способ доставки, контактный блок). Разделы
+   отбиты канавками и воздухом, а не рамками. Ширина колонки — по длине строки,
+   а не по ширине экрана.
+
+   Префикс body.page-redesign обязателен (глобальный ресет темы). Файл
+   подключается в header.php на адресах статики.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ⚠ .contacts_wrapper здесь нет намеренно: на контактах под заголовком лежит
+   не текстовая колонка, а панель .map_content шириной 1240. Колонка в 44rem
+   уводила заголовок к середине экрана, а панель оставалась широкой —
+   на десктопе они расходились по левому краю. Контакты настраиваются
+   своим блоком ниже. */
+body.page-redesign .static_page,
+body.page-redesign .sales_wrapper {
+  /* Белый лист снят: страница лежит на том же холсте, что и всё остальное. */
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+
+  /* Колонка по длине строки. 68 знаков — то, что читается без усилия;
+     на широких экранах остальное место отдаём воздуху, а не строке. */
+  max-width: 44rem;
+  margin: 8px auto 40px;
+  padding: 0 var(--gut);
+
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--ink);
+}
+
+/* ── Заголовки ───────────────────────────────────────────────────────────
+   Декоративную полоску под H1 снимаем: она была украшением, которое спорит
+   с канавками. Иерархию держит размер и воздух. */
+/* Заголовок контактов — по тем же полям, что панель под ним. */
+body.page-redesign .contacts_wrapper {
+  max-width: 1240px;
+  margin: 24px auto 8px;
+  font-family: var(--font);
+  color: var(--ink);
+}
+body.page-redesign .static_page .title_box,
+body.page-redesign .contacts_wrapper .title_box {
+  margin: 0 0 18px;
+  padding: 0;
+  background: none;
+  border: 0;
+}
+body.page-redesign .static_page .title_box h1,
+body.page-redesign .static_page .title_box .title,
+body.page-redesign .contacts_wrapper .title_box h1 {
+  margin: 0;
+  font-size: clamp(26px, 7vw, 34px) !important;
+  font-weight: 600 !important;
+  line-height: 1.12 !important;
+  color: var(--ink) !important;
+  letter-spacing: -.01em;
+}
+body.page-redesign .static_page .title_box h1::after,
+body.page-redesign .static_page .title_box .title::after { content: none !important; }
+
+/* Раздел начинается канавкой — тонкой прорезью в поверхности: тёмный волосок
+   и светлый вплотную под ним. Коробок нет.
+
+   !important обязателен на всех трёх строках. Легаси гасит у h2 `padding:0`
+   и `border:0` тем же весом селектора, и без него от канавки оставалась
+   одна светлая половина — та самая белая полоска поперёк подзаголовка. */
+body.page-redesign .static_page h2,
+body.page-redesign .static_page .title_box h2 {
+  margin: 22px 0 12px !important;
+  padding-top: 18px !important;
+  border-top: 1px solid rgba(16, 32, 64, .16) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .75) !important;
+  font-size: 21px !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  color: var(--ink) !important;
+}
+/* Первому разделу канавка не нужна — над ним заголовок страницы. */
+body.page-redesign .static_page > h2:first-of-type,
+body.page-redesign .static_page > *:first-of-type h2,
+body.page-redesign .static_page > .dp-section:first-of-type h2 {
+  margin-top: 6px !important;
+  padding-top: 0 !important;
+  border-top: 0 !important;
+  box-shadow: none !important;
+}
+/* Абзац после подзаголовка свой верхний отступ не добавляет: ритм держит
+   сам подзаголовок, иначе под ним то 12 px, то 26. */
+body.page-redesign .static_page h2 + p,
+body.page-redesign .static_page h2 + ul,
+body.page-redesign .static_page h2 + ol { margin-top: 0 !important; }
+body.page-redesign .static_page h3 {
+  margin: 24px 0 10px !important;
+  font-size: 17px !important;
+  font-weight: 600 !important;
+  color: var(--ink) !important;
+}
+
+/* Разделы и их тела — больше не коробки. */
+body.page-redesign .static_page .dp-section,
+body.page-redesign .static_page .dp-section__body {
+  background: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* ── Текст ───────────────────────────────────────────────────────────── */
+body.page-redesign .static_page p { margin: 0 0 14px; }
+body.page-redesign .static_page b,
+body.page-redesign .static_page strong { font-weight: 600; color: var(--ink); }
+body.page-redesign .static_page a { color: var(--blue); text-decoration: none; }
+body.page-redesign .static_page a:hover { text-decoration: underline; }
+
+/* Списки: маркер — фирменная точка, а не браузерный кружок. */
+body.page-redesign .static_page ul:not(.delivery-methods) {
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+}
+body.page-redesign .static_page ul:not(.delivery-methods) > li {
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 8px;
+}
+body.page-redesign .static_page ul:not(.delivery-methods) > li::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: .62em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--blue-soft, #2268B9);
+  opacity: .55;
+}
+body.page-redesign .static_page ol { margin: 0 0 16px; padding-left: 22px; }
+body.page-redesign .static_page ol > li { margin-bottom: 8px; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ДОСТАВКА И ОПЛАТА — семантика поверхностей
+
+   Страница собиралась слоями, и к этому дню на ней было три разных языка
+   сразу: плашка-заголовок с линейкой под собой, строки способов доставки
+   с круглым значком у левого края и вдавленный блок контактов. Плюс мой
+   собственный значок в лунке встал ПОВЕРХ старого (x 26…80 и 42…72) —
+   две иконки на одном месте.
+
+   Теперь поверхность значит одно и то же на всей странице:
+
+     выпуклая плита  — то, из чего выбирают (способ получения заказа);
+     лунка           — то, что нужно запомнить (сроки, контакты);
+     чистый холст    — обычный текст (раздел «Оплата» — образец).
+
+   Разделы отбиты канавкой и воздухом. Коробок-обёрток нет.
+
+   Селекторы повторяют легаси один в один: там !important, и перебить его
+   можно только равной спецификой при более позднем файле.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Раздел: канавка сверху вместо плашки с линейкой под заголовком. */
+body.page-redesign .static_page .dp-section {
+  position: static !important;
+  margin: 22px 0 0 !important;
+  padding-top: 18px !important;
+  border-top: 1px solid rgba(16, 32, 64, .16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .75);
+}
+/* Первый раздел идёт сразу за заголовком страницы — канавка там лишняя. */
+body.page-redesign .static_page > .title_box + .dp-section {
+  margin-top: 14px !important;
+  padding-top: 0 !important;
+  border-top: 0;
+  box-shadow: none;
+}
+body.page-redesign .static_page .dp-section > .title_box {
+  margin: 0 0 12px !important;
+  padding: 0 !important;
+  background: none !important;
+  border: 0 !important;
+  border-bottom: 0 !important;
+  box-shadow: none !important;
+}
+/* Канавку несёт сам раздел, поэтому у заголовка её снимаем. */
+body.page-redesign .static_page .dp-section > .title_box h2 {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  font-size: 21px !important;
+  font-weight: 600 !important;
+  color: var(--ink) !important;
+}
+body.page-redesign .static_page .dp-section > .dp-section__body {
+  position: static !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* ── Способы получения заказа ───────────────────────────────────────────
+   Единственное место страницы, где коробка уместна: это не абзац текста,
+   а четыре варианта на выбор. Выпуклые плиты — их видно как варианты. */
+body.page-redesign .static_page ul.delivery-methods {
+  display: flex !important;
+  flex-direction: column !important;
+  grid-template-columns: none !important;
+  gap: 12px !important;
+  margin: 14px 0 0 !important;
+  padding: 0 !important;
+  list-style: none;
+}
+body.page-redesign .static_page ul.delivery-methods > li.delivery-method {
+  position: relative;
+  display: block !important;
+  grid-column: auto !important;
+  margin: 0 !important;
+  /* Левое поле считается от значка: 14 + 34 + 12. Легаси держало 76 px под
+     круг на 54 px у самого края плиты — текст уезжал, а значок вываливался. */
+  padding: 16px 18px 16px 66px !important;
+  border: 0 !important;
+  border-top: 0 !important;
+  border-radius: 16px !important;
+  background: var(--bg) !important;
+  box-shadow:
+    4px 5px 13px rgba(16, 32, 64, .12),
+    -3px -3px 10px rgba(255, 255, 255, .95) !important;
+  font-size: 15px !important;
+  line-height: 1.55 !important;
+  transition: none !important;
+}
+/* Легаси ломало ритм: у первой плиты padding-top был 2 px против 20 у прочих. */
+body.page-redesign .static_page ul.delivery-methods > li.delivery-method:first-child {
+  padding-top: 16px !important;
+  border-top: 0 !important;
+}
+body.page-redesign .static_page ul.delivery-methods > li.delivery-method:hover {
+  background: var(--bg) !important;
+  transform: none !important;
+}
+body.page-redesign .static_page ul.delivery-methods > li.delivery-method > b {
+  display: block !important;
+  margin: 0 0 4px !important;
+  min-height: 0 !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: var(--ink) !important;
+}
+/* Значок — тот же, что был (SVG лежит в redesign.css), только в лунке и по
+   размеру заголовка. Своих элементов не добавляем: значок и так есть. */
+body.page-redesign .static_page ul.delivery-methods > li.delivery-method::before,
+body.page-redesign .static_page ul.delivery-methods > li.delivery-method:first-child::before {
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  left: 14px !important;
+  top: 15px !important;
+  width: 40px !important;
+  height: 40px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  background-color: var(--bg) !important;
+  background-size: 23px 23px !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  box-shadow:
+    inset 2px 3px 5px rgba(16, 32, 64, .14),
+    inset -2px -2px 4px rgba(255, 255, 255, .95) !important;
+  opacity: 1 !important;
+}
+
+/* Вложенный список внутри способа (график курьера) — без своей коробки. */
+body.page-redesign .static_page ul.delivery-schedule {
+  margin: 8px 0 0 !important;
+  padding: 0 !important;
+  font-size: 14px !important;
+  color: var(--muted) !important;
+}
+
+/* ── Лунка: то, что нужно запомнить ──────────────────────────────────────
+   «Сроки и стоимость» и «Контакты и поддержка» — одна и та же роль, значит
+   и поверхность одна. Раньше первое было абзацем без отступа сверху,
+   прилипшим к списку, а второе — вдавленной плашкой с отступом под значок
+   «i», которого давно нет. */
+body.page-redesign .static_page .dp-section__body > p.dp-note,
+body.page-redesign .static_page .tc-note,
+body.page-redesign .static_page .select_text_green {
+  margin: 26px 0 0 !important;
+  padding: 16px 18px !important;
+  border: 0 !important;
+  border-radius: 16px !important;
+  background: var(--bg) !important;
+  box-shadow:
+    inset 3px 4px 7px rgba(16, 32, 64, .13),
+    inset -3px -3px 6px rgba(255, 255, 255, .95) !important;
+  font-size: 15px !important;
+  line-height: 1.55 !important;
+  color: var(--ink) !important;
+}
+body.page-redesign .static_page .dp-section__body > p.dp-note > b:first-child,
+body.page-redesign .static_page .tc-note > b:first-child,
+body.page-redesign .static_page .select_text_green > b:first-child {
+  display: block;
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 600;
+}
+/* Заголовок уже блочный — перенос после него даёт пустую строку. */
+body.page-redesign .static_page .dp-section__body > p.dp-note > b:first-child + br,
+body.page-redesign .static_page .select_text_green > b:first-child + br { display: none; }
+body.page-redesign .static_page .select_text_green > b:first-child + br + p { margin-top: 0; }
+
+/* Строка со ссылками внутри плашки — просто ряд, своей поверхности у неё
+   нет: иначе это коробка в коробке, ровно то, от чего уходим. */
+body.page-redesign .static_page .sr-d-flex {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 14px;
+}
+
+/* ── Отступы-наследство ─────────────────────────────────────────────────
+   Легаси-классы вроде .sr-m-top-20 расставлены прямо в разметке страниц.
+   Ритм теперь держат отступы абзацев, поэтому их гасим — иначе между
+   абзацами то 14 px, то 34. */
+body.page-redesign .static_page [class*="sr-m-top-"]:not(.sr-d-flex) { margin-top: 0 !important; }
+body.page-redesign .static_page [class*="sr-m-bottom-"] { margin-bottom: 10px !important; }
+
+/* ── Блок «Контакты и поддержка» ────────────────────────────────────────
+   Поверхность задана выше, вместе с «Сроками и стоимостью»: у них одна роль.
+   Здесь остаётся только то, что касается этого блока: легаси-значок «i»
+   в углу и телефон с почтой внутри — выпуклыми кнопками, потому что это
+   действия, а не строки текста. */
+body.page-redesign .static_page .select_text_green::before,
+body.page-redesign .static_page .select_text_green::after { content: none !important; }
+body.page-redesign .static_page .select_text_green p,
+body.page-redesign .static_page .tc-note p { color: var(--muted); margin: 0 0 10px; }
+body.page-redesign .static_page .select_text_green p:last-of-type,
+body.page-redesign .static_page .tc-note p:last-of-type { margin-bottom: 0; }
+
+body.page-redesign .static_page .tc-note .sr-d-flex,
+body.page-redesign .static_page .select_text_green .sr-d-flex {
+  flex-wrap: nowrap;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  gap: 10px;
+}
+body.page-redesign .static_page .tc-note .sr-d-flex a,
+body.page-redesign .static_page .select_text_green .sr-d-flex a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Телефон и почта встают в один ряд: кегль мельче заметно, но это
+     действия, а не текст — их читают по форме, а не вчитываются. */
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 38px;
+  padding: 0 10px;
+  font-size: 13px;
+  white-space: nowrap;
+  border-radius: var(--r-pill, 999px);
+  background: var(--bg) !important;
+  box-shadow:
+    3px 4px 9px rgba(16, 32, 64, .13),
+    -3px -3px 8px rgba(255, 255, 255, .95);
+  font-weight: 600;
+  color: var(--blue);
+  text-decoration: none;
+  transition: box-shadow .18s var(--ease);
+}
+/* Две ссылки делят ряд поровну — так они задумывались на «Доставке и оплате».
+   Одна ссылка (на «О нас») при этом растягивалась во всю ширину плашки
+   и переставала читаться как кнопка. */
+body.page-redesign .static_page .tc-note .sr-d-flex a:only-child,
+body.page-redesign .static_page .select_text_green .sr-d-flex a:only-child {
+  flex: 0 1 auto;
+}
+
+body.page-redesign .static_page .tc-note .sr-d-flex a:active,
+body.page-redesign .static_page .select_text_green .sr-d-flex a:active {
+  box-shadow:
+    inset 2px 3px 6px rgba(16, 32, 64, .16),
+    inset -2px -2px 5px rgba(255, 255, 255, .9);
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   КОНТАКТЫ — только мобильная вёрстка
+
+   ⚠ Весь блок под @media (max-width: 899px). На широких экранах страница
+   остаётся ровно такой, как на бою: там настоящая сетка в две колонки
+   (bootstrap col-lg-6), и когда правила ниже применялись ко всем ширинам,
+   десктоп распрямляло в столбик — форма уезжала под фотографию и занимала
+   треть ширины. Десктоп переделываем отдельным этапом, вместе с остальными
+   широкими экранами.
+
+   Что меняем на телефоне. Было три поверхности одна в другой: белая панель
+   .map_content с рамкой, внутри неё с отступом 25 px плита офиса, а внутри
+   плиты — ещё одна лунка вокруг описания. Снаружи это читалось как коробка
+   в коробке в коробке.
+
+   Стало: внешней коробки нет вовсе, её роль играет холст страницы.
+   Функциональные блоки — офис, форма, карта — встают во всю ширину колонки
+   и отделены друг от друга воздухом, а не рамками.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 899px) {
+
+/* Заголовок стоял у самого края: легаси гасит у обёртки padding целиком
+   (`:has(> .title_box:only-child)`), а плиты ниже отбиты на колонку. */
+body.page-redesign .contacts_wrapper,
+body.page-redesign .contacts_wrapper:has(> .title_box:only-child) {
+  padding: 0 var(--gut) !important;
+  margin-bottom: 8px;
+}
+
+/* Внешняя панель снята: страница лежит на том же холсте, что и остальное. */
+body.page-redesign .map_content {
+  max-width: none;
+  margin: 0 0 32px;
+  padding: 0 var(--gut);
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+/* «Торговый офис» — подпись к блоку, а не заголовок страницы. Синяя засечка
+   слева снята вместе с полосой под h1: та же декорация из прежнего языка. */
+body.page-redesign .map_content .stores-header {
+  display: block;
+  margin: 0 0 12px;
+}
+body.page-redesign .map_content .stores-header h2 {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: none !important;
+  border: 0 !important;
+  font-family: var(--font);
+  font-size: 19px !important;
+  font-weight: 600 !important;
+  line-height: 1.25 !important;
+  color: var(--ink) !important;
+}
+
+/* Контакты — один блок из двух зон.
+
+   На бою это белая панель, внутри неё карточка офиса, под карточкой форма:
+   коробка в коробке. Внешнюю коробку снимаем, но блок остаётся один —
+   сведения и форма к ним части одного разговора. Двумя отдельными плитами
+   они читались как два самостоятельных блока; формой без поверхности —
+   как кусок без границ и, значит, без собственных отступов.
+
+   Теперь: одна плита на весь блок, внутри две зоны, разделённые канавкой.
+   Поля у зон одинаковые, содержимое обеих стоит на одной вертикали. */
+body.page-redesign .map_content .stores-list-wrp {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  border-radius: 18px;
+  background: var(--bg);
+  box-shadow:
+    5px 6px 16px rgba(16, 32, 64, .13),
+    -4px -4px 12px rgba(255, 255, 255, .95);
+}
+body.page-redesign .map_content .stores-list-wrp > [class*="col-"] {
+  width: 100%;
+  max-width: none;
+  flex: none;
+  padding: 0;
+  margin: 0 !important;
+}
+/* Бутстрапный .text-center на обёртке ловит всё содержимое и на телефоне
+   не перебивается (.text-lg-left включается только с 992px) — отсюда
+   «съехавшие» строки в реквизитах. */
+body.page-redesign .map_content .stores-address-list { text-align: left; }
+/* Приём «форма заезжает под карточку» рассчитан на две колонки рядом;
+   в столбик он давал наложение. */
+body.page-redesign .contacts__form { margin-top: 0 !important; }
+/* Стопка обрезает содержимое ради выезда панели реквизитов, но скругление
+   у неё было только снизу (0 0 18 18) — наследие вёрстки в две колонки.
+   Панель внутри скруглена со всех сторон, и сверху из-под её закруглённого
+   угла выглядывал квадратный угол стопки: та самая «дырка на скруглении». */
+body.page-redesign .contacts__stack {
+  margin-left: 0 !important;
+  border-radius: 0 0 18px 18px !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* ── Три плиты во всю ширину колонки ──────────────────────────────────── */
+body.page-redesign .map_content .catalog-stores-item {
+  padding: 16px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+/* Карта — окно в поверхности, а не предмет на ней: вдавленная рамка. */
+body.page-redesign .map_wrapper {
+  padding: 14px !important;
+  border: 0 !important;
+  border-radius: 18px !important;
+  background: var(--bg) !important;
+  box-shadow:
+    inset 3px 4px 7px rgba(16, 32, 64, .13),
+    inset -3px -3px 6px rgba(255, 255, 255, .95) !important;
+}
+
+/* ── Карточка офиса ───────────────────────────────────────────────────── */
+/* Адрес и график уже собраны флексом со значком-псевдоэлементом — ничего
+   нового не добавляем, значок переводим в лунку, как на «Доставке». */
+body.page-redesign .map_content .catalog-stores-item-address,
+body.page-redesign .map_content .catalog-stores-item-schedule .text-muted {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0 0 12px;
+  font-size: 15px !important;
+  line-height: 1.5;
+  font-weight: 400 !important;
+}
+body.page-redesign .map_content .catalog-stores-item-address { color: var(--ink) !important; }
+body.page-redesign .map_content .catalog-stores-item-schedule .text-muted { color: var(--muted) !important; }
+body.page-redesign .map_content .catalog-stores-item-address::before,
+body.page-redesign .map_content .catalog-stores-item-schedule .text-muted::before {
+  width: 30px !important;
+  height: 30px !important;
+  /* Значок встаёт ровно в угол внутреннего поля блока. */
+  margin: 0 !important;
+  border-radius: 50%;
+  background-size: 16px 16px !important;
+  background-position: center !important;
+  background-color: var(--bg);
+  box-shadow:
+    inset 2px 3px 5px rgba(16, 32, 64, .14),
+    inset -2px -2px 4px rgba(255, 255, 255, .95);
+}
+
+/* Телефоны — главное действие карточки: во всю ширину, столбиком, с продавливанием. */
+/* Два номера — в одну строку, поровну. Столбиком они съедали карточку,
+   а это один и тот же способ связи, а не два разных действия. */
+body.page-redesign .map_content .catalog-stores-item-phone {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  margin: 14px 0 0 !important;
+}
+body.page-redesign .map_content .catalog-stores-item-phone a[href^="tel:"] {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 8px !important;
+  border-radius: var(--r-pill, 999px);
+  background: var(--bg) !important;
+  box-shadow:
+    3px 4px 9px rgba(16, 32, 64, .13),
+    -3px -3px 8px rgba(255, 255, 255, .95);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue) !important;
+  white-space: nowrap;
+  text-decoration: none !important;
+  transition: box-shadow .16s var(--ease);
+}
+/* Трубка в каждой кнопке лишняя: и так понятно, что номер — это звонок. */
+body.page-redesign .map_content .catalog-stores-item-phone a[href^="tel:"]::before {
+  content: none !important;
+}
+body.page-redesign .map_content .catalog-stores-item-phone a[href^="tel:"]:hover {
+  transform: none;
+  box-shadow:
+    3px 4px 9px rgba(16, 32, 64, .13),
+    -3px -3px 8px rgba(255, 255, 255, .95);
+}
+body.page-redesign .map_content .catalog-stores-item-phone a[href^="tel:"]:active {
+  box-shadow:
+    inset 2px 3px 6px rgba(16, 32, 64, .16),
+    inset -2px -2px 5px rgba(255, 255, 255, .9);
+}
+
+/* Описание было ещё одной лункой внутри плиты — коробка в коробке.
+   Теперь это просто строка под канавкой. */
+body.page-redesign .catalog-stores-item-descr {
+  margin: 16px 0 0 !important;
+  padding: 14px 0 0 !important;
+  background: none !important;
+  border: 0 !important;
+  border-top: 1px solid rgba(16, 32, 64, .16) !important;
+  border-radius: 0 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .75) !important;
+}
+body.page-redesign .catalog-stores-item-descr p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+body.page-redesign .catalog-stores-item-info { margin-top: 14px; }
+body.page-redesign .catalog-stores-item-image-wrp { margin: 0; }
+body.page-redesign .catalog-stores-item-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+
+/* ── Форма ──────────────────────────────────────────────────────────────
+   Плиты у формы нет намеренно. Карточка офиса — то, что нужно прочитать,
+   поэтому она выделена поверхностью. Форма — то, что нужно заполнить,
+   и поверхность ей дают сами поля: лунки на холсте. Когда плиты было две,
+   они читались как два равных блока, а это один блок «контакты» —
+   сведения и форма к ним. */
+/* Поля зоны формы сидят на самой панели, а не на её обёртке: стопка
+   обрезает содержимое (внутри неё сверху выезжает панель реквизитов), и
+   кнопка у края теряла свою тень — её срезало по верхней и правой границе.
+   Теперь внутри стопки есть 16 px, тень помещается целиком. */
+body.page-redesign .contacts__form {
+  margin-top: 0 !important;
+  padding: 0 !important;
+  border-top: 1px solid rgba(16, 32, 64, .16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .75);
+  /* Центровка приходит сюда из прежней вёрстки и достаётся всей панели
+     реквизитов: строки рвались по центру рядом с кнопками справа —
+     отсюда ощущение «всё кривое». */
+  text-align: left !important;
+}
+body.page-redesign .contacts__pane {
+  padding: 16px !important;
+  background: var(--bg) !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+body.page-redesign .contacts__pane--form { background: none !important; }
+body.page-redesign .contacts-pane__head { margin-bottom: 14px; }
+/* Панель реквизитов начиналась на 80 px ниже шапки формы — под ней зияла
+   пустая полоса, а «К форме» уезжала от того места, где была «Реквизиты».
+   Смещение осталось от вёрстки в две колонки, где панель выезжала сбоку. */
+body.page-redesign .rekvizit-scroll {
+  top: 0 !important;
+  padding: 0 0 60px !important;
+}
+body.page-redesign .rekvizit-overlay__head {
+  padding: 0 0 12px !important;
+  margin: 0 0 12px !important;
+}
+
+body.page-redesign .contacts-pane__title {
+  font-family: var(--font);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--ink);
+}
+body.page-redesign .message-form input[type="text"],
+body.page-redesign .message-form input[type="tel"],
+body.page-redesign .message-form input[type="email"],
+body.page-redesign .message-form textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  border: 0 !important;
+  border-radius: 14px;
+  background: var(--bg) !important;
+  box-shadow:
+    inset 3px 4px 7px rgba(16, 32, 64, .13),
+    inset -3px -3px 6px rgba(255, 255, 255, .95);
+  font-family: var(--font);
+  font-size: 16px;
+  color: var(--ink);
+  transition: box-shadow .16s var(--ease);
+}
+body.page-redesign .message-form textarea { min-height: 120px; resize: vertical; }
+body.page-redesign .message-form input:focus,
+body.page-redesign .message-form textarea:focus {
+  outline: none;
+  box-shadow:
+    inset 3px 4px 7px rgba(16, 32, 64, .16),
+    inset -3px -3px 6px rgba(255, 255, 255, .95),
+    0 0 0 2px rgba(34, 104, 185, .32);
+}
+
+/* «Реквизиты» — действие в шапке формы, а не отдельная цветная кнопка:
+   тот же язык, что у остальных кнопок, и с продавливанием. */
+/* «Реквизиты» открывают справку, а не отправляют форму: единственная
+   цветная кнопка здесь — «Отправить сообщение». Градиента на кнопках нет
+   нигде: либо ровная синяя заливка у главного действия, либо плита. */
+body.page-redesign .rekvizit-trigger {
+  padding: 10px 16px !important;
+  background: var(--bg) !important;
+  color: var(--blue) !important;
+  box-shadow:
+    3px 4px 9px rgba(16, 32, 64, .13),
+    -3px -3px 8px rgba(255, 255, 255, .95) !important;
+  transition: box-shadow .16s var(--ease) !important;
+}
+body.page-redesign .rekvizit-trigger:hover { transform: none !important; }
+body.page-redesign .rekvizit-trigger:active {
+  box-shadow:
+    inset 2px 3px 6px rgba(16, 32, 64, .16),
+    inset -2px -2px 5px rgba(255, 255, 255, .9) !important;
+}
+
+/* ── Карта ─────────────────────────────────────────────────────────────── */
+body.page-redesign .map_wrapper {
+  overflow: hidden;
+  margin-top: 16px !important;
+}
+body.page-redesign .map_wrapper .ya-org-widget {
+  display: block;
+  width: 100%;
+  /* Высоту не режем: виджет Яндекса показывает под картой карточку
+     организации с рейтингом и кнопкой «Маршрут», и любое укорачивание
+     её срезает. 500 px — высота, заданная самому iframe. */
+  border: 0;
+  border-radius: 12px;
+}
+
+/* Подсказка «список скроллится» затухала в белый — цвет прежнего листа.
+   На холсте это читалось как светлая плёнка поверх текста. */
+body.page-redesign .rekvizit-scroll-hint {
+  background: linear-gradient(to bottom,
+    rgba(236, 238, 242, 0) 0%,
+    rgba(236, 238, 242, .75) 55%,
+    rgba(236, 238, 242, 1) 100%) !important;
+}
+
+/* ── Реквизиты ──────────────────────────────────────────────────────────
+   Панель оставалась на прежнем языке целиком: плоские синие пилюли сверху,
+   белые квадраты с рамкой у копирования, разделители тонкой синей чертой.
+   Переводим на тот же холст, что и всё остальное. */
+body.page-redesign .rekvizit-overlay__head {
+  background: var(--bg) !important;
+  border-bottom: 1px solid rgba(16, 32, 64, .16) !important;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .75);
+}
+/* «Скопировать все» — главное действие панели, остаётся цветным;
+   «К форме» — возврат, значит плита в тоне холста. */
+body.page-redesign .rekvizit-copy-all {
+  background: var(--blue) !important;
+  box-shadow:
+    4px 5px 12px rgba(0, 44, 102, .30),
+    -3px -3px 9px rgba(255, 255, 255, .55) !important;
+  transition: box-shadow .18s var(--ease) !important;
+}
+body.page-redesign .rekvizit-copy-all:hover { transform: none !important; }
+body.page-redesign .rekvizit-copy-all:active {
+  box-shadow:
+    inset 3px 4px 9px rgba(0, 24, 60, .38),
+    inset -2px -2px 6px rgba(255, 255, 255, .20) !important;
+}
+body.page-redesign .rekvizit-overlay__close {
+  background: var(--bg) !important;
+  color: var(--blue) !important;
+  box-shadow:
+    3px 4px 9px rgba(16, 32, 64, .13),
+    -3px -3px 8px rgba(255, 255, 255, .95) !important;
+  transition: box-shadow .16s var(--ease) !important;
+}
+body.page-redesign .rekvizit-overlay__close:hover { transform: none !important; }
+body.page-redesign .rekvizit-overlay__close:active {
+  box-shadow:
+    inset 2px 3px 6px rgba(16, 32, 64, .16),
+    inset -2px -2px 5px rgba(255, 255, 255, .9) !important;
+}
+/* Копирование строки — круглая плита, как кнопки соцсетей в подвале. */
+body.page-redesign .rekvizit-row__copy {
+  width: 36px !important;
+  height: 36px !important;
+  flex: none;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: var(--bg) !important;
+  color: var(--icon) !important;
+  box-shadow:
+    3px 4px 8px rgba(16, 32, 64, .13),
+    -2px -2px 6px rgba(255, 255, 255, .95) !important;
+  transition: box-shadow .16s var(--ease) !important;
+}
+body.page-redesign .rekvizit-row__copy:active {
+  box-shadow:
+    inset 2px 3px 6px rgba(16, 32, 64, .16),
+    inset -2px -2px 5px rgba(255, 255, 255, .9) !important;
+}
+/* Разделитель строк — канавка вместо синей черты. */
+body.page-redesign .rekvizit-row + .rekvizit-row::before {
+  left: 0 !important;
+  right: 0 !important;
+  height: 1px !important;
+  background: rgba(16, 32, 64, .16) !important;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .75);
+}
+/* Полосу прокрутки заменяют затухание и шеврон — она тут лишняя. */
+body.page-redesign .rekvizit-scroll { scrollbar-width: none; }
+body.page-redesign .rekvizit-scroll::-webkit-scrollbar { width: 0; height: 0; }
+
+} /* /@media (max-width: 899px) */
+

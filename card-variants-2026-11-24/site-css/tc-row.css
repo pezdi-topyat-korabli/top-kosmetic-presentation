@@ -1,0 +1,237 @@
+/* ДЕЙСТВИЯ СО СТРОКОЙ — общий кирпич (js/tc-row.js).
+   Язычок у края строки, за ним панель: избранное · смотреть · удалить.
+   Одна разметка на корзину и на состав заказа. */
+
+body.page-redesign .tc-row {
+  position: relative;
+  /* Горизонталь забираем себе, вертикаль оставляем браузеру: список
+     прокручивается пальцем по тем же строкам, и перехват вертикали сломал бы
+     прокрутку. Замок направления в JS решает по первым 10 px. */
+  touch-action: pan-y;
+}
+
+/* Слой с содержимым. Никуда не едет — панель накрывает его сверху.
+   Раскладку кирпич не навязывает: у корзины своя сетка, у состава заказа своя,
+   и слой обязан быть для них прозрачным контейнером, а не ещё одним grid-ом. */
+body.page-redesign .tc-row__slide {
+  position: relative;
+  z-index: 0;
+}
+
+/* ── Язычок ─────────────────────────────────────────────────────────────
+   Единственная подсказка, что у строки есть действия, поэтому он заметный:
+   фирменный синий, а не серая точка. Прижат к правому краю и уходит вместе
+   с содержимым. */
+body.page-redesign .tc-row__tab {
+  position: absolute;
+  /* Во всю высоту содержимого строки: так язычок читается как край панели,
+     который можно потянуть, а не как маленькая кнопка сбоку. Заодно это
+     нормальная цель для пальца по всей высоте строки. */
+  top: 0;
+  bottom: 0;
+  height: auto;
+  /* Насколько язычок вылезает за поле списка — задаёт сам список. По умолчанию
+     не вылезает: не у каждого списка край поля совпадает с краем экрана. */
+  right: var(--tc-row-tab-edge, 0px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 11px 0 0 11px;
+  background: var(--blue);
+  cursor: pointer;
+  transition: opacity .2s ease, background .15s ease;
+}
+
+body.page-redesign .tc-row__tab i {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #fff;
+  opacity: .95;
+}
+
+body.page-redesign .tc-row__tab:hover { background: #00478F; }
+
+/* ── Панель ─────────────────────────────────────────────────────────────
+   Выезжает из-за правого края и накрывает зону названия, цены и счётчика.
+   Фотография при этом остаётся на виду: строка не перестаёт быть строкой,
+   пока с ней работают. Левый край панели задаёт список — он один знает,
+   где у его строки кончается неприкосновенная часть. */
+body.page-redesign .tc-row__panel {
+  position: absolute;
+  /* Верх и низ — вровень с содержимым строки, а не с её внешними полями:
+     иначе язычок закрытия оказывался выше язычка открытия ровно на эти поля,
+     хотя это одна и та же фигура. Величину полей знает список. */
+  top: var(--tc-row-panel-inset, 0px);
+  bottom: var(--tc-row-panel-inset, 0px);
+  /* До той же кромки, что и язычок: панель приходит с края экрана, а не
+     из-под поля списка. */
+  right: var(--tc-row-tab-edge, 0px);
+  left: var(--tc-row-panel-left, 0);
+  z-index: 1;
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  /* Правый край — под язычок открытия: он остаётся на своём месте под панелью,
+     и наезжать на него кнопками незачем. */
+  padding: 0 24px 0 0;
+
+  /* Непрозрачная: под ней остаётся содержимое строки. Слева обрывается тенью —
+     так видно, что это наехавший слой, а не часть строки. */
+  background: var(--bg);
+  box-shadow: -10px 0 14px -8px rgba(16, 32, 64, .22);
+  transform: translate3d(101%, 0, 0);
+  will-change: transform;
+}
+
+body.page-redesign .tc-row.is-easing .tc-row__panel {
+  transition: transform .34s cubic-bezier(.2, .8, .25, 1);
+}
+
+/* Ручка обратной дороги — зеркало язычка открытия: тот же синий, та же
+   ширина и высота, только скругление с другой стороны и шеврон вместо точек.
+   Одна фигура на оба движения: чем открыл, тем и закрываешь. */
+body.page-redesign .tc-row__grip {
+  flex: 0 0 22px;
+  width: 22px;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 0 11px 11px 0;
+  background: var(--blue);
+  color: #fff;
+  cursor: pointer;
+  transition: background .15s ease;
+}
+
+body.page-redesign .tc-row__grip:hover { background: #00478F; }
+
+body.page-redesign .tc-row__grip svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* Кнопки делят зону поровну — так они крупнее и попадать в них проще, чем
+   в три узкие колонки у края. Рельефа у них нет: панель и так лежит поверх
+   строки, и плитки внутри плитки читались как второй слой без нужды.
+   Друг от друга кнопки отделены прорезью. */
+body.page-redesign .tc-row__act {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 4px;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  /* Цвет и вес — как у подписей таб-бара: это такие же кнопки-иконки с
+     подписью, и выглядеть они должны одинаково. Там --ink, а не серый. */
+  color: var(--ink);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10.5px;
+  font-weight: 500;
+  line-height: 1.15;
+  text-align: center;
+  cursor: pointer;
+  transition: color .15s ease, opacity .15s ease;
+}
+
+/* Прорезь между кнопками — та же канавка, что делит блоки в чек-ауте, только
+   поставленная на бок: тёмная половина слева, светлая справа. У крайних её
+   нет: делить там нечего, а у края она читалась бы как рамка. */
+body.page-redesign .tc-row__act + .tc-row__act::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 2px;
+  border-radius: 2px;
+  background: linear-gradient(
+    90deg,
+    rgba(16, 32, 64, .16) 0 1px,
+    rgba(255, 255, 255, .75) 1px 2px);
+}
+
+body.page-redesign .tc-row__act svg { width: 27px; height: 27px; }
+
+/* Сердце шире и ниже остальных иконок (22×19 против 24×24) и при общем размере
+   смотрелось крупнее мусорки и глаза. Уменьшаем рисунок, но МЕСТО оставляем
+   прежним: иначе подпись «Избранное» поднимается выше соседних. */
+body.page-redesign .tc-row__act .tc-heart {
+  width: 27px;
+  height: 27px;
+  padding: 3px 2px;
+  box-sizing: border-box;
+}
+
+/* Подпись обязательна: мусорка однозначна, а сердечко читают и как «нравится»,
+   и как «отложить» — вопрос снимает слово, а не догадка. */
+body.page-redesign .tc-row__act span { display: block; }
+
+body.page-redesign .tc-row__act.is-danger { color: var(--danger, #E62D32); }
+
+body.page-redesign .tc-row__act:active { opacity: .55; }
+
+/* Пока панель закрыта, её кнопки не должны ловить ни фокус, ни нажатия:
+   она стоит за правым краем строки. visibility не годится — панель ездит
+   за пальцем и должна быть видна на протяжении всего жеста. */
+body.page-redesign .tc-row:not(.is-open) .tc-row__panel {
+  pointer-events: none;
+}
+
+body.page-redesign .tc-row.is-open .tc-row__tab { pointer-events: none; }
+
+/* ── Сердечко ───────────────────────────────────────────────────────────
+   Кнопка носит общий класс .fav-btn, чтобы её обработал единственный на сайте
+   обработчик избранного (js/redesign-ui.js). Но сам .fav-btn описан под
+   карточку товара: он абсолютный, 28×28 и рисует заливку поверх <img>.
+   В панели геометрия своя, поэтому чужую здесь гасим, а «отложено» показываем
+   заливкой нашей иконки — тем же красным, что в карточке. */
+body.page-redesign .tc-row__act.fav-btn {
+  position: relative;
+  top: auto;
+  right: auto;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+}
+
+body.page-redesign .tc-row__act.fav-btn::before { display: none; }
+
+/* Два сердца в одной кнопке: контур и залитое. Видно ровно одно — то, что
+   отвечает состоянию. Так же устроена карточка, только там вместо второй
+   иконки заливка псевдоэлементом. */
+body.page-redesign .tc-row__act.fav-btn .tc-heart--on { display: none; }
+body.page-redesign .tc-row__act.fav-btn.is-active .tc-heart--off { display: none; }
+body.page-redesign .tc-row__act.fav-btn.is-active .tc-heart--on { display: block; }
+
+/* Отметку показывает только сердце. Подпись остаётся такой же, как у соседей:
+   цветное слово читалось как отдельное состояние кнопки, которого нет. */
+body.page-redesign .tc-row__act.fav-btn.is-active .tc-heart {
+  color: var(--like, #e61e28);
+}
+
+/* Нажатие — та же пружина, что у сердечка на карточке. Заливку там ведёт
+   псевдоэлемент, здесь его нет, поэтому пружиним саму иконку. */
+body.page-redesign .tc-row__act.fav-btn.fav-pop .tc-heart {
+  animation: tcRowFavPop .5s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+@keyframes tcRowFavPop {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.34); }
+  100% { transform: scale(1); }
+}

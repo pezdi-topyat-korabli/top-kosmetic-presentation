@@ -1,0 +1,214 @@
+/* ПЕРЕХОДЫ МЕЖДУ СТРАНИЦАМИ: индикатор и микроанимация появления.
+   Поведение — js/tc-nav.js. */
+
+/* Тонкая полоса вверху. Показывает, что запрос пошёл, но не перекрывает экран
+   и не блокирует нажатия: человек в любой момент может передумать. */
+.tc-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 400;
+  width: 100%;
+  height: 2px;
+  background: var(--blue);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Ползёт до 80% и ждёт ответа: сколько осталось — неизвестно, а честная
+   неопределённость лучше фальшивого «99%». */
+.tc-progress.is-on {
+  opacity: 1;
+  animation: tc-progress-run 8s cubic-bezier(.15, .8, .3, 1) forwards;
+}
+
+.tc-progress.is-done {
+  opacity: 1;
+  animation: tc-progress-end .3s ease forwards;
+}
+
+@keyframes tc-progress-run {
+  0%   { transform: scaleX(.05) }
+  40%  { transform: scaleX(.5) }
+  100% { transform: scaleX(.8) }
+}
+
+@keyframes tc-progress-end {
+  0%   { transform: scaleX(.85) }
+  100% { transform: scaleX(1); opacity: 0 }
+}
+
+/* Появление нового содержимого: короткий подъём. Уход не анимируем — ожидание
+   и так занимает время, а лишние 200мс на затухание делают переход вязким. */
+.tc-swap-area.is-entering {
+  animation: tc-enter .32s cubic-bezier(.2, .7, .2, 1) both;
+}
+
+@keyframes tc-enter {
+  from { opacity: 0; transform: translateY(8px) }
+  to   { opacity: 1; transform: none }
+}
+
+/* prefers-reduced-motion не учитываем — см. пояснение в redesign.css.
+   Полоса прогресса без движения превращается в застывший обрубок, который
+   ничего не сообщает, а укачать бегущей полоской в 2 px невозможно. */
+
+/* ── Маска перехода ─────────────────────────────────────────────────
+   Панель со скелетом поднимается снизу на время загрузки и растворяется,
+   открывая новый экран. Закрывает только область содержимого: шапка и таб-бар
+   постоянные, накрывать их — значит показать переход между приложениями,
+   а не между экранами одного. Поведение — js/tc-nav.js. */
+
+/* Шапка постоянная: она живёт между переходами, и закрывать её маской значит
+   на секунду «терять» её при каждом переходе. Поэтому маска накрывает экран
+   целиком (иначе сверху просвечивает уходящая страница), но лежит СЛОЕМ НИЖЕ
+   шапки — та остаётся видна поверх неё. */
+.tc-mask {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: calc(var(--tabbar-h) + var(--safe-bottom));
+  /* Ниже шапки и ниже шторок: шторка, из которой начали переход, уезжает
+     поверх маски. */
+  z-index: calc(var(--z-overlay) - 2);
+  overflow: hidden;
+  background: var(--bg);
+  transform: translateY(100%);
+  transition: transform var(--t-base) var(--ease);
+}
+
+.tc-mask.is-open {
+  transform: none;
+}
+
+/* Уход — растворением, а не обратным движением: экран под маской уже другой,
+   и увозить её вниз значило бы показать, что «шторка» была пустышкой. */
+.tc-mask.is-fading {
+  transform: none;
+  opacity: 0;
+  transition: opacity .2s var(--ease);
+}
+
+/* Силуэт полосы управления каталога: те же размеры, что у настоящей
+   (css/tc-catalog.css) — иначе сетка под ней стоит не на своём месте. */
+.tc-mask__cbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 54px;
+  margin-bottom: 12px;
+}
+
+/* Повторяет живую полосу: длинное поле поиска и два значка справа.
+   Прежний силуэт рисовал две подписанные кнопки и счётчик товаров —
+   такой полосы больше нет, и по загрузке содержимое прыгало. */
+.tc-mask__field {
+  flex: 1 1 auto;
+  height: 38px;
+  border-radius: 999px;
+}
+
+.tc-mask__square {
+  flex: none;
+  width: 54px;
+  height: 38px;
+  border-radius: 999px;
+}
+
+/* Страницы без известной формы ждут спиннером: силуэты обещали бы раскладку,
+   которой там может не быть. Спиннер — по центру закрытой области, поэтому
+   стоит отдельно от .tc-mask__inner с его отступом под шапку. */
+.tc-mask__spin {
+  position: absolute;
+  top: var(--hh, 88px);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Та же буква, что ждёт на кнопках и в заставке (кирпич .tc-o-spin). */
+.tc-spinner {
+  width: 38px;
+  height: 38px;
+  background-color: var(--blue);
+  -webkit-mask: url('../img/logo-o.svg') center / contain no-repeat;
+  mask: url('../img/logo-o.svg') center / contain no-repeat;
+  animation: tcOSpin 1.7s cubic-bezier(.82, 0, .22, 1) infinite;
+}
+
+/* Внутренности — скелет каталога (.cat-grid + .p-card-skeleton, стили в redesign.css)
+   или строки для списочных экранов. Своей пульсации здесь нет: она уже описана
+   у .skeleton, и второй вариант мерцания рядом с первым выглядел бы разнобоем. */
+/* Силуэты встают там же, где встанет содержимое — под шапкой. */
+.tc-mask__inner {
+  padding: var(--hh, 88px) var(--gut) 16px;
+}
+
+.tc-mask__inner--list {
+  display: grid;
+  gap: 12px;
+}
+
+.tc-mask__row {
+  display: flex;
+  align-items: center;
+  height: 68px;
+  padding: 0 14px;
+  border-radius: var(--r-card);
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+}
+
+.tc-mask__row .skeleton-line {
+  width: 60%;
+}
+
+/* ── Широкий экран ────────────────────────────────────────────────────
+   Маска была выключена целиком: «переходы по таб-бару бывают только на
+   телефоне». Это неверно — бесшовная подмена работает на любой ширине, и без
+   маски нажатие на пункт меню не давало вообще никакого отклика: страница
+   просто менялась через паузу. Отклик нужен тем более здесь, где экран
+   большой и пустое ожидание заметнее.
+
+   Силуэты встают в ту же колонку, что и настоящее содержимое: иначе по
+   загрузке сетка прыгает вбок. */
+@media (min-width: 900px) {
+  .tc-mask__inner {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: calc(var(--hh, 88px) + 10px) clamp(12px, 2vw, 24px) 16px;
+  }
+
+  /* Полоса раздела на широком экране — три блока: путь слева, поиск по центру,
+     кнопки справа. Силуэт повторяет их, а не телефонную полосу из поля и двух
+     значков. */
+  .tc-mask__cbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) min(480px, 38%) minmax(0, 1fr);
+    align-items: center;
+    gap: 16px;
+    height: 66px;
+  }
+
+  .tc-mask__cbar .tc-mask__square:first-of-type { margin-left: auto; }
+
+  .tc-mask__field { height: 44px; }
+
+  .tc-mask__square {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+  }
+
+  .tc-spinner { width: 46px; height: 46px; }
+}
+
+/* Пульсацию скелета при «уменьшить движение» гасит общее правило для .skeleton
+   в redesign.css — своего здесь не нужно. Раскрытие панели остаётся: это отклик
+   на нажатие, а не автодвижение. */

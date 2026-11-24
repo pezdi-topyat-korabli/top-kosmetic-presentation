@@ -1,0 +1,234 @@
+/* Оболочка демонстрации. На сайт не переносится: шапка и таб-бар здесь
+   упрощённые копии варианта №8, нужны для контекста и для полёта в корзину. */
+
+body.page-redesign {
+  margin: 0;
+  background: #fff;
+  font-family: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
+  color: #171b24;
+}
+
+/* Фото — нормализованные снимки 1000×1000 на #F2F2F2, как обработанные
+   медиа рабочей копии: поле карточки и фон фото совпадают. */
+
+/* Встроенный экран (compare.html, живые телефоны): только сайт. */
+html.lab-embed body.page-redesign .lab-bar { display: none; }
+
+/* ── Панель вариантов ─────────────────────────────────────────────── */
+body.page-redesign .lab-bar {
+  position: sticky;
+  top: 0;
+  z-index: 500;
+  background: #0d1424;
+  color: #fff;
+  font: 500 13px/1.3 'Montserrat', system-ui, sans-serif;
+}
+body.page-redesign .lab-bar__in {
+  display: flex;
+  align-items: center;
+  gap: 14px 22px;
+  flex-wrap: wrap;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 10px 20px;
+}
+body.page-redesign .lab-bar__title { display: grid; gap: 2px; margin-right: auto; }
+body.page-redesign .lab-bar__title strong { font-size: 14px; font-weight: 700; }
+body.page-redesign .lab-bar__title span { color: #9aa6bd; font-size: 11px; }
+body.page-redesign .lab-bar__tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+body.page-redesign .lab-tab,
+body.page-redesign .lab-chip {
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 13px;
+  background: #1c2538;
+  color: #dfe6f3;
+  font: 600 12px/1 'Montserrat', system-ui, sans-serif;
+  cursor: pointer;
+  transition: background .18s ease, color .18s ease;
+}
+body.page-redesign .lab-tab:hover,
+body.page-redesign .lab-chip:hover { background: #283450; }
+body.page-redesign .lab-tab[aria-selected="true"] { background: #fff; color: #0d1424; }
+body.page-redesign .lab-chip[aria-pressed="true"] { background: #2d6fd6; color: #fff; }
+body.page-redesign .lab-bar__tools { display: flex; flex-wrap: wrap; gap: 6px; }
+body.page-redesign .lab-bar__note {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 20px 10px;
+  color: #c4cee0;
+  font-size: 12px;
+}
+body.page-redesign .lab-tab:focus-visible,
+body.page-redesign .lab-chip:focus-visible { outline: 2px solid #8fb8ff; outline-offset: 2px; }
+
+/* Конструктор «Журнала»: виден только на варианте 4. */
+body.page-redesign .lab-kit {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 20px 10px;
+}
+body.page-redesign .lab-kit[hidden] { display: none; }
+body.page-redesign .lab-kit__group { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
+body.page-redesign .lab-kit__group > span { margin-right: 4px; color: #9aa6bd; font-size: 11px; font-weight: 600; }
+body.page-redesign .lab-chip--sm { padding: 6px 10px; font-size: 11.5px; }
+
+/* ── Шапка (упрощённый вариант №8) ───────────────────────────────── */
+body.page-redesign .lab-head { border-bottom: 1px solid #e5eaf0; background: #fff; }
+body.page-redesign .lab-head__in {
+  display: grid;
+  grid-template-columns: auto auto minmax(160px, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 14px 20px;
+}
+body.page-redesign .lab-logo img { display: block; height: 30px; width: auto; }
+body.page-redesign .lab-pill {
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: #085ab3;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  text-decoration: none;
+}
+body.page-redesign .lab-search {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: #f1f4f8;
+  color: #7b8491;
+  font-size: 13px;
+}
+body.page-redesign .lab-search b { color: #085ab3; font-weight: 700; }
+body.page-redesign .lab-icons { display: flex; gap: 10px; }
+body.page-redesign .lab-icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(16, 32, 64, .12);
+}
+body.page-redesign .lab-icon img { width: 17px; height: 17px; }
+body.page-redesign .lab-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #085ab3;
+  color: #fff;
+  font: 700 11px/18px 'Montserrat', system-ui, sans-serif;
+  text-align: center;
+}
+body.page-redesign .lab-badge[hidden] { display: none; }
+
+/* ── Страница каталога ───────────────────────────────────────────── */
+body.page-redesign .lab-wrap { max-width: 1280px; margin: 0 auto; padding: 18px 20px 48px; }
+body.page-redesign .lab-toolbar {
+  display: grid;
+  grid-template-columns: minmax(180px, 280px) minmax(160px, 1fr) auto auto;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 26px;
+  font-size: 13px;
+}
+body.page-redesign .lab-crumbs,
+body.page-redesign .lab-field,
+body.page-redesign .lab-btn {
+  display: flex;
+  align-items: center;
+  height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(16, 32, 64, .10);
+  color: #7b8491;
+  white-space: nowrap;
+}
+body.page-redesign .lab-crumbs b { color: #171b24; font-weight: 600; margin-left: 4px; }
+body.page-redesign .lab-btn { color: #171b24; font-weight: 700; }
+body.page-redesign .lab-foot { margin: 40px 0 0; color: #7b8491; font-size: 12px; line-height: 1.5; max-width: 760px; }
+
+/* ── Таб-бар (только на узком экране) ────────────────────────────── */
+body.page-redesign .lab-tabbar { display: none; }
+body.page-redesign .lab-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  z-index: 600;
+  max-width: calc(100% - 32px);
+  padding: 11px 16px;
+  border-radius: 12px;
+  background: #171b24;
+  color: #fff;
+  font-size: 13px;
+  transform: translate(-50%, 20px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease;
+}
+body.page-redesign .lab-toast.is-on { opacity: 1; transform: translate(-50%, 0); }
+
+@media (max-width: 899px) {
+  body.page-redesign .lab-bar__title { display: none; }
+  body.page-redesign .lab-bar__in { padding: 8px 12px; gap: 8px; }
+  body.page-redesign .lab-bar__tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; max-width: 100%; }
+  body.page-redesign .lab-tab, body.page-redesign .lab-chip { padding: 7px 10px; font-size: 11px; white-space: nowrap; }
+  body.page-redesign .lab-bar__note { display: none; }
+  body.page-redesign .lab-kit { flex-wrap: nowrap; overflow-x: auto; padding: 0 12px 8px; scrollbar-width: none; }
+  body.page-redesign .lab-kit__group { flex-wrap: nowrap; }
+  body.page-redesign .lab-kit .lab-chip { white-space: nowrap; }
+  body.page-redesign .lab-head__in { grid-template-columns: 1fr; justify-items: center; padding: 10px 14px; }
+  body.page-redesign .lab-pill, body.page-redesign .lab-search, body.page-redesign .lab-head .lab-icons { display: none; }
+  body.page-redesign .lab-wrap { padding: 12px 14px 110px; }
+  body.page-redesign .lab-toolbar { grid-template-columns: 1fr auto auto; gap: 8px; margin-bottom: 16px; }
+  body.page-redesign .lab-crumbs { display: none; }
+  body.page-redesign .lab-btn { width: 42px; padding: 0; justify-content: center; font-size: 0; }
+  body.page-redesign .lab-btn::before { content: '≡'; font-size: 16px; color: #171b24; }
+  body.page-redesign .lab-tabbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 400;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+    background: rgba(255, 255, 255, .96);
+    border-top: 1px solid #e5eaf0;
+  }
+  body.page-redesign .lab-tabbar a {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 3px;
+    color: #4b5566;
+    font-size: 10px;
+    text-decoration: none;
+  }
+  body.page-redesign .lab-tabbar img { width: 20px; height: 20px; }
+  body.page-redesign .lab-tabbar .lab-badge { top: -5px; right: calc(50% - 22px); }
+  body.page-redesign .lab-tabbar__o i {
+    width: 34px;
+    height: 34px;
+    margin-top: -12px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #5d9cf0, #085ab3 70%);
+    box-shadow: 0 6px 14px rgba(8, 90, 179, .35);
+  }
+}

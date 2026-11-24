@@ -1,0 +1,588 @@
+/* ФИЛЬТР КАТАЛОГА В ШТОРКЕ. Разметку даёт ajax/filter-view.php,
+   поведение — js/tc-filter-sheet.js.
+
+   Ни одной коробки в коробке: заголовок и чипы лежат прямо на поверхности
+   шторки, объём несут только сами чипы и поля. */
+
+.tcf-group {
+  padding: 16px 0 4px;
+}
+
+.tcf-group:first-child { padding-top: 4px; }
+
+.tcf-group + .tcf-group {
+  border-top: 1px solid var(--line-soft);
+}
+
+.tcf-group__top {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0 0 10px;
+}
+
+.tcf-group__title {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* «Все» — ссылка, а не кнопка: рядом с заголовком объём был бы шумом. */
+body.page-redesign .tcf-all-link {
+  margin-left: auto;
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--blue);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.tcf-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ── Чип. Выпуклая пилюля в тоне холста, галочка скрыта ───────────── */
+body.page-redesign .tcf-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 13px;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  box-shadow:
+    3px 4px 9px rgba(16, 32, 64, .13),
+    -3px -3px 8px rgba(255, 255, 255, .95),
+    inset 1px 1px 1px rgba(255, 255, 255, .8);
+  transition: box-shadow var(--t-fast) var(--ease),
+              color var(--t-fast) var(--ease),
+              background var(--t-fast) var(--ease),
+              opacity var(--t-fast) var(--ease);
+}
+
+body.page-redesign .tcf-chip.is-hidden { display: none; }
+
+/* Квадратик чекбокса в чипе не нужен: состояние читается заливкой.
+   Прячем через display — все размеры в общем правиле чекбоксов (redesign.css)
+   стоят с !important, и перебить их иначе нельзя. Переключение по нажатию на
+   label скрытому полю это не мешает. */
+body.page-redesign .tcf-chip input[type="checkbox"] { display: none; }
+
+/* Корневая категория: дерево показываем весом текста, а не вложенным блоком. */
+body.page-redesign .tcf-chip--root { font-weight: 700; }
+
+.tcf-chip__count {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+/* Выбрано — заливкой. Вдавленность на пилюле в 34 px почти не читается,
+   а выбор должен быть виден с одного взгляда. */
+body.page-redesign .tcf-chip.is-on {
+  background: var(--blue);
+  color: #fff;
+  font-weight: 600;
+  box-shadow:
+    2px 3px 8px rgba(0, 60, 140, .28),
+    inset 1px 1px 1px rgba(255, 255, 255, .25);
+}
+
+body.page-redesign .tcf-chip.is-on .tcf-chip__count { color: rgba(255, 255, 255, .72); }
+
+body.page-redesign .tcf-chip:not(.is-on):active {
+  box-shadow:
+    1px 1px 3px rgba(16, 32, 64, .10),
+    inset 2px 3px 6px rgba(16, 32, 64, .14),
+    inset -2px -2px 5px rgba(255, 255, 255, .9);
+}
+
+/* Пусто в этой выборке. Не убираем: пропажа значений сбивает сильнее. */
+body.page-redesign .tcf-chip.is-empty {
+  opacity: .38;
+  box-shadow: inset 0 0 0 1px var(--line);
+  background: transparent;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* ── Выбранное строкой под шапкой ─────────────────────────────────── */
+
+/* Строка выбранного стоит ВСЕГДА, даже пустая: иначе первый же тег сдвигал бы
+   все группы вниз. Отступ сверху не декоративный — шапка рисует поверх
+   содержимого полоску затухания в 10 px, и тег попадал под неё срезанным. */
+.tcf-picked {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* Высота считается вместе с полями (border-box), поэтому 48, а не 30:
+     пустая строка должна занимать ровно столько же, сколько строка с тегом. */
+  min-height: 48px;
+  padding: 12px var(--gut) 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tcf-picked::-webkit-scrollbar { width: 0; height: 0; display: none; }
+/* Атрибутом hidden эту строку не прячем: в bootstrap_v4.css [hidden] стоит с
+   !important, и место под тег то появлялось, то исчезало. Строка просто
+   всегда на месте — пустая она и должна быть пустой. */
+
+body.page-redesign .tcf-tag {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 30px;
+  padding: 0 10px 0 12px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--blue);
+  color: #fff;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.tcf-tag__x {
+  font-size: 16px;
+  line-height: 1;
+  opacity: .8;
+}
+
+/* Появление и уход тега. Уходящий не просто гаснет, а схлопывается по ширине —
+   иначе соседи прыгают на его место рывком. */
+body.page-redesign .tcf-tag {
+  max-width: 70vw;
+  overflow: hidden;
+  transition: opacity .18s var(--ease), transform .18s var(--ease),
+              max-width .2s var(--ease), padding .2s var(--ease), margin .2s var(--ease);
+}
+
+body.page-redesign .tcf-tag.is-in {
+  opacity: 0;
+  transform: scale(.92);
+}
+
+body.page-redesign .tcf-tag.is-out {
+  opacity: 0;
+  transform: scale(.92);
+  max-width: 0;
+  padding-left: 0;
+  padding-right: 0;
+  margin-left: -8px;
+  pointer-events: none;
+}
+
+/* ── Цена. Поле ввода в неоморфе — всегда канавка ─────────────────── */
+.tcf-price {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.tcf-price__field {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 14px;
+  box-sizing: border-box;
+  border-radius: var(--r-ctrl);
+  background: var(--bg);
+  box-shadow:
+    inset 2px 3px 6px rgba(16, 32, 64, .13),
+    inset -2px -2px 5px rgba(255, 255, 255, .9);
+}
+
+.tcf-price__field > span {
+  flex: 0 0 auto;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+body.page-redesign .tcf-price__field input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+body.page-redesign .tcf-price__field input:focus { outline: 0; }
+
+/* Плейсхолдер — границы выборки, а не введённое: держим бледным. */
+body.page-redesign .tcf-price__field input::placeholder {
+  color: var(--muted);
+  opacity: .55;
+  font-weight: 500;
+}
+
+/* ── Слой «Все»: одна группа во весь рост шторки ──────────────────── */
+
+/* Направление то же, что у самой шторки: выезжает снизу, уходит вниз.
+   Горизонтальный выезд спорил бы с жестом шторки. */
+.tcf-all {
+  position: absolute;
+  inset: 0;
+  z-index: 210;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  border-radius: 18px 18px 0 0;
+  transform: translateY(100%);
+  transition: transform var(--t-slow) var(--ease);
+}
+
+.tcf-all[hidden] { display: none; }
+
+.tcf-all.is-open { transform: translateY(0); }
+
+.tcf-all__head {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 8px var(--gut);
+  box-sizing: border-box;
+}
+
+body.page-redesign .tcf-all__back {
+  display: flex;
+  margin-left: calc(12px - var(--gut));
+}
+
+body.page-redesign .tcf-all__back svg { width: 18px; height: 18px; }
+
+/* Заголовок по центру шапки, а не от кнопки: центр считаем от шапки, иначе
+   длина названия группы его двигала бы. */
+.tcf-all__title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: calc(100% - 2 * (32px + var(--gut) + 8px));
+  font-size: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Поиск — канавка, как поля цены. */
+.tcf-find {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 var(--gut) 12px;
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: var(--r-ctrl);
+  background: var(--bg);
+  color: var(--muted);
+  box-shadow:
+    inset 2px 3px 6px rgba(16, 32, 64, .13),
+    inset -2px -2px 5px rgba(255, 255, 255, .9);
+}
+
+.tcf-find svg { flex: 0 0 auto; width: 16px; height: 16px; }
+
+body.page-redesign .tcf-find input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 14px;
+}
+
+body.page-redesign .tcf-find input:focus { outline: 0; }
+
+.tcf-all__body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  /* Поле снизу — место для подсказки прокрутки: иначе шеврон ложится прямо
+     на последнюю строку и закрывает её текст. */
+  padding: 0 var(--gut) 30px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.tcf-all__body::-webkit-scrollbar { width: 0; height: 0; display: none; }
+
+/* Строка значения. Разделяет волосок, а не борта плашек. */
+body.page-redesign .tcf-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+}
+
+body.page-redesign .tcf-row + .tcf-row { border-top: 1px solid var(--line-soft); }
+body.page-redesign .tcf-row[hidden] { display: none; }
+
+body.page-redesign .tcf-row--root { font-weight: 700; }
+.tcf-row--kid .tcf-row__text { padding-left: 14px; }
+
+.tcf-row__text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.tcf-row__count {
+  flex: 0 0 auto;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Квадратик выбора — лунка в холсте. Заливки у отмеченного нет, как и у
+   чекбоксов в чек-ауте: синий прямоугольник вспыхивает и спорит с тегами.
+   Отметку показывает сама галочка. */
+.tcf-row__box {
+  flex: 0 0 auto;
+  position: relative;
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  background: var(--bg);
+  box-shadow:
+    inset 2px 2px 5px rgba(16, 32, 64, .16),
+    inset -2px -2px 4px rgba(255, 255, 255, .9);
+  transition: box-shadow var(--t-fast) var(--ease);
+}
+
+.tcf-row.is-on .tcf-row__box {
+  box-shadow:
+    inset 2px 2px 6px rgba(16, 32, 64, .2),
+    inset -2px -2px 4px rgba(255, 255, 255, .95);
+}
+
+/* Галочка прочерчивается, а не возникает. Длительность взята заметно больше
+   штатных .26s (redesign.css): на 22 px рисование в четверть секунды глаз не
+   успевает прочесть, и отметка выглядит как мгновенная подстановка. */
+.tcf-row__box svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--blue);
+  opacity: 0;
+}
+
+.tcf-row.is-on .tcf-row__box svg { opacity: 1; }
+
+/* Без оглядки на «уменьшить движение»: это не украшение, а отклик на нажатие —
+   ровно та анимация, ради которой исключение и делается. Конечное состояние
+   держит both, поэтому галочка видна в любом случае. */
+.tcf-row.is-on .tcf-row__box svg path {
+  stroke-dasharray: 22;
+  stroke-dashoffset: 22;
+  animation: tcf-draw .26s cubic-bezier(.5, 0, .2, 1) both;
+}
+
+@keyframes tcf-draw { to { stroke-dashoffset: 0; } }
+
+body.page-redesign .tcf-row.is-empty {
+  opacity: .4;
+  pointer-events: none;
+}
+
+/* ── Низ шторки: сброс слева, главное действие справа ─────────────── */
+
+.tcf-foot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+body.page-redesign .tcf-reset {
+  flex: 0 0 auto;
+  border: 0;
+  padding: 6px 2px;
+  background: none;
+  color: var(--blue);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+body.page-redesign .tcf-apply {
+  flex: 1 1 auto;
+  min-height: 50px;
+}
+
+body.page-redesign .tcf-apply[disabled] {
+  background: var(--line);
+  color: #fff !important;
+  cursor: default;
+}
+
+/* Пересчёт идёт: гасим, но подпись не подменяем — не дёргаем главное действие. */
+body.page-redesign .tcf-apply.is-counting { opacity: .72; }
+
+.tcf-fail {
+  padding: 24px 0;
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+}
+
+/* ── Силуэты на время загрузки ───────────────────────────────────── */
+
+/* Силуэты повторяют геометрию настоящих элементов: заголовок группы — строка
+   в 12 px, чип — пилюля в 34 px, поле цены — прямоугольник в 42 px. */
+.tcf-sk-title {
+  display: block;
+  height: 12px;
+  border-radius: 6px;
+}
+
+.tcf-sk-chip {
+  display: inline-block;
+  height: 34px;
+  border-radius: var(--r-pill);
+}
+
+.tcf-sk-field {
+  flex: 1 1 0;
+  height: 42px;
+  border-radius: var(--r-ctrl);
+}
+
+/* ── Строка тегов не влезла: тот же приём, что у зон фильтра (.filter-scroll-hint) —
+   затухание плюс пульсирующий шеврон, только повёрнутые вбок ─────────── */
+
+.tcf-xhint {
+  position: sticky;
+  right: 0;
+  flex: 0 0 0;
+  width: 0;
+  height: 30px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+
+.tcf-picked.has-more .tcf-xhint { opacity: 1; }
+
+.tcf-xhint::before {
+  content: '';
+  position: absolute;
+  right: calc(-1 * var(--gut));
+  top: -12px;
+  bottom: -10px;
+  width: 64px;
+  background: linear-gradient(to right,
+    color-mix(in srgb, var(--bg) 0%, transparent) 0%,
+    color-mix(in srgb, var(--bg) 85%, transparent) 60%,
+    var(--bg) 100%);
+}
+
+/* Отступ от кромки экрана считаем от поля строки: шеврон стоит в 8 px от неё,
+   и его острый угол не задевает край даже в дальней точке качания. */
+.tcf-xhint::after {
+  content: '';
+  position: absolute;
+  right: calc(8px - var(--gut));
+  top: 50%;
+  width: 9px;
+  height: 17px;
+  margin-top: -8.5px;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 28' fill='none' stroke='%230059B9' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='2 2 12 14 2 26'/></svg>") center/contain no-repeat;
+  opacity: .75;
+  animation: tcf-chevron-x 1.6s ease-in-out infinite;
+}
+
+/* При уменьшении движения шеврон остаётся видимым без покачивания. */
+@keyframes tcf-chevron-x {
+  0%, 100% { transform: translateX(0); opacity: .75; }
+  50% { transform: translateX(3px); opacity: 1; }
+}
+
+/* Высота у шторки фильтра ПОСТОЯННАЯ и задана заранее — примерно та, что
+   набирало содержимое. Так одинаково высоки и скелет, и готовый фильтр, и слой
+   «Все»: ничего не прыгает ни при загрузке, ни при входе в группу и обратно.
+   Длинный список внутри спокойно прокручивается, о чём говорит подсказка.
+   Потолок всё же учитываем: на низком экране шторка не должна лезть под шапку. */
+body.page-redesign .sheet--filter .sheet__panel {
+  height: min(76dvh, calc(100dvh - var(--sheet-top, 90px)));
+  /* Переход на случай, когда высоту меняет сам браузер (панели в Safari). */
+  transition: transform var(--t-slow) var(--ease), height .28s var(--ease);
+}
+
+/* На мыши и клавиатуре шторка показывается боковой панелью во всю высоту:
+   постоянная высота нужна была, чтобы на телефоне ничего не прыгало при
+   загрузке и при входе в группу. */
+@media (min-width: 900px) {
+  body.page-redesign .sheet--filter .sheet__panel {
+    height: 100%;
+    max-height: none;
+  }
+}
+
+/* Подсказка прокрутки внутри шторки — общий кирпич .filter-scroll-hint.
+   Ему нужен цвет затухания и поправка на поле зоны: sticky липнет к кромке
+   CONTENT-box, и без компенсации подсказка зависала бы выше настоящего низа,
+   открывая под собой обрезанную строку. */
+body.page-redesign .tcf-all__body .filter-scroll-hint,
+body.page-redesign .sheet--filter .sheet__body .filter-scroll-hint {
+  --fsh-bg: var(--bg);
+}
+
+body.page-redesign .tcf-all__body > .filter-scroll-hint { bottom: -30px; }
+body.page-redesign .sheet--filter .sheet__body > .filter-scroll-hint { bottom: -16px; }
+
+/* Этот файл подключается после общей оболочки. */
+@media (prefers-reduced-motion: reduce) {
+  body.page-redesign .sheet--filter .sheet__panel,
+  .tcf-all {
+    transition: none;
+  }
+
+  .tcf-xhint::after {
+    animation: none;
+  }
+}

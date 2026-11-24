@@ -1,0 +1,172 @@
+/* ВАРИАНТ 1 «ВИТРИНА». Подключать после tc-cv-base.css; <body class="… tc-cv tc-cv1">.
+
+   Фото — главное, кнопка ему не мешает: синий круг «+» в правом нижнем углу
+   поля, всегда виден. Под курсором карточки круг открывается в пилюлю
+   «В корзину» — маской clip-path, без анимации ширины. На телефоне остаётся
+   кругом 40 px под палец. После добавления: тёмная заливка, галочка, и тем же
+   приёмом из правого края открывается белый счётчик «− N +». */
+
+body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8 .add-btn {
+  right: 12px;
+  bottom: 12px;
+  width: 136px;
+  height: 44px;
+  justify-content: flex-start;
+  border-radius: 999px !important;
+  background: var(--blue) !important;
+  color: #fff;
+  /* Видна только правая часть — круг 44×44. Маска режет и область нажатия. */
+  clip-path: inset(0 0 0 92px round 999px);
+  transition:
+    clip-path .2s cubic-bezier(.16, 1, .3, 1),
+    background-color .15s ease,
+    transform .12s cubic-bezier(.16, 1, .3, 1);
+}
+
+/* Знак «+» — две полоски фоном: чёткий на любом экране, без картинки. */
+body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8 .add-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  z-index: 1;
+  width: 14px;
+  height: 14px;
+  margin-top: -7px;
+  background:
+    linear-gradient(#fff, #fff) center / 14px 2px no-repeat,
+    linear-gradient(#fff, #fff) center / 2px 14px no-repeat;
+  transition: opacity .15s ease;
+}
+
+body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8 .add-btn .v8-action {
+  position: absolute;
+  top: 50%;
+  left: 18px;
+  font-size: 13px;
+  font-weight: 700;
+  opacity: 0;
+  transform: translate(6px, -50%);
+  transition: opacity .15s ease, transform .2s cubic-bezier(.16, 1, .3, 1);
+}
+
+/* Раскрытие: под курсором карточки и при фокусе с клавиатуры. Вход 0,32 с,
+   выход короче — 0,2 с. */
+@media (hover: hover) and (pointer: fine) {
+  body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8:hover .add-btn:not(:disabled) {
+    clip-path: inset(0 0 0 0 round 999px);
+    transition-duration: .32s, .15s, .12s;
+  }
+  body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8:hover .add-btn:not(:disabled) .v8-action {
+    opacity: 1;
+    transform: translate(0, -50%);
+    transition-delay: .05s;
+  }
+  body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8 .add-btn:not(:disabled):hover {
+    background: #064a94 !important;
+  }
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8 .add-btn:focus-visible {
+  clip-path: inset(0 0 0 0 round 999px);
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8 .add-btn:focus-visible .v8-action {
+  opacity: 1;
+  transform: translate(0, -50%);
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8 .add-btn:not(:disabled):active {
+  transform: scale(.97);
+}
+
+/* Добавление: тёмная заливка из центра и галочка поверх; «+» и подпись уходят. */
+body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8 .add-btn .ab-fill::before {
+  width: 170px;
+  height: 170px;
+  background: #13233f;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8 .add-btn .ab-check {
+  left: calc(100% - 22px);
+  width: 22px;
+  height: 22px;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8 .add-btn .ab-fill::before { left: calc(100% - 22px); }
+body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8 .add-btn:is(.is-filling, .is-checking, .is-added)::before,
+body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8 .add-btn:is(.is-filling, .is-checking, .is-added) .v8-action {
+  opacity: 0 !important;
+}
+
+/* Счётчик открывается из того же угла: белая пилюля, синие «−» и «+». */
+body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8 .qty-ctl {
+  top: auto;
+  left: auto;
+  right: 12px;
+  bottom: 12px;
+  height: 44px;
+  padding: 4px;
+  gap: 2px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: none;
+  opacity: 1;
+  transform: none;
+  clip-path: inset(0 0 0 100% round 999px);
+  transition: clip-path .32s cubic-bezier(.16, 1, .3, 1);
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8.has-qty .qty-ctl {
+  clip-path: inset(0 0 0 0 round 999px);
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8 .qty-ctl__btn {
+  width: 36px;
+  height: 36px;
+  color: var(--blue);
+  transition: background-color .12s ease, transform .1s ease;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8 .qty-ctl__btn:hover { background: #eef4fb; }
+body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8 .qty-ctl__btn:active { transform: scale(.92); box-shadow: none; }
+body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8 .qty-ctl__num {
+  min-width: 22px;
+  color: #171b24;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* Нет в наличии: не кнопка, а тихая метка на фото. */
+body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8 .add-btn.is-unavailable {
+  left: 12px;
+  right: auto;
+  width: auto;
+  height: 28px;
+  padding: 0 11px !important;
+  background: rgba(255, 255, 255, .92) !important;
+  clip-path: none;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8 .add-btn.is-unavailable::before { display: none; }
+body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8 .add-btn.is-unavailable .v8-action {
+  position: static;
+  color: #5f6876;
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 1;
+  transform: none;
+}
+
+/* Телефон: круг под палец, без раскрытия. */
+@media (max-width: 899px) {
+  body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8 .add-btn {
+    right: 8px;
+    bottom: 8px;
+    width: 40px;
+    height: 40px;
+    clip-path: none;
+  }
+  body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8 .add-btn::before { right: 13px; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8 .add-btn .ab-fill::before,
+  body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8 .add-btn .ab-check { left: 50%; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8 .qty-ctl {
+    right: 8px;
+    bottom: 8px;
+    height: 40px;
+    padding: 3px;
+  }
+  body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8 .qty-ctl__btn { width: 32px; height: 32px; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv1 .p-card--v8 .add-btn.is-unavailable { left: 8px; width: auto; height: 26px; }
+}

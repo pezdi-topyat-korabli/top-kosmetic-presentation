@@ -1,0 +1,68 @@
+/* КАРТОЧКА ТОВАРА НА ТЕЛЕФОНЕ: цена и покупка под рукой.
+   Поведение — js/tc-product.js. Значения — из tc-tokens.css. */
+
+@media (max-width: 899px) {
+
+  /* Фото занимало почти весь первый экран, оставляя цену и кнопку за сгибом.
+     Ограничиваем долей ширины: пропорция сохраняется, но экран остаётся экраном.
+     Меряем от vw — в Safari единицы высоты гуляют при прокрутке, и блок в потоке
+     от них дёргался бы. */
+  body.page-redesign.tc-product-screen .product-item-detail-slider-image,
+  body.page-redesign.tc-product-screen .product-item-detail-slider-images-container img {
+    max-height: 78vw;
+    object-fit: contain;
+  }
+
+  /* ── Панель покупки ─────────────────────────────────────────────────
+     Над таб-баром, поперёк экрана. Появляется, когда настоящая кнопка ушла
+     с глаз, — иначе на экране было бы две одинаковые кнопки. */
+
+  .tc-buybar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: calc(var(--tabbar-h) + var(--safe-bottom));
+    z-index: var(--z-drop);
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px var(--gut);
+
+    background: var(--surface);
+    border-top: 1px solid var(--line-soft);
+    box-shadow: var(--shadow-lift);
+
+    transform: translateY(100%);
+    transition: transform var(--t-base) var(--ease);
+  }
+
+  .tc-buybar.is-on {
+    transform: none;
+  }
+
+  .tc-buybar__price {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--ink);
+    font-family: var(--font);
+    font-size: 18px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* Кнопка не растягивается на всю ширину: цена рядом должна оставаться читаемой,
+     а действие и так очевидно. */
+  .tc-buybar__btn {
+    flex: 0 0 auto;
+    min-width: 150px;
+  }
+}
+
+/* Панель — мобильная: на широком экране кнопка покупки и так на виду. */
+@media (min-width: 900px) {
+  .tc-buybar { display: none; }
+}

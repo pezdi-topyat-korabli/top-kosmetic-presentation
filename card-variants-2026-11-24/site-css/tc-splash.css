@@ -1,0 +1,119 @@
+/* ЗАСТАВКА: всё, что не нужно в первом кадре — сборка слова и уход.
+   Первый кадр (фон, буква, полоса) описан инлайном в include/tc-splash.php. */
+
+/* Разгон — остановка — пауза. Описано и в разметке заставки (первый кадр), и
+   здесь: заставку после ухода удаляют вместе с её стилями, а «сшивка» перехода
+   пользуется тем же вращением. */
+@keyframes tcSplashSpin {
+  0%   { transform: rotate(0); }
+  70%  { transform: rotate(720deg); }
+  100% { transform: rotate(720deg); }
+}
+
+/* Блик по букве в момент «загрузилось» — короткая вспышка перед сборкой слова.
+   Лежит внутри обрезки буквы, поэтому за её край не выходит. */
+.tc-splash__sweep { opacity: 0; }
+
+/* Отблеск идёт вместе со сборкой слова, а не отдельным шагом: трогается, пока
+   «T» и «P» ещё доезжают, и успевает сойти до того, как буква двинется на вход. */
+.tc-splash.is-word .tc-splash__sweep {
+  animation: tcSweep 1.2s cubic-bezier(.36, 0, .32, 1) .18s both;
+}
+
+@keyframes tcSweep {
+  0%   { opacity: 0; transform: translateX(0); }
+  22%  { opacity: 1; }
+  74%  { opacity: 1; }
+  100% { opacity: 0; transform: translateX(600px); }
+}
+
+/* ── «TOP» складывается ────────────────────────────────────────────── */
+
+.tc-splash.is-word .tc-splash__t {
+  animation: tcSplashInT .42s cubic-bezier(.2, .75, .25, 1) both;
+}
+
+.tc-splash.is-word .tc-splash__p {
+  animation: tcSplashInP .42s cubic-bezier(.2, .75, .25, 1) both;
+}
+
+@keyframes tcSplashInT {
+  from { opacity: 0; transform: translateX(-38px) scale(.9); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes tcSplashInP {
+  from { opacity: 0; transform: translateX(38px) scale(.9); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── Вход в букву ──────────────────────────────────────────────────── */
+
+/* На входе «T» и «P» просто гаснут: вся группа в этот момент увеличивается,
+   и любой их собственный разлёт всё равно уезжает за края незамеченным.
+   Гасим анимацией, а не переходом: до этого прозрачность держала анимация
+   появления, и переход с её значения не запускался — буквы пропадали рывком. */
+.tc-splash.is-parting .tc-splash__t,
+.tc-splash.is-parting .tc-splash__p {
+  animation: tcSplashFade .45s ease forwards;
+}
+
+@keyframes tcSplashFade {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+/* Заливка линзы уходит: дальше сквозь неё видно страницу — вырез в слое-заставке
+   совпадает с линзой и растёт вместе с буквой. */
+.tc-splash.is-parting .tc-splash__lens {
+  opacity: 0;
+  transition: opacity .5s ease;
+}
+
+.tc-splash__logo {
+  transition:
+    transform 1.2s cubic-bezier(.55, 0, .25, 1),
+    opacity .4s ease .8s;
+  will-change: transform;
+}
+
+/* Слой-заставка с вырезом-линзой. Пока вырез не нужен, слой просто закрывает
+   экран (inset: 0). С началом ухода он становится большим квадратом с линзой
+   в середине и растёт: вырез растёт вместе с ним и открывает страницу. */
+.tc-splash__veil.is-cut {
+  inset: auto;
+  left: 50%;
+  top: 50%;
+  width: 200vmax;
+  height: 200vmax;
+  margin: -100vmax 0 0 -100vmax;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+          mask-size: 100% 100%;
+  transform-origin: center;
+  transition: transform 1.2s cubic-bezier(.55, 0, .25, 1);
+  will-change: transform;
+}
+
+/* Полоса и подпись уходят раньше входа: на них в этот момент уже не смотрят. */
+.tc-splash.is-parting .tc-splash__bottom {
+  opacity: 0;
+  transition: opacity .25s ease;
+}
+
+/* ── «Сшивка» перехода ─────────────────────────────────────────────── */
+
+/* На переходах показываем ту же букву, только вращение: без полосы, подписей
+   и входа в линзу. Разметка — шаблон #tc-stitch (include/tc-splash.php). */
+.tc-stitch {
+  width: 84px;
+  height: auto;
+  overflow: visible;
+}
+
+.tc-stitch .tc-splash__o {
+  transform-box: view-box;
+  transform-origin: 196px 66px;
+  animation: tcSplashSpin 1.7s cubic-bezier(.82, 0, .22, 1) infinite;
+}

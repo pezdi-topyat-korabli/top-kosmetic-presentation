@@ -1,0 +1,809 @@
+/* ШТОРКИ. Оболочка для «Ещё», каталога, корзины с оформлением, быстрого просмотра.
+   Поведение — js/sheet.js. Здесь только вид и раскладка. */
+
+.sheet {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-sheet);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.sheet[hidden] { display: none; }
+
+.sheet__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 25, 55, .38);
+  opacity: 0;
+  transition: opacity var(--t-base) var(--ease);
+}
+
+.sheet.is-open .sheet__scrim { opacity: 1; }
+
+.sheet__panel {
+  position: relative;
+  /* Контейнер для вёрстки внутри. Оформление живёт только здесь, и его
+     раскладка должна считаться от ширины ПАНЕЛИ, а не окна: иначе при окне
+     1920 в узкой панели работает полная десктопная вёрстка — поля
+     в тридцать пикселей и развалившийся блок доставки. */
+  container-type: inline-size;
+  container-name: tcsheet;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 560px;
+  /* Высоту оверлеев меряем в dvh: в Safari единицы высоты гуляют при прокрутке,
+     и на fixed-панели это единственный случай, где dvh уместен.
+
+     Потолок оставляет над шторкой полосу с шапкой. Так видно, что страница
+     никуда не делась, шторка читается как слой поверх неё, а не как новый
+     экран, и остаётся куда нажать, чтобы вернуться. Считаем от высоты шапки,
+     а не подбираем проценты: поменяется шапка — потолок поедет за ней. */
+  max-height: calc(100dvh - var(--sheet-top, 90px));
+  padding-bottom: var(--safe-bottom);
+  /* Поверхность шторки — тон ХОЛСТА, а не белый. На белом неоморф не работает:
+     светлая половина канавки и светлый край полки совпадают с фоном, и от
+     объёма остаётся только тёмная половина — то есть обычная линия.
+     Белыми остаются карточки, лежащие на этой поверхности. */
+  background: var(--bg);
+  border-radius: 18px 18px 0 0;
+  box-shadow: var(--shadow-float);
+  transform: translateY(100%);
+  /* min-height анимируется вместе с выездом: переход из корзины в оформление
+     поднимает шторку до потолка, а возврат отпускает её обратно к высоте
+     содержимого (js/tc-checkout.js). */
+  transition: transform var(--t-slow) var(--ease), min-height .34s var(--ease);
+  will-change: transform;
+}
+
+.sheet.is-open .sheet__panel { transform: translateY(0); }
+
+/* Ручка. Тап-зона намеренно больше самой полоски: попадать нужно пальцем.
+
+   Лежит НАД содержимым, а не в потоке: в потоке она отодвигала заголовок
+   и крестик вниз на свою высоту, и шапка шторки начиналась глубоко от края.
+   Абсолютной она места не занимает — заголовок поднимается к самому верху,
+   а тянуть по-прежнему можно за ту же зону. */
+.sheet__grab {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* Выше шапки: та поднята над вендорскими плитками (z-index 200), и с прежней
+     тройкой ручка оказалась под ней — единственная подсказка о жесте пропала. */
+  z-index: 201;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+  padding-top: 8px;
+  cursor: grab;
+  touch-action: none;
+}
+
+/* Ручка тёмная намеренно: это единственная подсказка, что шторку можно тянуть.
+   На светлом холсте прежний --line почти терялся, и жест приходилось угадывать. */
+.sheet__grab::before {
+  content: '';
+  width: 38px;
+  height: 4px;
+  border-radius: var(--r-pill);
+  background: #8C9BBA;
+}
+
+.sheet__head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  /* Шапка встаёт вплотную к верхней кромке: ручка абсолютная и места не
+     занимает, а крестик стоит справа — с центральной полоской ручки они
+     не пересекаются. Раньше высота ручки складывалась с отступами шапки,
+     и заголовок начинался глубоко от края. */
+  padding: 8px var(--gut);
+  /* Высота шапки задана явно, а не набирается содержимым: иначе её растягивал
+     самый высокий элемент — крестик, и любая правка размера кнопки двигала
+     заголовок. Теперь кнопку можно менять свободно, шапка стоит на месте. */
+  min-height: 56px;
+  box-sizing: border-box;
+  touch-action: none;
+
+  /* Шапка — приподнятая полка над содержимым. Линии под ней НЕТ намеренно:
+     разделитель под самой кромкой шторки читался как случайная полоска и спорил
+     с заголовком. Кромку рисует полоска затухания (::after ниже). */
+  position: relative;
+  /* Выше всего, что может проехать снизу. Двойки не хватало: у плиток выбора
+     в оформлении собственный z-index 100 (вендорский bootstrap_v4), и они
+     рисовались ПОВЕРХ кромки — тень пропадала ровно на их ширину, а по бокам
+     оставалась. Тело шторки своего контекста наложения не создаёт, поэтому
+     такие плитки спорят с шапкой напрямую. */
+  z-index: 200;
+  background: var(--bg);
+  /* Верхние углы шторки скруглены — шапка обязана их повторять, иначе она
+     срезает скругление прямым краем. */
+  border-radius: 18px 18px 0 0;
+}
+
+/* Кромку держит полоска затухания, а не box-shadow: тень от шапки ложилась бы
+   ПОД содержимое, а полоска рисуется поверх — вместе с самой шапкой. */
+.sheet__head::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 10px;
+  pointer-events: none;
+  background: linear-gradient(
+    rgba(16, 32, 64, .15) 0%,
+    rgba(16, 32, 64, .05) 45%,
+    rgba(16, 32, 64, 0) 100%);
+  transition: opacity .22s var(--ease), height .22s var(--ease);
+}
+
+/* Содержимое ушло под шапку — полка отрывается сильнее. */
+.sheet__panel.is-scrolled .sheet__head::after {
+  height: 14px;
+  background: linear-gradient(
+    rgba(16, 32, 64, .22) 0%,
+    rgba(16, 32, 64, .08) 45%,
+    rgba(16, 32, 64, 0) 100%);
+}
+
+.sheet__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+/* Крестик — первая круглая неоморф-кнопка в интерфейсе. Объём даёт не тень,
+   а радиальный градиент: он смещается при нажатии, и кнопка «вдавливается».
+   Приём и токены — из from-server/visual-language.html (.round-button), чтобы
+   следующие такие кнопки делались так же, а не заново.
+   Наведение и нажатие описаны вместе: на тач-экранах hover не существует. */
+/* Крестик — круглая неоморф-кнопка «Нажми» из visual-language.html.
+
+   Префикс body.page-redesign ОБЯЗАТЕЛЕН: в redesign.css есть глобальный ресет
+   `body.page-redesign button { background: none }`, и без префикса он по
+   специфичности стирает фон — кнопка остаётся плоской.
+
+   Полусферу собирают три слоя, каждый нужен:
+     • блик сверху-слева и затемнение снизу-справа ВНУТРИ круга — они и дают
+       объём; без них остаётся плоский кружок с тенью;
+     • внешняя тень снизу-справа плюс светлый контрсвет сверху-слева —
+       кнопка отрывается от плоскости;
+     • тонкая внутренняя кромка — край сферы, иначе она выглядит размытой.
+
+   Нажатие: блик и затемнение меняются местами (свет уходит вниз-вправо),
+   внешняя тень схлопывается, знак проседает — сфера вдавливается.
+   Наведение и нажатие описаны вместе: на тач-экранах наведения нет. */
+/* Круглые кнопки шапки — крестик и возврат. Вид описан на обе разом: это одна
+   и та же кнопка, отличается только глиф и то, к какому краю она прижата. */
+body.page-redesign .sheet__back,
+body.page-redesign .sheet__close,
+body.page-redesign .tc-mh-back,
+body.page-redesign .tc-mh-more {
+  /* Центр круга стоит на диагонали угла: отступ справа равен отступу сверху
+     (12 px до кромки кнопки при её половине 16 → центр в 28 px от обеих
+     границ панели). Поле считаем от --gut, чтобы соотношение держалось
+     и на мобиле (14 px), и на широком экране (20 px). */
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  padding: 0;
+  border-radius: 50%;
+  color: #5C6B85;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 58%),
+    radial-gradient(circle at 72% 78%, rgba(16, 32, 64, .17) 0%, rgba(16, 32, 64, 0) 62%),
+    var(--bg);
+
+  /* Первой строкой — короткая плотная тень: она очерчивает саму окружность.
+     Без неё фигура растворялась в фоне, оставался только мягкий ореол. */
+  /* На тоне холста тени нужны плотнее, чем были на белом: серый съедает их
+     сильнее, и форма опять расплывалась. Первая строка очерчивает окружность,
+     вторая отрывает её от поверхности, третья — контрсвет с обратной стороны. */
+  box-shadow:
+    0 1px 3px rgba(16, 32, 64, .24),
+    6px 7px 15px rgba(16, 32, 64, .28),
+    -4px -5px 11px rgba(255, 255, 255, 1),
+    inset 1px 1px 1px rgba(255, 255, 255, .95),
+    inset -1px -2px 3px rgba(16, 32, 64, .12);
+
+  transition: background .3s ease-in-out, box-shadow .2s ease-in-out;
+}
+
+/* Крестик прижат к правому краю, всё, что между ним и стрелкой, достаётся
+   заголовку. */
+body.page-redesign .sheet__close {
+  margin-left: auto;
+  margin-right: calc(12px - var(--gut));
+}
+
+/* Стрелка возврата — зеркально крестику у левого края. Ставится ПОСЛЕ общего
+   блока: там объявлен display: flex, и скрыть кнопку раньше не выйдет. */
+body.page-redesign .sheet__back {
+  margin-left: calc(12px - var(--gut));
+  margin-right: 2px;
+  /* В корзине возвращаться некуда — кнопка есть только в оформлении. */
+  display: none;
+}
+
+body.page-redesign .sheet--checkout .sheet__back { display: flex; }
+
+body.page-redesign .sheet__back svg { width: 18px; height: 18px; }
+
+/* Кнопки по краям, заголовок между ними — шапка навигации, а не список.
+   Центр берём от шапки, а не от свободного места: кнопки разной ширины
+   иначе сдвигали бы заголовок то влево, то вправо. */
+body.page-redesign .sheet--checkout .sheet__title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: calc(100% - 2 * (32px + var(--gut) + 8px));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+body.page-redesign .sheet__close > span {
+  display: block;
+  /* Глиф × центрируем как есть: подъём на 2 px был подобран под кнопку 40 px,
+     а на 32 px он читался как съехавший вверх. */
+  transition: transform .3s ease-in-out;
+}
+
+body.page-redesign .tc-mh-back:active,
+body.page-redesign .tc-mh-more:active,
+body.page-redesign .tc-mh-more[aria-expanded="true"],
+body.page-redesign .sheet__back:hover,
+body.page-redesign .sheet__back:active,
+body.page-redesign .sheet__back:focus-visible,
+body.page-redesign .sheet__close:hover,
+body.page-redesign .sheet__close:active,
+body.page-redesign .sheet__close:focus-visible {
+  background:
+    radial-gradient(circle at 70% 74%, rgba(255, 255, 255, .95) 0%, rgba(255, 255, 255, 0) 58%),
+    radial-gradient(circle at 30% 26%, rgba(16, 32, 64, .16) 0%, rgba(16, 32, 64, 0) 62%),
+    var(--bg);
+
+  box-shadow:
+    1px 1px 3px rgba(16, 32, 64, .12),
+    inset 2px 3px 6px rgba(16, 32, 64, .14),
+    inset -2px -2px 5px rgba(255, 255, 255, .9);
+}
+
+body.page-redesign .sheet__close:hover > span,
+body.page-redesign .sheet__close:active > span { transform: translateY(1px); }
+
+.sheet__body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  /* Уходящая при удалении строка едет за правый край — это горизонтальная
+     прокрутка, если её не запретить. Режем по телу шторки, а не по списку:
+     язычок строки намеренно выходит за поле списка к самой кромке. */
+  overflow-x: clip;
+  overscroll-behavior: contain;
+  padding: 0 var(--gut) 16px;
+  -webkit-overflow-scrolling: touch;
+
+  /* Полосы прокрутки нет. О том, что список продолжается, говорит подсказка
+     затухания у нижней кромки — этого достаточно, а синяя полоса шла по
+     язычкам действий и сливалась с ними. */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.sheet__body::-webkit-scrollbar { width: 0; height: 0; display: none; }
+
+/* Липкий низ: итог и главное действие видны всегда, а не в конце простыни. */
+.sheet__foot {
+  flex: 0 0 auto;
+  padding: 12px var(--gut) 16px;
+  background: var(--bg);
+  /* Канавка отделяет низ от списка: тёмный волосок и светлый под ним.
+     Тёмная половина заметно плотнее светлой — иначе на сером тоне видно
+     только белую полоску, и прорезь читается как случайная линия. */
+  border-top: 1px solid rgba(16, 32, 64, .16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .75);
+}
+
+/* Страница под открытой шторкой не едет. position:fixed, а не overflow:hidden —
+   в iOS Safari второй способ фон не держит. */
+body.is-sheet-open {
+  position: fixed;
+  width: 100%;
+  overflow: hidden;
+}
+
+
+/* Список ссылок — самая частая начинка (меню «Ещё», разделы каталога). */
+.sheet-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sheet-list__link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 50px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--line-soft);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.sheet-list li:last-child .sheet-list__link { border-bottom: 0; }
+
+.sheet-list__link:active { color: var(--blue); }
+
+@media (hover: hover) and (pointer: fine) {
+  .sheet-list__link:hover { color: var(--blue); }
+}
+
+/* Широкие экраны: та же панель, но по центру и с полями — превращается
+   в обычное модальное окно, отдельной верстки для десктопа не нужно. */
+@media (min-width: 900px) {
+  .sheet { align-items: center; }
+
+  .sheet__panel {
+    max-height: 84dvh;
+    border-radius: var(--r-card);
+    transform: translateY(24px) scale(.98);
+    opacity: 0;
+    transition: transform var(--t-base) var(--ease), opacity var(--t-base) var(--ease);
+  }
+
+  .sheet.is-open .sheet__panel {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+
+  .sheet__grab { display: none; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ОФОРМЛЕНИЕ ВНУТРИ ШТОРКИ КОРЗИНЫ
+
+   Корзина уезжает вверх, оформление приезжает снизу, панель растёт под
+   содержимое. Гасить корзину простым исчезновением нельзя: движение вверх —
+   единственное, что объясняет, куда она делась и откуда вернётся.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Оформление длиннее корзины — отдаём ему почти весь экран. Высоту меняем
+   переходом, поэтому у панели анимируется и max-height, не только transform. */
+.sheet__panel {
+  transition: transform var(--t-slow) var(--ease),
+              max-height var(--t-slow) var(--ease),
+              /* min-height ОБЯЗАН остаться в списке: этим свойством растёт
+                 шторка при переходе «корзина → оформление» (js/tc-checkout.js).
+                 Правило выше его анимировало, но это, более позднее, перекрывало
+                 весь transition целиком — и рост в 370 px проходил одним кадром. */
+              min-height var(--t-slow) var(--ease),
+              /* Рост и убыль по содержимому — тоже переходом: высоту в пикселях
+                 на время анимации проставляет js/tc-sheet-overlay.js (watchHeight),
+                 иначе панель меняла размер рывком под пальцем. */
+              height .32s var(--ease);
+}
+
+/* Оформление длиннее корзины, но потолок у него тот же: полоса с шапкой над
+   шторкой должна оставаться на всех шагах, иначе на переходе «корзина →
+   оформление» экран дёргается вверх. Прокрутка внутри шторки это покрывает. */
+
+/* Корзина уходит: вверх и в прозрачность. */
+.sheet__body.tcb-leaving {
+  opacity: 0;
+  transform: translateY(-24px);
+  transition: opacity 180ms var(--ease), transform 180ms var(--ease);
+  pointer-events: none;
+}
+
+/* Оформление приходит снизу. Стартовое состояние держится один кадр —
+   снимает его js/tc-checkout.js. */
+.sheet__body.tcb-entering {
+  opacity: 0;
+  transform: translateY(28px);
+}
+
+/* В покое трансформации быть НЕ ДОЛЖНО. Итог оформления держится на
+   position:fixed, а любой transform у предка делает его точкой отсчёта для
+   fixed-потомков. Так как это тело шторки — оно же и прокручиваемый контейнер,
+   панель итога уезжала вместе с содержимым и «прилипала» только на первом
+   экране. Без трансформации точкой отсчёта остаётся .sheet__panel (у него
+   свой transform и will-change), и итог держится за нижний край шторки. */
+.sheet__body.co-in-sheet {
+  transition: opacity 260ms var(--ease), transform 260ms var(--ease);
+  transform: none;
+  opacity: 1;
+  /* Первый блок не должен упираться в шапку: под ней тень, и без зазора
+     она ложится прямо на карточку, а выпуклость блока теряется. */
+  padding-top: 14px;
+  /* Место под закреплённой панелью итога. Число здесь — только на случай,
+     если замер не сработал: настоящую высоту ставит js/tc-checkout.js. */
+  padding-bottom: 280px;
+}
+
+/* Пока идёт превращение, содержимое не должно скакать полосой прокрутки. */
+.sheet__panel.is-morphing .sheet__body { overflow: hidden; }
+
+/* Скелет ожидания поверх тела шторки: под ним меняется содержимое, а человек
+   видит загрузку, а не белый прямоугольник. Ниже шапки и выше низа — чтобы
+   заголовок и итог корзины оставались на месте. */
+.sheet__wait {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 64px;
+  bottom: 0;
+  z-index: 2;
+  padding: 0 var(--gut);
+  background: var(--bg);
+  transition: opacity 220ms var(--ease);
+}
+.sheet__wait.is-gone { opacity: 0; pointer-events: none; }
+
+/* Оформление внутри шторки живёт в своей ширине: боковая колонка чек-аута
+   на телефоне и так уходит вниз, а рамки и отступы страницы здесь лишние —
+   шторка сама и есть рамка. */
+.sheet__body.co-in-sheet .co-page,
+.sheet__body.co-in-sheet .bx-soa {
+  margin: 0;
+  padding: 0;
+  background: none;
+}
+
+/* Заголовок страницы внутри шторки не нужен: его роль играет шапка шторки. */
+.sheet__body.co-in-sheet .title_box { display: none; }
+
+/* Скелет оформления: заголовок блока, поля покупателя, карточки доставки.
+   Форма повторяет то, что приедет, — иначе заглушка обещает одно, а приходит
+   другое, и подмена читается как рывок. */
+.co-sk {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding-top: 4px;
+}
+
+/* Блок скелета повторяет настоящую карточку оформления: тон холста и мягкий
+   рельеф вместо рамки. Белая заглушка обещала белые карточки, а приезжали
+   серые — переход читался как подмена. */
+.co-sk-block {
+  padding: 18px 16px;
+  border: 0;
+  border-radius: var(--r-card);
+  background: var(--bg);
+  box-shadow:
+    5px 6px 14px rgba(16, 32, 64, .13),
+    -4px -5px 12px rgba(255, 255, 255, .95);
+}
+
+.co-sk-line {
+  height: 13px;
+  border-radius: 999px;
+}
+.co-sk-line.is-title { width: 46%; height: 17px; margin-bottom: 18px; }
+.co-sk-line.is-label { width: 34%; height: 11px; margin-bottom: 8px; }
+
+.co-sk-field + .co-sk-field { margin-top: 14px; }
+
+.co-sk-input {
+  height: 46px;
+  border-radius: var(--r-ctrl);
+}
+
+.co-sk-card {
+  height: 62px;
+  border-radius: var(--r-ctrl);
+}
+.co-sk-card + .co-sk-card { margin-top: 10px; }
+
+
+/* Подсказка прокрутки в теле шторки. Sticky ограничен content-box родителя,
+   а у .sheet__body снизу padding 16px — без компенсации подсказка висела бы
+   на 16px выше настоящей кромки. Тот же приём, что у шторки фильтров. */
+body.page-redesign .sheet__body > .filter-scroll-hint {
+  bottom: -16px;
+  /* Поверхность шторки — холст, а не белое: иначе затухание светлее фона. */
+  --fsh-bg: var(--bg);
+  /* Во всю ширину шторки, а не поля списка: язычки действий выходят за поле
+     к самой кромке, и затухание обрывалось прямо на них — правый край списка
+     оставался чётким там, где всё остальное уже растворилось. */
+  margin-left: calc(-1 * var(--gut));
+  margin-right: calc(-1 * var(--gut));
+}
+
+/* Подсказка прокрутки нужна и остаётся — гасим её только на время заглушки.
+   Пока едет скелет, она рисовалась ПОВЕРХ него (у неё z-index выше) и портила
+   ожидание: шеврон висел посреди силуэтов, объясняя прокрутку того, чего ещё
+   нет. Как только содержимое встало, подсказка работает как обычно. */
+body.page-redesign .sheet__panel.is-morphing .filter-scroll-hint {
+  display: none;
+}
+
+/* ── Внутренний экран шторки ──────────────────────────────────────────
+   Открывается поверх другой шторки в ТОЙ ЖЕ рамке (быстрый просмотр из
+   корзины, слой «Все» в фильтре). Крестика тут нет: закрытие — это возврат,
+   поэтому слева стоит «назад», а жест по ручке делает то же самое. */
+/* !important тут вынужденный: у кнопок просмотра display описан с ним же
+   (redesign.css, броня старой темы). Уйдёт вместе с бронёй. */
+body.page-redesign .sheet.is-inner .qv-close,
+body.page-redesign .sheet.is-inner .sheet__close { display: none !important; }
+
+body.page-redesign .qv-back { display: none; }
+
+body.page-redesign .sheet.is-inner .qv-back {
+  display: flex;
+  margin-right: auto;
+  margin-left: calc(12px - var(--gut));
+}
+
+body.page-redesign .qv-back svg { width: 18px; height: 18px; }
+
+/* ── «Ещё»: строки списка и липкая полоса контактов ─────────────────────────
+   Строки переведены на тот же вид, что в кабинете: канавка вместо плоской
+   линии, шеврон справа — видно, что это переход, а не пункт меню.
+   Полоса контактов внизу липкая (общий .sheet__foot): телефон, часы и адрес
+   нужны в один тап с любой страницы, а поисковику — как повторяющийся блок
+   «название, адрес, телефон». Данные приходят из карточки склада. */
+.sheet-list__link {
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(16, 32, 64, .16);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .75);
+}
+.sheet-list li:last-child .sheet-list__link { box-shadow: none; }
+
+.sheet-list__go {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  color: #9AA7BF;
+}
+
+.tc-more-foot__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+.tc-more-foot__tel {
+  font-family: var(--font);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: none;
+  letter-spacing: .01em;
+}
+.tc-more-foot__soc {
+  display: flex;
+  gap: 8px;
+}
+/* Круглые выпуклые кнопки — те же, что «выйти» на хабе кабинета. */
+.tc-more-foot__soc a {
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow:
+    3px 4px 9px rgba(16, 32, 64, .13),
+    -3px -3px 8px rgba(255, 255, 255, .95);
+  transition: box-shadow .18s var(--ease);
+}
+.tc-more-foot__soc a:active {
+  box-shadow:
+    inset 2px 3px 6px rgba(16, 32, 64, .16),
+    inset -2px -2px 5px rgba(255, 255, 255, .9);
+}
+/* Значок — маска, а не картинка: исходники белые (их рисовали под синий
+   подвал) и на светлой плите не видны. Маска красит их цветом иконок сайта. */
+.tc-more-foot__ico {
+  width: 18px;
+  height: 18px;
+  display: block;
+  background-color: var(--icon);
+  -webkit-mask: var(--ico) center / contain no-repeat;
+  mask: var(--ico) center / contain no-repeat;
+}
+.tc-more-foot__ico--vk { --ico: url('../img/vk-ico.svg'); }
+.tc-more-foot__ico--tg { --ico: url('../img/tg-ico.svg'); }
+.tc-more-foot__soc a:active .tc-more-foot__ico { background-color: var(--blue); }
+
+/* Часы и адрес тянулись во всю ширину шторки, а между строками было 6 px:
+   четыре строки в кучу, и «д.48» оставалось сиротой на отдельной строке.
+   Колонка по длине строки, воздуха между строками больше, чем внутри строки,
+   и «когда» отделено от «где» насыщенностью, а не только переносом. */
+.tc-more-foot__line {
+  margin-top: 10px;
+  max-width: 34ch;
+  font-family: var(--font);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+.tc-more-foot__row + .tc-more-foot__line {
+  margin-top: 14px;
+  color: var(--ink);
+  opacity: .78;
+}
+/* Полоса прижата к низу экрана — под ней на телефоне домашняя черта. */
+.tc-more-foot {
+  padding-bottom: calc(16px + var(--safe-bottom, 0px));
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   МЫШЬ И КЛАВИАТУРА: шторка становится боковой панелью
+
+   Шторка снизу с ручкой — язык пальца: её тянут, она перекрывает экран снизу,
+   потому что там большой палец. На клаво-мыши этого жеста нет, тянуть нечем,
+   и панель снизу читается чужеродно. Содержимое при этом то же самое, меняется
+   только подача: панель приезжает справа, во всю высоту, без ручки.
+
+   Планшет в альбомной ориентации пока попадает сюда же — он шире 900. Деление
+   по способу ввода, а не по ширине, идёт отдельным шагом.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@media (min-width: 900px) {
+
+  .sheet {
+    align-items: stretch;
+    justify-content: flex-end;
+    /* Выше шапки. На телефоне шторка намеренно живёт ПОД ней: сверху остаётся
+       полоса с шапкой, по которой видно, что страница никуда не делась.
+       Боковая панель идёт во всю высоту, и шапка поверх неё накрывала бы
+       крестик — он оказывался некликабельным, и закрыть панель можно было
+       только щелчком мимо. */
+    z-index: 1100;
+  }
+
+  .sheet__panel {
+    /* Ширина по содержимому, а не одна на всё. Список корзины и избранное —
+       это узкие списки: на 860 строка товара растягивалась через всю панель,
+       а количество уезжало к дальнему краю. */
+    width: min(520px, 92vw);
+    max-width: none;
+    /* Во всю высоту: потолок со «полоской шапки» был нужен, чтобы пальцем было
+       куда нажать для возврата. Здесь для этого есть затемнение и клавиша Esc. */
+    max-height: none;
+    height: 100%;
+    padding-bottom: 0;
+    border-radius: 18px 0 0 18px;
+    transform: translateX(100%);
+  }
+
+  .sheet.is-open .sheet__panel { transform: translateX(0); }
+
+  /* Ручку убираем вместе с её тап-зоной: тянуть панель мышью нечем. */
+  .sheet__grab { display: none; }
+
+  /* Высоту шапки НЕ трогаем. Был padding-top:18px — добавить воздуха вместо
+     исчезнувшей ручки. От него кнопки вставали выше середины (18 сверху,
+     9 снизу) и переставали читаться как угловые: у шапки в 56 px кнопка 32 px
+     отходит от каждой кромки на 12, и её центр ложится на диагональ угла —
+     ровно так же, как крестик отходит от правого края. */
+}
+
+
+@media (min-width: 900px) {
+  /* Сетка внутри панели считается от ЕЁ ширины, а не от ширины окна: четыре
+     колонки каталога в панели давали карточки по 95 px. auto-fill подбирает
+     число колонок сам и работает одинаково и в панели, и в окне. */
+  body.page-redesign .sheet .cat-grid {
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  }
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Быстрый просмотр на мыши и клавиатуре — такая же боковая панель
+
+   У просмотра своя механика появления: он «вылетает из карточки» (сдвиг
+   к её центру плюс мини-масштаб) и закрывается сжатием. На телефоне это
+   уместно — палец ткнул в карточку, она развернулась. На широком экране
+   просмотр открывается в том числе ИЗ корзины, где никакой карточки под
+   курсором нет, и прилетающая из угла плита выглядит случайной.
+
+   Делаем его такой же панелью справа, как корзина и избранное: тот же выезд,
+   тот же уезд, та же высота. Селекторы с двумя классами — у собственных
+   правил просмотра выше вес.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@media (min-width: 900px) {
+
+  /* У просмотра своя обёртка с полями по 24 px и центрированием — от них
+     панель висела в воздухе и не доходила до края. */
+  body.page-redesign .quick-view {
+    padding: 0;
+    align-items: stretch;
+    justify-content: flex-end;
+    z-index: 1100;
+  }
+
+  body.page-redesign .quick-view .qv-drawer {
+    width: min(560px, 92vw);
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    border-radius: 18px 0 0 18px;
+    opacity: 1;
+    transform: translateX(100%);
+    transition: transform var(--t-slow) var(--ease);
+  }
+
+  body.page-redesign .quick-view.is-open .qv-drawer {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  /* Закрытие тем же движением, а не сжатием: иначе панель «схлопывалась»
+     в точку и это читалось как резкий обрыв. */
+  body.page-redesign .quick-view.is-closing .qv-drawer {
+    transition: transform var(--t-slow) var(--ease);
+    transform: translateX(100%);
+    opacity: 1;
+  }
+
+  /* Скругления — по форме панели: слева две кромки, справа плита упирается
+     в край экрана. */
+  body.page-redesign .quick-view .qv-header { border-radius: 18px 0 0 0; }
+  body.page-redesign .quick-view .qv-scroll-hint { border-radius: 0; }
+
+  /* Правая кнопка шапки — на том же отступе от угла, что и «назад» слева и
+     крестик у остальных шторок: 12 px до кромки при половине кнопки в 16.
+     Своих полей у просмотра нет, поэтому она стояла по полю шапки (20 px),
+     и шапка выглядела съехавшей вправо. Когда просмотр открыт из корзины,
+     крестика нет и крайним оказывается сердце. */
+  body.page-redesign .quick-view .qv-close,
+  body.page-redesign .sheet.is-inner .qv-fav {
+    margin-right: calc(12px - var(--gut));
+  }
+}
+
+/* Справочная шторка (js/redesign-ui.js): текст страницы внутри — без своих
+   полей страницы, заголовок уже в шапке шторки. */
+body.page-redesign .sheet--info .static_page {
+  margin: 0 !important;
+  padding: 0 !important;
+  max-width: none;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+body.page-redesign .sheet--info .static_page > :first-child { margin-top: 0 !important; padding-top: 0 !important; }
+body.page-redesign .tc-info-sk { display: grid; gap: 12px; padding-top: 6px; }
+
+/* Системная настройка движения для панелей. Итоговые состояния сохраняются. */
+@media (prefers-reduced-motion: reduce) {
+  .sheet__panel,
+  .sheet__scrim,
+  body.page-redesign .sheet.sheet--search .sheet__panel,
+  body.page-redesign .quick-view .qv-drawer,
+  body.page-redesign .quick-view.is-closing .qv-drawer,
+  .quick-view.is-closing .qv-overlay {
+    transition: none;
+  }
+
+  .quick-view .qv-scroll-hint::after,
+  .quick-view .qv-text-section::before,
+  body.page-redesign .sheet .filter-scroll-hint::after {
+    animation: none;
+  }
+}

@@ -1,0 +1,155 @@
+/* НИЖНИЙ ТАБ-БАР — ядро навигации модели «как приложение».
+   Профиль · Избранное · Каталог (центр) · Корзина · Поиск.
+
+   Живёт рядом с существующей шапкой, а не вместо неё: шапку переводим на новую
+   модель следующим шагом, чтобы каждый кусок можно было проверить отдельно.
+
+   Иконки — родные из /img, собраны в спрайт include/tc-icons.php.
+   Значения берём из css/tc-tokens.css; ни одного !important здесь нет —
+   свои классы не пересекаются с бронёй redesign.css. */
+
+/* Контент не должен упираться в полосу.
+
+   Запас держит САМ ФУТЕР, а не body. На body он ложился ПОД футером, и между
+   синим низом страницы и таб-баром оставалась белая полоса во всю ширину —
+   страница выглядела оборванной. Внутри футера тот же запас закрашен его
+   фоном, и низ доходит ровно до верхней кромки полосы.
+
+   Страницам без футера запас по-прежнему даёт body: иначе последняя строка
+   уходила бы под таб-бар. */
+@media (max-width: 899px) {
+  body.page-redesign:not(:has(.site-footer)) {
+    padding-bottom: calc(var(--tabbar-h) + var(--safe-bottom));
+  }
+
+  /* Без дочернего комбинатора: футер обычно прямой ребёнок body, но на главной
+     он приходит из index.php, и в разметке может оказаться внутри обёртки —
+     скрипт в footer.php переносит его к body уже после разбора страницы.
+     20px — собственный нижний отступ футера на телефоне (redesign.css). */
+  body.page-redesign .site-footer {
+    padding-bottom: calc(20px + var(--tabbar-h) + var(--safe-bottom));
+  }
+}
+
+/* ── Нижний таб-бар ─────────────────────────────────────────────────── */
+
+.tabbar {
+  position: fixed;
+  inset: auto 0 0;
+  /* Выше маски перехода (js/tc-nav.js): та закрывает весь экран, и центральная
+     кнопка, выступающая над полосой, срезалась её кромкой. Шторки по-прежнему
+     выше таб-бара. */
+  z-index: var(--z-overlay);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: center;
+  height: calc(var(--tabbar-h) + var(--safe-bottom));
+  padding-bottom: var(--safe-bottom);
+  background: var(--surface);
+  border-top: 1px solid var(--line-soft);
+}
+
+/* Всё содержимое полосы опущено на пару пикселей: иконки с подписями стояли
+   вплотную к верхней кромке, и полоса читалась смещённой вверх. */
+.tabbar__item {
+  position: relative;
+  top: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  /* Тап-цель во всю высоту полосы: попадать нужно пальцем, а не в иконку 24px. */
+  height: 100%;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--muted);
+  transition: color var(--t-fast) var(--ease);
+}
+
+.tabbar__item.is-active { color: var(--blue); }
+
+/* Иконки подняты на пару пикселей: подписи стоят ниже, и в паре «иконка —
+   слово» тяжесть уходила вниз. «О» поднята на столько же — нижняя линия у всех
+   остаётся общей. */
+.tabbar__item .ico {
+  position: relative;
+  top: -2px;
+  width: 24px;
+  height: 24px;
+}
+
+/* Подписи не прячем — узнаваемость важнее компактности (правило кита). */
+.tabbar__cap {
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Центр — «Каталог», главное действие. Приподнят и виден всегда. */
+/* Подпись центральной кнопки — как у соседей: сама буква уже фирменная,
+   и синее слово под ней читалось вторым акцентом на ровном месте. */
+.tabbar__item--center,
+.tabbar__item--center.is-active {
+  color: var(--ink);
+}
+
+/* В центре — сама фирменная «O» из логотипа (рисунок в include/tc-tabbar.php).
+   Приподнята над полосой; тень идёт по контуру буквы, а не кругом. */
+.tabbar__o {
+  display: block;
+  position: relative;
+  top: -2px;
+  width: 51px;
+  height: 49px;
+  /* В потоке кнопка занимает ровно высоту иконки соседей (24px: 49 − 25),
+     поэтому подпись стоит в одну строку с остальными, а сама буква
+     выступает над полосой. Нижнего поля нет намеренно: с ним «О» висела
+     на 4 px выше соседних иконок; растёт буква вверх, нижняя линия общая. */
+  margin-top: -25px;
+  margin-bottom: 0;
+  filter:
+    drop-shadow(0 1px 1.5px rgba(0, 40, 110, .18))
+    drop-shadow(0 6px 9px rgba(0, 60, 150, .2));
+}
+
+.tabbar__o svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.tabbar__badge {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  margin-left: 4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: var(--r-pill);
+  background: var(--blue);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+}
+
+/* Нажатие: короткая просадка вместо hover — на тач-устройствах hover бесполезен. */
+.tabbar__item:active .ico,
+.tabbar__item:active .tabbar__o { transform: scale(.94); }
+
+.tabbar__item .ico,
+.tabbar__o { transition: transform var(--t-fast) var(--ease); }
+
+/* Hover — только там, где есть настоящий курсор. */
+@media (hover: hover) and (pointer: fine) {
+  .tabbar__item:hover { color: var(--blue); }
+  .app-header__more:hover { background: var(--fill); }
+}
+
+/* На широких экранах таб-бара нет: там работает горизонтальное меню в шапке. */
+@media (min-width: 900px) {
+  .tabbar { display: none; }
+}

@@ -1,0 +1,1396 @@
+/* ⚠ Переключатели ширины здесь — КОНТЕЙНЕРНЫЕ, а не оконные.
+   Оформление живёт только внутри шторки (js/tc-checkout.js грузит его в её
+   тело), и мерить его надо по ширине панели. По окну получалось так: окно
+   1920, панель узкая, узкие ветки не включались — и внутри работала полная
+   десктопная вёрстка с полями в тридцать пикселей и развалившимся блоком
+   доставки. Контейнер объявлен у .sheet__panel (css/tc-sheet-overlay.css). */
+
+/* ==========================================================================
+   ОФОРМЛЕНИЕ ЗАКАЗА — одна страница (/personal/order/make/)
+   Подключается только на чек-ауте (header.php, гард по /personal/order).
+
+   Заменяет слой костылей `.bx-soa*` из redesign.css, который боролся с мастером
+   из 5 шагов. Здесь мастера нет: все блоки раскрыты, итог липкий.
+
+   Язык — минимализм по эталону `.m-sort-cat` (сортировка в drawer):
+   белый фон + рамка 1px #CAD5F0 → hover: синяя рамка + синий текст
+   → выбранное: 2px solid var(--blue) + вес 600. Без заливок, градиентов и теней.
+
+   Порядок блоков задаётся `order`, а не DOM: движок обходит секции через
+   querySelectorAll('.bx-soa-section.bx-active') и порядок в DOM ему важен.
+   ========================================================================== */
+
+/* The standalone checkout uses the same breakpoints as the basket sheet. */
+body.page-redesign .co-page { container: tcsheet / inline-size; }
+
+body.page-redesign .co {
+  --co-gap: 20px;
+  --co-radius: 16px;
+  --co-border: #E5EAF5;      /* рамка карточки */
+  --co-control: #CAD5F0;     /* рамка контрола */
+  --co-fill: #F8FAFD;        /* мягкая заливка */
+  --co-divider: #EEF2F9;
+
+  /* Тон всех неоморф-поверхностей чек-аута: блоки, плитки, поля.
+     Это ЦВЕТ ХОЛСТА, а не белый. Белая карточка на сером фоне — язык material:
+     форму там держит контраст подложки. В неоморфе форму держит свет, и он
+     работает только когда элемент одного тона с окружением: светлая половина
+     рельефа должна быть светлее фона, а тёмная — темнее. На белом светлее уже
+     некуда, поэтому от объёма оставалась одна тёмная сторона, и все рельефы
+     выглядели плоскими линиями. */
+  --co-nm: var(--bg, #ECEEF2);
+  --co-muted: #6b7280;
+  --co-ok: #1f9254;
+  --co-err: #E62D32;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  /* stretch (не start): колонки равной высоты, чтобы сайдбар растянулся до низа
+     контента, и sticky-итог упирался ровно в нижнюю границу чек-аута, а не «недотягивал». */
+  align-items: stretch;
+  gap: var(--co-gap);
+}
+
+/* ── Колонки ───────────────────────────────────────────────────────────── */
+body.page-redesign .co__main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--co-gap);
+  min-width: 0;             /* иначе длинные названия товаров распирают грид */
+}
+
+/* Визуальный порядок: Получатель → Доставка → Оплата → Товары */
+body.page-redesign #bx-soa-properties { order: 1; }
+body.page-redesign #bx-soa-delivery   { order: 2; }
+body.page-redesign #bx-soa-pickup     { order: 3; }
+body.page-redesign #bx-soa-paysystem  { order: 4; }
+body.page-redesign #bx-soa-basket     { order: 5; }
+body.page-redesign #bx-soa-region     { order: 0; }
+body.page-redesign #bx-soa-auth       { order: -1; }
+body.page-redesign #bx-soa-total-mobile { display: none; }  /* свой липкий бар, клон не нужен */
+
+/* Блок общих уведомлений. Пустой он имеет высоту 0, но остаётся flex-элементом и съедает
+   один `gap` — из-за чего первая карточка опускалась на 20px ниже липкого итога, и они
+   не выравнивались по верхней кромке. Прячем, пока в нём нечего показать (класс ставит
+   checkout-onepage.js в обёртке showErrors). */
+body.page-redesign #bx-soa-main-notifications { order: -2; display: none; }
+body.page-redesign #bx-soa-main-notifications.co-has-msg { display: block; }
+
+/* ── Поля, которые заполняются сами ────────────────────────────────────────
+   Оба показывались в «Покупателе» и спрашивали о том, что человек уже сказал.
+
+   «Город» (ORDER_PROP_5, свойство CITY) заполняет checkout-address.js из
+   выбранной локации и адреса — в заказ, в админку и в 1С город обязан уехать
+   текстом, поэтому поле остаётся в форме и ПРОДОЛЖАЕТ отправляться; убран
+   только вопрос. Свойство не обязательное, так что пустым его никто не
+   потребует, а пустым оно и не бывает.
+
+   «Выберите профиль» — штатный список сохранённых профилей Битрикса, виден
+   только авторизованному. Выбирать не из чего: юрлицо отключено, профиль
+   один, а поля и так подставлены. Скрытый select отдаёт то же значение,
+   что отдал бы видимый.
+
+   ID свойства согласован с CITY_PROP в js/checkout-address.js — менять только
+   вместе. */
+body.page-redesign .co .form-group:has(> select[name="PROFILE_ID"]),
+body.page-redesign .co .form-group:has(> input[name="ORDER_PROP_5"]),
+body.page-redesign .co .bx-soa-customer-field:has(input[name="ORDER_PROP_5"]) {
+  display: none;
+}
+
+/* ── Карточка блока ────────────────────────────────────────────────────── */
+/* Блок лежит на холсте мягкой плитой: рамка ушла, границу держит тень.
+   Она слабее, чем у плиток выбора, — блок не должен спорить с тем, что внутри.
+   Минимализм остаётся: ни одного лишнего элемента, объём даёт только свет. */
+body.page-redesign .co-card {
+  background: var(--co-nm);
+  border: 0;
+  border-radius: var(--co-radius);
+  overflow: visible;        /* было hidden у .bx-soa-section и резало выпадашку подсказок */
+  box-shadow:
+    5px 6px 14px rgba(16, 32, 64, .13),
+    -4px -5px 12px rgba(255, 255, 255, .95);
+}
+
+body.page-redesign .co .bx-soa-section-title-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  /* Поля сверху и снизу равны: заголовок с номером стоит в шапке ровно
+     посередине, а не подпёрт к верхней кромке блока. */
+  padding: 14px 22px 14px;
+  margin-bottom: 8px;
+  background: none;
+  cursor: default;          /* не аккордеон — кликать не по чему */
+  border: 0;
+
+  /* Шапка блока отделена канавкой — тем же приёмом, что низ шторки.
+     Рисуем её псевдоэлементом, а не border-ом: граница шла от края до края
+     и упиралась в скругление блока, будто её обрезали. Псевдоэлемент можно
+     отступить от краёв — прорезь читается как деталь блока, а не как разрез.
+     Отступ снизу тоже нужен: вплотную к цифре линия липла к ней. */
+  position: relative;
+}
+
+body.page-redesign .co .bx-soa-section-title-container::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  right: 5px;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(
+    rgba(16, 32, 64, .16) 0 1px,
+    rgba(255, 255, 255, .75) 1px 2px);
+}
+
+body.page-redesign .co .bx-soa-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--text);
+  margin: 0;
+  /* У вендора здесь padding-top: 3px — из-за него номер и заголовок съезжали
+     вниз, и поля шапки блока переставали быть равными: сверху 16, снизу 13. */
+  padding: 0;
+}
+
+/* Номер шага.
+   Вендорский style.css рисует его счётчиком: `.bx-soa-section-title-count:after{content:counter(heading)}`.
+   Счётчик идёт по DOM, а наш порядок задан `order` — номера разъезжались (Товары=1, Регион=2…).
+   Поэтому счётчик глушим и проставляем номера руками по id секции.
+   `:before` у вендора — иконка статуса шага (галочка/ошибка), в одностраничнике не нужна. */
+body.page-redesign .co .bx-soa-section-title-count {
+  position: static;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  border-radius: 50%;
+  border: 0;
+  background: var(--co-nm);
+  /* Номер лежит в лунке — тот же приём, что у полей. Рамка не нужна: круг
+     очерчивает свет. */
+  box-shadow:
+    inset 2px 2px 4px rgba(16, 32, 64, .16),
+    inset -2px -2px 4px rgba(255, 255, 255, .95);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--blue);
+}
+body.page-redesign .co .bx-soa-section-title-count::before { display: none !important; }
+body.page-redesign .co .bx-soa-section-title-count::after {
+  position: static;
+  counter-increment: none;
+  content: '';
+  width: auto;
+  height: auto;
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 600;
+  color: var(--blue);
+}
+body.page-redesign .co #bx-soa-properties .bx-soa-section-title-count::after { content: '1'; }
+body.page-redesign .co #bx-soa-delivery   .bx-soa-section-title-count::after { content: '2'; }
+body.page-redesign .co #bx-soa-paysystem  .bx-soa-section-title-count::after { content: '3'; }
+body.page-redesign .co #bx-soa-basket     .bx-soa-section-title-count::after { content: '4'; }
+
+/* «изменить» — рудимент мастера. Из DOM не убираем (движок вешает на него обработчики
+   и делает BX.unbindAll → падение на null), но показывать нечего: всё и так раскрыто. */
+body.page-redesign .co .bx-soa-editstep { display: none !important; }
+
+body.page-redesign .co .bx-soa-section-content {
+  padding: 14px 22px 22px;
+}
+
+/* ── Телепортированные контролы ────────────────────────────────────────────
+   Секция «Регион» скрыта: её контролы (город, индекс, тип плательщика) переехали
+   в «Доставку» и «Получателя» (см. teleport() в checkout-onepage.js). Из DOM её
+   удалять нельзя — движок резолвит узел по id и рендерит в него виджет локации. */
+body.page-redesign #bx-soa-region { display: none !important; }
+
+body.page-redesign .co-slot { margin: 0 0 18px; }
+body.page-redesign .co-slot__title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--co-muted);
+  margin: 0 0 10px;
+}
+body.page-redesign .co-slot .form-group { margin-bottom: 12px; }
+body.page-redesign .co-slot .form-group:last-child { margin-bottom: 0; }
+
+/* Адрес спрашивался дважды: штатная textarea ORDER_PROP_7 в «Получателе» и наш блок
+   с подсказками и картой в «Доставке» — это одно свойство заказа. Textarea нужна в DOM
+   (в неё пишет и наш блок, и виджет ПВЗ), но показывать её второй раз незачем. */
+body.page-redesign .co-hidden-field {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
+  white-space: nowrap; border: 0;
+}
+
+/* Комментарий к заказу — под спойлером, нужен единицам.
+   Селектор с .form-group обязателен: правило `.co .form-group{display:flex}` выше
+   имеет ту же специфичность и иначе раскрывало бы спойлер само. */
+body.page-redesign .co .form-group.co-comment,
+body.page-redesign .co-comment { display: none; }
+body.page-redesign .co .form-group.co-comment.is-open,
+body.page-redesign .co-comment.is-open { display: flex; }
+body.page-redesign .co-comment__toggle {
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue);
+  cursor: pointer;
+}
+body.page-redesign .co-comment__toggle:hover { text-decoration: underline; }
+
+/* ── Сайдбар с итогом ──────────────────────────────────────────────────── */
+body.page-redesign .co__side { min-width: 0; }
+body.page-redesign .co .bx-soa-cart-total-ghost { display: none; }
+
+body.page-redesign .co__summary {
+  position: sticky;
+  top: calc(var(--hh, 120px) + 16px);   /* липкий хедер над нами */
+  background: var(--co-nm);
+  border: 0;
+  border-radius: var(--co-radius);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+/* хедер уехал — поднимаем итог за ним */
+body.page-redesign.header-hidden .co__summary { top: 16px; }
+
+/* ── Кнопка «Оформить заказ» + согласие ────────────────────────────────── */
+body.page-redesign .co-save {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Вид кнопки «Оформить заказ» описан в общей системе кнопок (redesign.css, блок
+   «КНОПКИ — ОДНА СИСТЕМА НА ВЕСЬ САЙТ»): там `.co-submit` подключён селектором
+   к тем же правилам, что и `.tc-btn--primary --lg --block`. Дублировать стили здесь
+   не нужно — менять внешний вид кнопок только в одном месте. */
+
+body.page-redesign .co-consent {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 10px;
+  align-items: start;
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--co-muted);
+  cursor: pointer;
+}
+/* Собственных стилей у чекбокса согласия нет: рельеф ему даёт общий кирпич
+   (redesign.css, `input[type=checkbox]`). Здесь остаётся только отступ под
+   увеличенный размер. */
+body.page-redesign .co-consent .pc-consent-cb { margin: 0; }
+
+body.page-redesign .co-consent a { color: var(--blue); text-decoration: underline; }
+body.page-redesign .co-consent__short { display: none; }   /* короткая версия — только на мобиле */
+/* не поставили галку — подсвечиваем (класс ставит JS-гейт) */
+body.page-redesign .co-consent.pc-consent-err { color: var(--co-err); }
+body.page-redesign .co-consent.pc-consent-err .pc-consent-cb { outline: 2px solid var(--co-err); outline-offset: 2px; border-radius: 4px; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   СОДЕРЖИМОЕ БЛОКОВ
+   Разметку внутри секций рисует order_ajax.js — переопределять его генераторы ради
+   вёрстки не стали: структура пригодная, одеваем её в наш язык через CSS.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Поля формы ────────────────────────────────────────────────────────── */
+/* flex-колонка нужна, чтобы сообщение об ошибке уезжало ПОД поле (в разметке движка
+   оно лежит ПЕРЕД инпутом — иначе текст ошибки висел бы над ним). */
+body.page-redesign .co .form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 14px;
+}
+body.page-redesign .co .form-group:last-child { margin-bottom: 0; }
+body.page-redesign .co .form-group > label { order: 1; }
+body.page-redesign .co .form-group > .soa-property-container,
+body.page-redesign .co .form-group > input,
+body.page-redesign .co .form-group > textarea,
+body.page-redesign .co .form-group > select,
+body.page-redesign .co .form-group > .bx-sls,
+body.page-redesign .co .form-group > .form-check-group { order: 2; }
+body.page-redesign .co .form-group > .alert { order: 3; }
+
+body.page-redesign .co .bx-soa-customer-label,
+body.page-redesign .co .bx-soa-custom-label,
+body.page-redesign .co label:not(.form-check-label):not(.pc-consent) {
+  display: block;
+  margin: 0 0 6px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--co-muted);
+}
+body.page-redesign .co .bx-soa-custom-label span[style*="red"],
+body.page-redesign .co .form-group span.text-danger { color: var(--co-err) !important; }
+
+/* Поля ввода вдавлены в карточку: блок выпуклый, поле в нём — углубление,
+   куда кладут текст. Рамка не нужна, границу держит внутренняя тень. */
+body.page-redesign .co input[type="text"],
+body.page-redesign .co input[type="email"],
+body.page-redesign .co input[type="tel"],
+body.page-redesign .co textarea,
+body.page-redesign .co select {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 46px;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--co-nm);
+  box-shadow:
+    inset 3px 4px 7px rgba(16, 32, 64, .14),
+    inset -3px -3px 6px rgba(255, 255, 255, .95);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  color: var(--text);
+  transition: box-shadow .2s var(--ease, ease);
+}
+body.page-redesign .co textarea { min-height: 84px; resize: vertical; }
+/* Фокус — то же углубление плюс тонкий синий контур внутри: поле не меняет
+   геометрию, поэтому соседние не дёргаются. */
+body.page-redesign .co input:focus,
+body.page-redesign .co textarea:focus,
+body.page-redesign .co select:focus {
+  outline: none;
+  box-shadow:
+    inset 0 0 0 1.5px var(--blue),
+    inset 2px 3px 6px rgba(16, 32, 64, .10),
+    inset -2px -2px 5px rgba(255, 255, 255, .9);
+}
+/* ── Ошибки полей ──────────────────────────────────────────────────────────
+   Движок рисует ошибку розовым баннером (.alert.alert-danger) внутри группы поля,
+   над инпутом — вид из 2010-х, и непонятно, к какому полю она относится.
+   Делаем как принято сейчас: поле краснеет, под ним мелкая красная строка. */
+body.page-redesign .co input.is-error,
+body.page-redesign .co textarea.is-error,
+body.page-redesign .co select.is-error {
+  background: #FFF7F7;
+  box-shadow:
+    inset 0 0 0 1.5px var(--co-err),
+    inset 2px 3px 6px rgba(64, 16, 16, .10);
+}
+body.page-redesign .co input.is-error:focus,
+body.page-redesign .co textarea.is-error:focus {
+  box-shadow:
+    inset 0 0 0 2px var(--co-err),
+    inset 2px 3px 6px rgba(64, 16, 16, .12);
+}
+
+body.page-redesign .co .form-group .alert,
+body.page-redesign .co [data-property-id-row] .alert,
+/* Блок адреса — свой, у него нет строки свойства, но ошибка в нём выглядит
+   так же, как у остальных полей. */
+body.page-redesign .co .pc-addr__field .alert,
+body.page-redesign .co .bx-ui-sls-error-message {
+  margin: 6px 0 0;
+  padding: 0 0 0 18px;
+  background: none !important;
+  border: 0 !important;
+  border-radius: 0;
+  color: var(--co-err) !important;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.35;
+  position: relative;
+}
+/* «!» вместо иконки — чтобы строка читалась как ошибка, а не как подсказка */
+body.page-redesign .co .form-group .alert:not(:empty)::before,
+body.page-redesign .co [data-property-id-row] .alert:not(:empty)::before {
+  content: '!';
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 13px;
+  height: 13px;
+  margin-top: 2px;
+  border-radius: 50%;
+  background: var(--co-err);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+}
+body.page-redesign .co .form-group .alert:empty { display: none; }
+
+/* Розовые баннеры «Поле "X" обязательно для заполнения» — это НЕ .alert, а вендорские
+   тултипы (.bx-soa-tooltip > .tooltip-inner). Их движок рисует над подписью поля после
+   каждого ajax-пересчёта, поэтому обычные селекторы ошибок их не ловили.
+   Сам баннер убираем, а текст из него checkout-onepage.js переносит в нашу строку
+   под полем — так серверные ошибки не теряются и выглядят как остальные. */
+body.page-redesign .co .bx-soa-tooltip { display: none !important; }
+body.page-redesign .co .bx-soa-section-content > .alert { display: none !important; }
+
+/* По вендорскому has-error НЕ красим: движок вешает его при каждом ajax-пересчёте,
+   и поля краснели, стоило сменить доставку, — ещё до того, как человек начал заполнять.
+   Красный ставит только checkout-onepage.js (класс is-error), и только после того,
+   как нажали «Оформить заказ». */
+
+/* радио физ/юр — в строку */
+body.page-redesign .co .form-check-group { display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: center; }
+body.page-redesign .co .form-check-group > label { flex: 0 0 100%; }
+body.page-redesign .co .form-check { display: flex; align-items: center; gap: 8px; padding: 0; margin: 0; }
+/* bootstrap делает .form-check-input абсолютным (position:absolute; margin-left:-1.25rem),
+   и в нашем flex-ряду радио наезжало на первую букву подписи. Возвращаем в поток. */
+body.page-redesign .co .form-check-input {
+  position: static;
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--blue);
+}
+body.page-redesign .co .form-check-label {
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+/* ── Плитки доставки и оплаты ──────────────────────────────────────────────
+   Язык эталона `.m-sort-cat`: белый фон + рамка, выбранное — 2px синяя рамка.
+   Без градиентов, заливок и теней. */
+/* Бутстрап-сетка внутри: .bx-soa-pp.row > .col-md-7 > .row > .bx-soa-pp-company.col-6.
+   Из-за вложенного .row и col-6 плитки вставали по две в ряд. Разбираем её в свою сетку.
+
+   Именно СЕТКА из трёх колонок, а не flex: так плитка доставки и плитка оплаты получают
+   одинаковую ширину сами по себе. На flex единственный способ оплаты растягивался бы
+   на всю ширину блока, и карточки в двух блоках были разного размера. */
+body.page-redesign .co .bx-soa-pp.row,
+body.page-redesign .co .bx-soa-pp {
+  display: block;
+  margin: 0;
+  width: 100%;
+}
+body.page-redesign .co .bx-soa-pp > div[class*="col-"] {
+  max-width: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+body.page-redesign .co .bx-soa-pp .row,
+body.page-redesign .co .bx-soa-pp-item-container > .row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 0;
+  width: 100%;
+}
+body.page-redesign .co .bx-soa-pp .bx-soa-pp-company,
+body.page-redesign .co .bx-soa-pp .bx-soa-pp-company.col-6 {
+  width: auto;
+  max-width: none;
+  margin: 0;
+  flex: none;
+}
+/* Плитка: логотип → название → цена, по центру.
+   Высота у всех одинаковая (`stretch` + height:100%): цена есть только у рассчитанной
+   службы, и без этого выбранная плитка оказывалась выше соседних.
+   Рамку держим 1px и подкрашиваем — 2px у выбранной сдвигала бы её контент на 1px. */
+body.page-redesign .co .bx-soa-pp-company {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  /* height НЕ задаём: заданная высота отменяет растягивание в сетке, и плитка с ценой
+     (она есть только у рассчитанной службы) становилась выше соседних.
+     min-height общий для доставки и оплаты — карточки в обоих блоках одного размера.
+     Высота как до переделки: логотипу нужно место, плитка не должна быть приплюснутой. */
+  min-height: 150px;
+  padding: 18px 16px;
+  box-sizing: border-box;
+  background: var(--co-nm);
+  border: 0;
+  border-radius: 16px;
+  text-align: center;
+  cursor: pointer;
+
+  /* Невыбранные — еле угадываемая выпуклость: плитка «лежит» на поверхности,
+     но не спорит с содержимым. Выбранная вдавливается (ниже). Синей рамки
+     больше нет: состояние показывает форма, а не цвет — так список читается
+     спокойнее, и выбор виден боковым зрением. */
+  box-shadow:
+    2px 3px 7px rgba(16, 32, 64, .09),
+    -2px -2px 6px rgba(255, 255, 255, .9);
+
+  transition: box-shadow .26s var(--ease, cubic-bezier(.2, .7, .2, 1));
+}
+body.page-redesign .co .bx-soa-pp .bx-soa-pp-company { align-self: stretch; }
+
+/* логотип на плитке (вставляет checkout-onepage.js вместо фоновой картинки).
+   Крупный (как до переделки) — плитки высокие и лого должно занимать место. */
+body.page-redesign .co .co-tile-logo {
+  order: 0;
+  display: block;
+  height: 34px;
+  width: auto;
+  max-width: 140px;
+  object-fit: contain;
+  margin: 0;
+}
+/* иконка карты — вместо вендорской заглушки платёжной системы */
+body.page-redesign .co .co-tile-logo--icon {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  color: var(--blue);
+}
+body.page-redesign .co .co-tile-logo--icon svg { width: auto; height: 30px; }
+body.page-redesign .co .co-tile-logo--icon svg { display: block; }
+/* Иконка своего самовывоза — крупнее вендорских лого соседних плиток, чтобы не терялась */
+body.page-redesign .co .co-tile-logo--pickup { height: 42px; }
+body.page-redesign .co .co-tile-logo--pickup svg { height: 42px; }
+/* Своя иконка курьера (viewBox обрезан) — крупнее, чтобы верх плитки читался вровень с лого перевозчика */
+body.page-redesign .co .co-tile-logo--courier { height: 62px; max-width: none; }
+/* Наведение — чуть выше над поверхностью, без смены цвета. */
+body.page-redesign .co .bx-soa-pp-company:hover {
+  box-shadow:
+    3px 4px 10px rgba(16, 32, 64, .12),
+    -2px -3px 8px rgba(255, 255, 255, .95);
+}
+
+/* Выбранная вдавлена. Переход общий с невыбранным состоянием, поэтому смена
+   выбора читается как движение: прежняя плитка отжимается, новая уходит внутрь.
+   Вдавленность неглубокая — она должна угадываться, а не давить. */
+body.page-redesign .co .bx-soa-pp-company.bx-selected,
+body.page-redesign .co .bx-soa-pp-company.bx-active,
+body.page-redesign .co .bx-soa-pp-company.bx-selected:hover,
+body.page-redesign .co .bx-soa-pp-company.bx-active:hover {
+  background: var(--co-nm);
+  box-shadow:
+    inset 4px 5px 9px rgba(16, 32, 64, .16),
+    inset -3px -4px 8px rgba(255, 255, 255, .95);
+
+}
+
+/* Нажатая и отпущенная плитки — те же два рельефа, но по клику, на живых узлах
+   (классы ставит checkout-onepage.js). Именно здесь смена и видна: до пересчёта
+   движок разметку не трогает, поэтому переход успевает проиграться целиком. */
+body.page-redesign .co .bx-soa-pp-company.co-pressing,
+body.page-redesign .co .bx-soa-pp-company.co-pressing:hover {
+  box-shadow:
+    inset 4px 5px 9px rgba(16, 32, 64, .16),
+    inset -3px -4px 8px rgba(255, 255, 255, .95);
+}
+
+body.page-redesign .co .bx-soa-pp-company.co-lifting,
+body.page-redesign .co .bx-soa-pp-company.co-lifting:hover {
+  box-shadow:
+    2px 3px 7px rgba(16, 32, 64, .09),
+    -2px -2px 6px rgba(255, 255, 255, .9);
+}
+body.page-redesign .co .bx-soa-pp-company-graf-container { display: contents; }
+body.page-redesign .co .bx-soa-pp-company-image,
+body.page-redesign .co .bx-soa-pp-company-checkbox { display: none !important; }
+/* порядок внутри плитки: сначала название, под ним цена (в разметке они наоборот) */
+body.page-redesign .co .bx-soa-pp-company-smalltitle,
+body.page-redesign .co .bx-soa-pp-company-name {
+  order: 1;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--text);
+  margin: 0;
+}
+body.page-redesign .co .bx-soa-pp-delivery-cost { order: 2; }
+body.page-redesign .co .bx-soa-pp-company.bx-selected .bx-soa-pp-company-smalltitle { font-weight: 600; color: var(--blue); }
+/* цена доставки. Вендор делал её position:absolute с тёмной плашкой в углу плитки
+   (right:-2px; bottom:-2px; background:rgba(0,0,0,.5)) — возвращаем в поток. */
+body.page-redesign .co .bx-soa-pp-delivery-cost {
+  position: static;
+  padding: 0;
+  background: none;
+  border-radius: 0;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--text);
+}
+body.page-redesign .co .bx-soa-pp-company.bx-selected .bx-soa-pp-delivery-cost {
+  background: none;
+  color: var(--blue);
+}
+
+/* дубль-панель деталей справа — в одностраничнике не нужна */
+body.page-redesign .co .bx-soa-pp-desc-container:empty { display: none; }
+
+/* ── Выбор пункта выдачи ───────────────────────────────────────────────────
+   Панель с виджетом перевозчика показывалась как вторая карточка: логотип, название
+   и описание способа доставки — всё то же самое, что уже написано на выбранной плитке.
+   Дубль убираем: от панели нужна только кнопка выбора точки. Ставим её отдельной
+   строкой под плитками, по правому краю.
+   Класс co-sdek-pvz вешает адаптер перевозчика (js/checkout-sdek.js) — только на панель,
+   в которой реально есть кнопка. Сам виджет не переделываем: он подвисает при выборе
+   точки в списке, баг запаркован. */
+body.page-redesign .co .bx-soa-pp-desc-container { display: none; }
+/* Селектор с `.bx-soa-pp >`: панель — прямой потомок .bx-soa-pp с бутстрап-классом
+   col-md-5, и правило `.bx-soa-pp > div[class*="col-"]{margin:0}` (для разбора сетки плиток)
+   перебивало отступ по специфичности. Поэтому целимся точнее — иначе кнопка липнет к плиткам. */
+body.page-redesign .co .bx-soa-pp > .bx-soa-pp-desc-container.co-sdek-pvz {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  max-width: none;
+  margin: 16px 0 4px;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+}
+body.page-redesign .co .co-sdek-pvz .bx-soa-pp-company {
+  display: block;
+  width: auto;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  cursor: default;
+  text-align: right;
+}
+body.page-redesign .co .co-sdek-pvz .bx-soa-pp-company:hover { border: 0; box-shadow: none; }
+/* Дубль сведений о способе доставки — всё это уже написано на выбранной плитке:
+   логотип, название («СДЭК (Постамат)»), описание и строки «Стоимость / Срок доставки».
+   В панели оставляем ровно одну вещь — кнопку выбора точки. */
+body.page-redesign .co .co-sdek-pvz .bx-soa-pp-list,
+body.page-redesign .co .co-sdek-pvz .bx-soa-pp-company-smalltitle,
+body.page-redesign .co .co-sdek-pvz .bx-soa-pp-company-subTitle,
+body.page-redesign .co .co-sdek-pvz .bx-soa-pp-company-desc,
+body.page-redesign .co .co-sdek-pvz .bx-soa-pp-company-logo,
+body.page-redesign .co .co-sdek-pvz .bx-soa-pp-company-image,
+body.page-redesign .co .co-sdek-pvz .bx-soa-pp-company-graf-container,
+body.page-redesign .co .co-sdek-pvz .co-tile-logo { display: none !important; }
+/* Выбранная точка — В ОДИН РЯД с кнопкой: адрес слева, кнопка справа, вровень по высоте.
+   Модуль (labelPzv, ipol.sdekPickup/templates/order/template.php:407) кладёт ВСЁ в .sdek_pvzLair
+   именно в таком порядке: кнопка → <br> → <span.sdek_pvzAddr> → <br>. Поэтому ряд строим на
+   .sdek_pvzLair, порядок переворачиваем через order (иначе кнопка была бы слева), а <br>
+   глушим — они рвут flex-строку. flex-wrap оставляет корректный перенос на узких экранах. */
+body.page-redesign .co .co-sdek-pvz .sdek_pvzLair {
+  display: flex;
+  align-items: stretch;          /* плашка вытягивается до высоты кнопки */
+  justify-content: flex-end;     /* группа прижата к правому краю */
+  gap: 10px;
+  flex-wrap: wrap;
+}
+body.page-redesign .co .co-sdek-pvz .sdek_pvzLair br { display: none; }
+body.page-redesign .co .co-sdek-pvz a.SDEK_selectPVZ { order: 1; flex: 0 0 auto; }
+body.page-redesign .co .co-sdek-pvz .sdek_pvzAddr {
+  order: 0;
+  margin: 0;                     /* был margin-top — он ставил плашку под кнопку */
+  display: flex;
+  align-items: center;
+  min-height: 46px;              /* = min-height кнопки, чтобы совпадали по высоте */
+  box-sizing: border-box;
+  text-align: left;
+}
+/* Кнопка выбора точки — вторичное действие. Вид (рельеф, цвет, состояния) даёт
+   общий кирпич .tc-btn--ghost: её селектор подключён там же, в redesign.css.
+   Здесь остаётся только геометрия, которой у общей кнопки нет. */
+body.page-redesign .co a.SDEK_selectPVZ,
+body.page-redesign .co a.SDEK_selectPVZ.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 0 20px;
+  border-radius: 12px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+}
+/* выбранная точка */
+body.page-redesign .co .sdek_pvzAddr {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: var(--co-fill);
+  border: 1px solid var(--co-border);
+  border-radius: 10px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  color: var(--text);
+}
+
+/* 🔴 ФИКС ВЕЧНОГО ФРИЗА виджета ПВЗ СДЭК при выборе точки (2026-07-17).
+   СИМПТОМ: клик по метке ПВЗ на карте → страница виснет НАВСЕГДА (не только на слабом ПК).
+   ДИАГНОЗ (доказан профилем + бисектом на боевом): Rendering/Forced-reflow ~7.5с и растёт;
+   Painting ничтожен, JS быстрый, утечки/кол-ва меток/автопана — НИ ПРИ ЧЁМ (все опровергнуты).
+   Причина: контент балуна #SDEK_baloon имеет ГИБКИЙ max-width:258px → его ширина раскачивается
+   в бесконечной layout-петле с авто-размером Yandex-балуна (balloon.open() не возвращается).
+   ЛЕЧЕНИЕ: фиксируем ширину #SDEK_baloon (не max, а width) + contain:layout — петля рвётся,
+   балун рисуется, «Выбрать» работает. Проверено на боевом: 3 точки + перевыбор, без фриза.
+   Это НАШ CSS на классе виджета — вендор не патчим (переживёт обновление модуля ipol.sdek). */
+body.page-redesign #SDEK_baloon,
+#SDEK_baloon {
+  width: 236px !important;
+  max-width: 236px !important;
+  contain: layout !important;
+}
+
+/* ── Состав заказа ─────────────────────────────────────────────────────────
+   Блока в оформлении нет: состав человек правит в корзине, сюда возвращает
+   стрелка в шапке шторки. Из DOM секцию не убираем — компонент резолвит узел
+   по id и делает BX.unbindAll, удаление роняет пересчёт. Сумма товаров при
+   этом остаётся на виду, она в итоге заказа. */
+body.page-redesign .co #bx-soa-basket { display: none !important; }
+
+/* «Продолжить покупки» — вторичная кнопка вендорских блоков (например, пустая
+   корзина при прямом заходе на страницу оформления). */
+body.page-redesign .co .co-continue {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  /* Вид — общий кирпич .tc-btn--ghost (redesign.css). Здесь только геометрия. */
+  margin-top: 16px;
+  padding: 11px 20px;
+  border-radius: 12px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+/* select — свой шеврон (appearance:none), иначе нативная стрелка выбивается из стиля */
+body.page-redesign .co select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 40px;
+  cursor: pointer;
+  text-overflow: ellipsis;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%230059B9' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 14px;
+}
+
+/* ── Итог ──────────────────────────────────────────────────────────────── */
+body.page-redesign .co .bx-soa-cart-total {
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+body.page-redesign .co .bx-soa-cart-total-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  color: var(--co-muted);
+}
+body.page-redesign .co .bx-soa-cart-total-line .bx-soa-cart-d {
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+body.page-redesign .co .bx-soa-cart-total-line-total {
+  margin-top: 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--co-divider);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+body.page-redesign .co .bx-soa-cart-total-line-total .bx-soa-cart-d {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+}
+body.page-redesign .co .bx-soa-cart-total-line-highlighted .bx-soa-cart-d { color: var(--co-ok); }
+body.page-redesign .co .bx-soa-price-free { color: var(--co-ok); font-weight: 700; }
+/* НДС — справка, а не слагаемое */
+body.page-redesign .co .bx-soa-cart-total-line-vat {
+  padding-top: 2px;
+  font-size: 12px;
+  color: var(--co-muted);
+}
+body.page-redesign .co .bx-soa-cart-total-line-vat .bx-soa-cart-d { font-weight: 500; color: var(--co-muted); }
+body.page-redesign .co .bx-soa-cart-total-button-container { display: none !important; }
+
+/* ── Планшет: сайдбар под контент ──────────────────────────────────────── */
+@container tcsheet (max-width: 1100px) {
+  body.page-redesign .co { grid-template-columns: minmax(0, 1fr); }
+
+  /* top обнуляем вместе с position. Иначе он остаётся заряженным: на время
+     пересчёта body получает класс co-busy, и правило
+     `.co-busy .co__summary { position: relative }` — оно объявлено ВНЕ
+     медиазапроса и потому побеждает — оживляет десктопный
+     top: calc(var(--hh) + 16px). Сводка съезжала вниз ровно на высоту шапки
+     плюс 16 px, кнопка заказа уходила за нижний край экрана.
+     Смещение при этом невидимо для раскладки: relative двигает картинку,
+     но не меняет высоту родителя, поэтому панель «проваливалась». */
+  body.page-redesign .co__summary { position: static; top: auto; }
+  body.page-redesign.co-busy .co__summary { top: auto; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   СОСТОЯНИЯ ЗАГРУЗКИ (likeApp)
+   Раньше любой пересчёт (смена доставки, города) вешал на весь экран белый оверлей
+   с loader.gif — страница моргала и блокировалась целиком. Теперь показываем работу
+   только там, где она идёт: тонкая бегущая полоса на пересчитываемых блоках,
+   а на сабмите — спиннер в кнопке.
+   ══════════════════════════════════════════════════════════════════════════ */
+body.page-redesign.co-busy #bx-soa-delivery,
+body.page-redesign.co-busy #bx-soa-paysystem,
+body.page-redesign.co-busy .co__summary { position: relative; }
+
+body.page-redesign.co-busy #bx-soa-delivery .bx-soa-section-content,
+body.page-redesign.co-busy #bx-soa-paysystem .bx-soa-section-content,
+body.page-redesign.co-busy .co__summary .bx-soa-cart-total {
+  /* Затемнения нет намеренно: гасить содержимое на каждый пересчёт — значит
+     мигать всей секцией из-за смены одной цифры. Что идёт работа, говорит
+     бегущая полоса по кромке блока. Ввод при этом всё равно закрыт. */
+  pointer-events: none;
+}
+
+/* бегущая полоса по верхней кромке пересчитываемого блока.
+   left/right отступают на радиус карточки (--co-radius), чтобы полоса шла по ПРЯМОЙ
+   части верхней грани и не «выезжала» на скруглённые углы. */
+body.page-redesign.co-busy #bx-soa-delivery::before,
+body.page-redesign.co-busy #bx-soa-paysystem::before,
+body.page-redesign.co-busy .co__summary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: var(--co-radius, 16px);
+  right: var(--co-radius, 16px);
+  height: 2px;
+  border-radius: 0 0 2px 2px;
+  overflow: hidden;
+  /* Дорожка, по которой бежит блик, — та же логика, что у скелета: видно, что
+     процесс идёт, а не что «что-то мигает». */
+  background: rgba(16, 32, 64, .07);
+  z-index: 2;
+}
+body.page-redesign.co-busy #bx-soa-delivery::after,
+body.page-redesign.co-busy #bx-soa-paysystem::after,
+body.page-redesign.co-busy .co__summary::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: var(--co-radius, 16px);
+  right: var(--co-radius, 16px);
+  height: 2px;
+  background: linear-gradient(90deg,
+    rgba(0, 89, 185, 0) 0%,
+    var(--blue) 45%,
+    rgba(124, 184, 245, 1) 60%,
+    rgba(0, 89, 185, 0) 100%);
+  background-size: 45% 100%;
+  background-repeat: no-repeat;
+  animation: co-progress 1.05s ease-in-out infinite;
+  z-index: 3;
+}
+@keyframes co-progress {
+  0%   { background-position: -45% 0; }
+  100% { background-position: 145% 0; }
+}
+
+/* сабмит — спиннер прямо в кнопке */
+body.page-redesign.co-saving a.co-submit {
+  pointer-events: none;
+  color: transparent !important;
+}
+body.page-redesign.co-saving a.co-submit::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+    border: 0;
+  border-radius: 0;
+  background-color: #fff;
+  -webkit-mask: url('../img/logo-o.svg') center / contain no-repeat;
+  mask: url('../img/logo-o.svg') center / contain no-repeat;
+  animation: tcOSpin 1.7s cubic-bezier(.82, 0, .22, 1) infinite;
+}
+@keyframes co-spin { to { transform: rotate(360deg); } }
+body.page-redesign a.co-submit { position: relative; }
+
+/* Кнопка-«ручка» мобильной панели: на десктопе не нужна */
+body.page-redesign .co__peek { display: none; }
+
+/* ── Мобилка: итог — липкая нижняя панель ──────────────────────────────────
+   Панель всегда показывает «Итого» и кнопку — то, ради чего человек здесь.
+   Остальные строки (товары, вес, доставка, НДС) свёрнуты и разворачиваются
+   тапом по «ручке»: на 360×640 развёрнутый итог съел бы треть экрана. */
+@container tcsheet (max-width: 900px) {
+  body.page-redesign .co { --co-gap: 14px; }
+  /* Нижний отступ на мобиле такой же по смыслу, как на широком экране:
+     канавка не должна липнуть к кружку с номером. Ноль здесь и держал её
+     вплотную — правка padding-а в общем правиле сюда не доставала. */
+  /* Отступ шапки до содержимого: считается от канавки, а не от текста —
+     padding-bottom заголовка + margin-bottom контейнера + padding-top тела.
+     Втроём они легко набирают полсотни пикселей, и блок разъезжается. */
+  body.page-redesign .co .bx-soa-section-title-container { padding: 13px 16px 13px; margin-bottom: 6px; }
+  body.page-redesign .co .bx-soa-section-content { padding: 12px 16px 18px; }
+  body.page-redesign .co .bx-soa-section-title { font-size: 16px; }
+
+  /* И .co__side, и голый .bx-soa-sidebar: класс .co__side вешает надстройка
+     (checkout-onepage.js) уже после отрисовки, а движок пересоздаёт сайдбар
+     на каждый пересчёт — смену города, доставки, применение адреса. В зазоре
+     между «узел создан» и «класс повешен» панель оставалась обычным блоком
+     в потоке и падала в самый низ формы, ниже края экрана. Закрепляем сразу
+     по вендорскому классу, тогда зазора просто нет. */
+  body.page-redesign .co .bx-soa-sidebar,
+  body.page-redesign .co__side {
+    position: fixed;
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* вендорское .bx-soa-sidebar{height:100%} при position:fixed растягивало панель
+       на весь экран (fixed + height:100% + bottom:0 → top:0, высота во весь viewport) */
+    height: auto;
+    z-index: 900;
+  }
+  body.page-redesign .co__summary {
+    position: static;
+    border-radius: 18px 18px 0 0;
+    border-bottom: 0;
+    padding: 8px 16px max(12px, env(safe-area-inset-bottom, 12px));
+    gap: 10px;
+    box-shadow: 0 -8px 28px rgba(16, 32, 64, .12);
+  }
+
+  /* «ручка» — тап разворачивает состав */
+  /* «ручка» — грабер: тап разворачивает, свайпом панель тянется за пальцем.
+     Площадь нажатия делаем padding-ом, сама полоска — общий .tc-grab. */
+  body.page-redesign .co__peek {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 10px 0 8px;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    touch-action: none;          /* тянем шторку, а не скроллим страницу */
+  }
+
+  /* Детали итога — в обёртке .co__collapse с анимируемой высотой (bottom-sheet).
+     Свёрнуто max-height:0, развёрнуто — авто (JS ставит scrollHeight при drag; в покое
+     класс is-open даёт достаточный потолок). «Итого» всегда на виду. */
+  body.page-redesign .co__collapse {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .32s cubic-bezier(.4, 0, .2, 1);
+  }
+  /* Пока строки ещё НЕ уехали в обёртку .co__collapse — прячем их сразу.
+     Обёртку строит надстройка уже после отрисовки, а движок пересобирает итог
+     на каждый пересчёт. В зазоре между «движок отрисовал» и «надстройка
+     свернула» панель успевала показаться развёрнутой во весь состав, и на
+     каждом пересчёте подпрыгивала вверх, а потом схлопывалась обратно.
+     Как только строки окажутся в обёртке, они перестанут быть прямыми детьми
+     .bx-soa-cart-total и правило само отпустит их — дальше рулит обёртка. */
+  body.page-redesign .co .bx-soa-cart-total > .bx-soa-cart-total-line:not(.bx-soa-cart-total-line-total) {
+    display: none;
+  }
+  body.page-redesign .co__side.is-open .co__collapse { max-height: 60dvh; }
+  body.page-redesign .co .bx-soa-cart-total-line-total {
+    display: flex;
+    margin: 6px 0 0;
+    padding-top: 12px;
+    /* Канавка, а не плоская линия: тот же приём, что у шапок блоков чек-аута.
+       Светлый волосок ставим СВЕРХУ (граница снизу), иначе на верхней границе
+       половины меняются местами и прорезь выглядит выпуклостью. */
+    border-top: 1px solid rgba(16, 32, 64, .16);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .75);
+  }
+  /* НДС-строка идёт после «Итого» — прячем со свёрнутой панелью, показываем с открытой */
+  body.page-redesign .co .bx-soa-cart-total-line-vat { display: none; }
+  body.page-redesign .co__side.is-open .bx-soa-cart-total-line-vat { display: flex; }
+
+  /* согласие: короткая формулировка — полный текст 152-ФЗ съедал ~100px панели.
+     Галочка и ссылка на текст согласия остаются. */
+  /* Согласие центрируем целиком — галочка вместе с подписью. Сетка 18px+1fr
+     растягивала текст на всю ширину, и пара оказывалась прижатой влево, хотя
+     всё остальное в шторке (итог, кнопка) выровнено по центру. */
+  body.page-redesign .co-consent {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 12px;
+    text-align: center;
+  }
+  body.page-redesign .co-consent__full { display: none; }
+  body.page-redesign .co-consent__short { display: inline; }
+
+  /* Резерв под липкую нижнюю панель кладём В САМЫЙ НИЗ страницы (после футера),
+     а не на контент чек-аута: иначе между чек-аутом и футером зияла пустота.
+     Значение (150px) — стартовый fallback до того, как JS (setBottomReserve) проставит
+     точную высоту свёрнутой панели инлайном. :has ограничивает правило чек-аутом. */
+  body.page-redesign:has(#bx-soa-order) { padding-bottom: 150px; }
+}
+
+@container tcsheet (max-width: 600px) {
+  body.page-redesign .co .bx-soa-section-title { font-size: 15px; }
+  body.page-redesign a.co-submit { min-height: 50px; font-size: 14px; }
+  body.page-redesign .co .bx-soa-cart-total-line-total .bx-soa-cart-d { font-size: 20px; }
+
+  /* плитки в колонку: три в ряд на 360px нечитаемы */
+  body.page-redesign .co .bx-soa-pp .row,
+  body.page-redesign .co .bx-soa-pp-item-container > .row { grid-template-columns: 1fr; }
+  body.page-redesign .co .bx-soa-pp-company { min-height: 0; padding: 14px 16px; }
+  body.page-redesign .co .bx-soa-pp-desc-container.co-sdek-pvz { justify-content: stretch; }
+  body.page-redesign .co .co-sdek-pvz .bx-soa-pp-company { width: 100%; }
+  body.page-redesign .co a.SDEK_selectPVZ { width: 100%; justify-content: center; }
+}
+
+/* ==========================================================================
+   ЗАКАЗ ПРИНЯТ — /personal/order/make/?ORDER_ID=N (шаблон confirm.php)
+
+   Тот же язык, что и чек-аут: белые карточки, рамка 1px, радиус 16, без теней
+   и градиентов. Ширина уже основной страницы — здесь одна колонка с итогом,
+   растягивать её на всю сетку незачем.
+
+   Блок .oc__pay оборачивает ВЫВОД ПЛАТЁЖНОЙ СИСТЕМЫ (у Robokassa это бутстрап:
+   два абзаца, зелёная .btn-success и .alert-info). Разметку обработчика не трогаем —
+   она приедет обратно при обновлении модуля sale, — а переодеваем стилями.
+   ========================================================================== */
+
+body.page-redesign .oc {
+  --oc-border: #E5EAF5;
+  --oc-control: #CAD5F0;
+  --oc-muted: #6b7280;
+
+  max-width: 620px;
+  margin: 0 auto 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Заголовок страницы («Заказ №N принят») — по центру над узкой колонкой.
+   Класс ставит personal/order/make/index.php, когда в адресе есть ORDER_ID.
+   Одного text-align мало: на широких экранах redesign.css делает .title_box
+   флексом с justify-content:space-between (там же живёт сортировка каталога),
+   а заголовку задаёт width:max-content — центрировать надо и контейнер, и сам h1. */
+body.page-redesign .title_box--center {
+  justify-content: center !important;
+  text-align: center;
+}
+body.page-redesign .title_box--center h1 {
+  width: auto !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* ── Шапка: галочка + строка о письме ──────────────────────────────────── */
+body.page-redesign .oc__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+
+/* Стандартная «галочка успеха»: контур круга и сама галочка прочерчиваются
+   одновременно и заканчиваются в один момент (0.62s), после чего значок коротко
+   подпрыгивает и от него уходит одна волна.
+   Длины линий: окружность r=24 → 2πr ≈ 150.8; ломаная галочки ≈ 31.8. */
+body.page-redesign .oc__check {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--blue);
+  /* Значок лежит в лунке — общий приём страницы возврата с оплаты
+     (.pc-payres__icon) и номеров блоков чек-аута. */
+  box-shadow:
+    inset 3px 4px 8px rgba(16, 32, 64, .15),
+    inset -3px -3px 7px rgba(255, 255, 255, .95);
+}
+body.page-redesign .oc__check svg { width: 56px; height: 56px; display: block; }
+
+/* Волна успеха — ровно одна, стартует в момент, когда обе линии дочерчены. */
+body.page-redesign .oc__check::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--blue);
+  opacity: 0;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  body.page-redesign .oc__check::after { animation: oc-ripple .9s ease-out .62s both; }
+}
+
+/* Контур круга: rotate(-90deg), чтобы прочерчивание начиналось сверху, а не справа. */
+body.page-redesign .oc__check-ring {
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+
+/* Спрятанное стартовое состояние — только там, где анимация точно проиграет.
+   В базовом правиле оно означало бы, что при выключенных анимациях галочка
+   не появится вовсе: прятать может лишь тот, кто гарантированно покажет. */
+@media (prefers-reduced-motion: no-preference) {
+  body.page-redesign .oc__check {
+    animation: oc-success .5s cubic-bezier(.2,.8,.3,1.4) .62s both;
+  }
+  body.page-redesign .oc__check-ring {
+    stroke-dasharray: 151;
+    stroke-dashoffset: 151;
+    animation: oc-draw-ring .62s cubic-bezier(.65, 0, .35, 1) both;
+  }
+  /* Галочка стартует позже и идёт быстрее — обе линии финишируют вместе. */
+  body.page-redesign .oc__check-path {
+    stroke-dasharray: 32;
+    stroke-dashoffset: 32;
+    animation: oc-draw .42s cubic-bezier(.65, 0, .35, 1) .2s both;
+  }
+}
+
+@keyframes oc-draw-ring { to { stroke-dashoffset: 0; } }
+@keyframes oc-draw      { to { stroke-dashoffset: 0; } }
+@keyframes oc-success {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+@keyframes oc-ripple {
+  0%   { transform: scale(1);   opacity: .5; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+
+body.page-redesign .oc__lead {
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  line-height: 24px;
+  color: #33455C;
+}
+body.page-redesign .oc__lead b { font-weight: 600; color: #12233D; word-break: break-word; }
+
+/* ── Карточка со сводкой ───────────────────────────────────────────────── */
+/* Карточка сводки — та же плита, что блоки чек-аута и карточка возврата
+   с оплаты: подтверждение заказа стоит ровно посередине этого пути и должно
+   говорить на одном с ними языке. */
+body.page-redesign .oc__card {
+  border: 0;
+  border-radius: 16px;
+  background: var(--bg);
+  padding: 6px 22px;
+  box-shadow:
+    5px 6px 14px rgba(16, 32, 64, .13),
+    -4px -5px 12px rgba(255, 255, 255, .95);
+}
+
+body.page-redesign .oc__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  /* Канавка вместо плоской линии — общий приём (.nm-line). */
+  border-bottom: 1px solid rgba(16, 32, 64, .16);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .75);
+}
+body.page-redesign .oc__row:last-child { border-bottom: 0; box-shadow: none; }
+
+body.page-redesign .oc__lbl {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  color: var(--oc-muted);
+  flex: 0 0 auto;
+}
+body.page-redesign .oc__val {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  color: #12233D;
+  text-align: right;
+  min-width: 0;
+}
+body.page-redesign .oc__val--strong { font-weight: 600; font-size: 15px; }
+
+/* ── Оплата: переодеваем вывод платёжной системы ───────────────────────── */
+body.page-redesign .oc__pay {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+/* Утилиты бутстрапа в выводе обработчика (.d-flex, .align-items-center, .mb-4)
+   объявлены с !important — обычным правилом их не перебить, и воевать с раскладкой
+   бессмысленно. Снимаем только отступы, а размеры формы и кнопки ниже задаём
+   тоже через !important, чтобы работало и когда родитель остался флексом. */
+body.page-redesign .oc__pay .mb-4,
+body.page-redesign .oc__pay .col-auto {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+/* ряд с кнопкой — отбивка до плашки о возврате (gap самого .oc__pay сюда не достаёт:
+   у него один прямой ребёнок, вся начинка обработчика лежит внутри него) */
+body.page-redesign .oc__pay .d-flex {
+  margin: 0 0 12px !important;
+  padding: 0 !important;
+}
+/* Абзацы обработчика убраны: первый — «услугу предоставляет ROBOKASSA»
+   (обязательным упоминанием не является, платёжная страница и так брендирована),
+   второй — «сумма к оплате», она уже есть в карточке выше.
+   Вернуть = удалить это правило. */
+body.page-redesign .oc__pay p { display: none; }
+
+/* Форма Robokassa приезжает с инлайновым style="display:inline-block" — она бы
+   сжалась по содержимому, и кнопка внутри не растянулась бы. Инлайновый стиль
+   перебивается только !important. */
+body.page-redesign .oc__pay form {
+  display: block !important;
+  width: 100% !important;   /* форма — флекс-элемент внутри .d-flex, с auto она сжимается по кнопке */
+  flex: 1 1 100%;
+  margin: 0 !important;
+}
+
+/* Вид кнопки платёжной системы описан в общей системе кнопок (redesign.css):
+   селектор `.oc__pay .btn` подключён там к тем же правилам, что и `.tc-btn--primary --lg`.
+   Здесь остаётся только то, что относится к раскладке чужой разметки. */
+body.page-redesign .oc__pay a.btn { display: inline-flex; }
+body.page-redesign .oc__pay input.btn,
+body.page-redesign .oc__pay button.btn { display: block; }
+
+body.page-redesign .oc__pay .alert {
+  margin: 0;
+  padding: 14px 18px;
+  border: 1px solid var(--oc-border);
+  border-radius: 14px;
+  background: #F8FAFD;
+  color: var(--oc-muted);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  line-height: 20px;
+  text-align: center;
+}
+body.page-redesign .oc__pay .alert b { font-weight: 600; color: #33455C; }
+
+/* ── Сноски и ссылки ───────────────────────────────────────────────────── */
+/* Кнопки на этой странице — общий класс .tc-btn (redesign.css), своих больше нет. */
+
+body.page-redesign .oc__actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+body.page-redesign .oc__link {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  color: var(--blue);
+  text-align: center;
+}
+
+body.page-redesign .oc__foot,
+body.page-redesign .oc__note {
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--oc-muted);
+  text-align: center;
+}
+body.page-redesign .oc__note {
+  padding: 14px 18px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--bg);
+  box-shadow:
+    inset 2px 3px 6px rgba(16, 32, 64, .13),
+    inset -2px -2px 5px rgba(255, 255, 255, .95);
+}
+body.page-redesign .oc__note--err { border-color: #F3C9CA; background: #FDF3F3; color: #A33; }
+
+body.page-redesign .oc__card--err { padding: 24px 22px; text-align: center; }
+body.page-redesign .oc__errtitle {
+  margin: 0 0 8px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 17px;
+  color: #12233D;
+}
+body.page-redesign .oc__errtext {
+  margin: 0 0 18px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  line-height: 22px;
+  color: #33455C;
+}
+
+@container tcsheet (max-width: 600px) {
+  body.page-redesign .oc { gap: 16px; margin-bottom: 36px; }
+  body.page-redesign .oc__card { padding: 4px 16px; }
+  /* метка и значение в столбик: «Адрес доставки» + длинная строка в одну линию не влезают */
+  body.page-redesign .oc__row { flex-direction: column; align-items: flex-start; gap: 4px; }
+  body.page-redesign .oc__val { text-align: left; }
+  body.page-redesign .oc__actions { flex-direction: column; }
+  body.page-redesign .oc__actions .tc-btn { width: 100%; }
+}
+
+/* Спиннер на странице оплаты: форму платёжной системы отправляем сами, человек
+   видит не «ещё одну кнопку Оплатить», а честное «переносим вас на оплату». */
+body.page-redesign .oc__spinner {
+  width: 40px;
+  height: 40px;
+  background-color: var(--blue);
+  -webkit-mask: url('../img/logo-o.svg') center / contain no-repeat;
+  mask: url('../img/logo-o.svg') center / contain no-repeat;
+  animation: tcOSpin 1.7s cubic-bezier(.82, 0, .22, 1) infinite;
+}
+body.page-redesign .oc__spinner.is-done {
+  animation: none;
+  opacity: .35;
+}
+@keyframes oc-spin { to { transform: rotate(360deg); } }
+
+/* Кнопка «Оплатить» в личном кабинете — тот же общий класс .tc-btn (redesign.css).
+   Своего класса под неё больше нет: одинаковые кнопки описаны один раз. */
+
+/* ── Подсказка под полем местоположения ─────────────────────────────────────
+   Движок печатает под локацией текст «Выберите свой город в списке…»
+   (order_ajax.js, .bx-soa-reference). Поле местоположения одностраничный слой
+   переносит в «Доставку», а подсказка оставалась в «Покупателе» — оторванная
+   от того, что объясняла. Убираем совсем: список городов подсказывает сам.
+
+   У подсказки в блоке авторизации есть класс col — её не трогаем. */
+body.page-redesign .bx-soa-reference:not(.col) { display: none; }

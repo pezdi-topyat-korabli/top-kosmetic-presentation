@@ -1,0 +1,301 @@
+/* ВАРИАНТ 4 «ЖУРНАЛ» — НАБОР ВАРИАЦИЙ. Подключать после tc-cv4-journal.css.
+
+   Три независимые настройки ставятся data-атрибутами на обёртке вокруг сетки
+   (на сайте — контейнер каталога, в шоуруме — .lab-page):
+
+     data-j-r  скругление поля фото: 6 | 14 | 22 | 32
+     data-j-s  поверхность: gray | light | white | tint | gradient | frost | glass
+     data-j-c  покупка: text | icon-line | icon-solid | icon-glass
+
+   Любое сочетание работает: настройки превращаются в CSS-переменные, а правила
+   ниже читают только переменные.
+
+   Фото. На сайте снимки уже на #F2F2F2. Для светлых и цветных полей их фон
+   убирается приёмом «умножение»: яркость +5,5 % делает #F2F2F2 белым, а белый
+   при умножении принимает цвет поля. Настоящему стеклу (glass) этого мало —
+   поле полупрозрачное, поэтому ему нужны фото без фона (в шоуруме вырезаны
+   встроенным Vision: tools/cutout.swift). */
+
+/* ── Скругление ───────────────────────────────────────────────────── */
+[data-j-r="6"]  { --j-r: 6px; }
+[data-j-r="14"] { --j-r: 14px; }
+[data-j-r="22"] { --j-r: 22px; }
+[data-j-r="32"] { --j-r: 32px; }
+
+body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-r] .p-card--v8 .card-img {
+  border-radius: var(--j-r);
+}
+
+/* ── Поверхность ──────────────────────────────────────────────────── */
+[data-j-s="gray"] {
+  --j-plate: #f2f2f2;
+}
+[data-j-s="light"] {
+  --j-plate: #f8f8f9;
+  --j-blend: multiply;
+  --j-img: brightness(1.055);
+}
+[data-j-s="white"] {
+  --j-plate: #fff;
+  --j-plate-edge: inset 0 0 0 1px #e5e8ee;
+  --j-blend: multiply;
+  --j-img: brightness(1.055);
+}
+[data-j-s="tint"] {
+  --j-plate: #edf3fb;
+  --j-blend: multiply;
+  --j-img: brightness(1.055);
+}
+[data-j-s="gradient"] {
+  --j-plate: linear-gradient(180deg, #fbfbfc 0%, #eceff4 100%);
+  --j-blend: multiply;
+  --j-img: brightness(1.055);
+}
+/* Матовое стекло без вырезки: непрозрачное «стекло» из градиента, светлой
+   кромки сверху и холодной глубины снизу. Работает с текущими фото сайта. */
+/* Блик стекла — верхний слой фона поля: товар ложится поверх него. */
+[data-j-s="frost"] {
+  --j-plate:
+    linear-gradient(118deg, rgba(255, 255, 255, .55) 0%, rgba(255, 255, 255, 0) 34%),
+    linear-gradient(155deg, #ffffff 0%, #f5f8fd 40%, #e4edf9 100%);
+  --j-plate-edge:
+    inset 0 1px 0 #fff,
+    inset 0 0 0 1px rgba(255, 255, 255, .95),
+    inset 0 -26px 52px rgba(8, 90, 179, .07),
+    0 18px 36px -28px rgba(8, 60, 140, .45);
+  --j-blend: multiply;
+  --j-img: brightness(1.055);
+}
+/* Настоящее стекло: полупрозрачное поле поверх мягкого голубого фона
+   страницы — сквозь поле виден фон. Нужны фото без фона. */
+[data-j-s="glass"] {
+  --j-plate:
+    linear-gradient(118deg, rgba(255, 255, 255, .5) 0%, rgba(255, 255, 255, 0) 30%),
+    linear-gradient(rgba(255, 255, 255, .42), rgba(255, 255, 255, .42));
+  --j-plate-edge:
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    inset 0 0 0 1px rgba(255, 255, 255, .6),
+    0 22px 44px -30px rgba(8, 50, 130, .55);
+  background:
+    radial-gradient(42% 36% at 10% 8%, #c9dcf8 0%, rgba(201, 220, 248, 0) 100%),
+    radial-gradient(38% 34% at 88% 22%, #d7ebfd 0%, rgba(215, 235, 253, 0) 100%),
+    radial-gradient(46% 40% at 30% 70%, #dfe7fb 0%, rgba(223, 231, 251, 0) 100%),
+    radial-gradient(40% 36% at 82% 86%, #cfe3f9 0%, rgba(207, 227, 249, 0) 100%),
+    #f3f7fd;
+}
+
+/* Без backdrop-filter: он сделал бы поле опорой для кнопки (она внутри
+   .card-img) и утащил бы её на фото. Под полем гладкий градиент — размытие
+   на нём всё равно не видно; стекло дают прозрачность, кромка и блик. */
+body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-s] .p-card--v8 .card-img {
+  background: var(--j-plate);
+  box-shadow: var(--j-plate-edge, none);
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-s] .p-card--v8 .card-img > img {
+  mix-blend-mode: var(--j-blend, normal);
+  filter: var(--j-img, none);
+}
+/* Поле остаётся static: кнопка и счётчик крепятся к карточке и стоят в
+   строке цены, а не на фото. */
+body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-s] .p-card--v8 .fav-btn { z-index: 3; }
+
+/* ── Покупка: значок корзины ──────────────────────────────────────── */
+[data-j-c="icon-line"] {
+  --j-btn: transparent;
+  --j-btn-ink: #171b24;
+  --j-btn-ring: rgba(23, 27, 36, .2);
+  --j-btn-h: #eef4fb;
+  --j-btn-ink-h: var(--blue);
+  --j-btn-ring-h: var(--blue);
+  --j-fill: var(--blue);
+}
+[data-j-c="icon-solid"] {
+  --j-btn: var(--blue);
+  --j-btn-ink: #fff;
+  --j-btn-ring: transparent;
+  --j-btn-h: #064a94;
+  --j-btn-ink-h: #fff;
+  --j-btn-ring-h: transparent;
+  --j-fill: #13233f;
+}
+[data-j-c="icon-glass"] {
+  --j-btn: rgba(255, 255, 255, .62);
+  --j-btn-ink: var(--blue);
+  --j-btn-ring: rgba(255, 255, 255, .95);
+  --j-btn-h: #fff;
+  --j-btn-ink-h: var(--blue);
+  --j-btn-ring-h: rgba(8, 90, 179, .35);
+  --j-btn-shadow: 0 10px 22px -12px rgba(8, 50, 130, .5);
+  --j-btn-blur: blur(10px) saturate(1.4);
+  --j-fill: var(--blue);
+}
+
+/* Значок занимает 42 px справа от цены; область нажатия — весь круг. */
+body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8 .card-price { padding-right: 54px; }
+body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8.has-qty .card-price { padding-right: 92px; }
+
+body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8 .add-btn {
+  right: 0;
+  bottom: -12px;
+  width: 42px;
+  height: 42px;
+  justify-content: center;
+  overflow: visible;
+  border-radius: 50% !important;
+  background: var(--j-btn) !important;
+  color: var(--j-btn-ink);
+  -webkit-backdrop-filter: var(--j-btn-blur, none);
+  backdrop-filter: var(--j-btn-blur, none);
+  transition: background-color .15s ease, color .15s ease, transform .12s cubic-bezier(.16, 1, .3, 1);
+}
+/* Корзина — маска basket.svg сайта, цвет от текста кнопки. */
+body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8 .add-btn::after {
+  display: block;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  width: 15px;
+  height: 19px;
+  background: currentColor;
+  transform: translate(-50%, -54%);
+  transition: opacity .15s ease, transform .2s cubic-bezier(.16, 1, .3, 1);
+}
+/* Подпись остаётся для читалок экрана, а видимой частью служит кольцом. */
+body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8 .add-btn .v8-action {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  border-radius: 50%;
+  background: none;
+  box-shadow: inset 0 0 0 1px var(--j-btn-ring), var(--j-btn-shadow, 0 0 #0000);
+  color: transparent;
+  font-size: 0;
+  transition: box-shadow .15s ease;
+}
+/* Плюс над кнопкой: всплывает при добавлении. */
+body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8 .add-btn::before {
+  content: '+1';
+  position: absolute;
+  top: auto;
+  right: auto;
+  left: 50%;
+  bottom: 100%;
+  margin-bottom: 2px;
+  color: var(--blue);
+  font: 700 12px/1 'Montserrat', sans-serif;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate(-50%, 6px);
+  pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8 .add-btn:not(:disabled):hover {
+    background: var(--j-btn-h) !important;
+    color: var(--j-btn-ink-h);
+  }
+  body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8 .add-btn:not(:disabled):hover .v8-action {
+    box-shadow: inset 0 0 0 1px var(--j-btn-ring-h), var(--j-btn-shadow, 0 0 #0000);
+  }
+  body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8 .add-btn:not(:disabled):hover::after {
+    transform: translate(-50%, -62%);
+  }
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8 .add-btn:not(:disabled):active {
+  transform: scale(.94);
+}
+
+/* Добавление: круг заливается из центра, корзина уходит, рисуется галочка,
+   кольцо расходится волной, над кнопкой всплывает «+1». */
+body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8 .add-btn .ab-fill {
+  display: block;
+  z-index: 1;
+  border-radius: 50%;
+  overflow: hidden;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8 .add-btn .ab-fill::before {
+  width: 100%;
+  height: 100%;
+  background: var(--j-fill);
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8 .add-btn .ab-check {
+  left: 50%;
+  z-index: 3;
+  width: 20px;
+  height: 20px;
+  stroke: #fff;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8 .add-btn:is(.is-filling, .is-checking, .is-added)::after {
+  opacity: 0;
+  transform: translate(-50%, -54%) scale(.6);
+}
+/* В варианте 4 подпись на время заливки гасится; здесь она — кольцо. */
+body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8 .add-btn:is(.is-filling, .is-checking, .is-added) .v8-action {
+  opacity: 1 !important;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8 .add-btn.is-filling .v8-action {
+  animation: jRing .7s cubic-bezier(.16, 1, .3, 1);
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8 .add-btn.is-checking::before {
+  animation: jPlus .9s cubic-bezier(.16, 1, .3, 1) .05s forwards;
+}
+@keyframes jRing {
+  0%   { box-shadow: inset 0 0 0 1px var(--j-btn-ring), 0 0 0 0 rgba(8, 90, 179, .45); }
+  100% { box-shadow: inset 0 0 0 1px var(--j-btn-ring), 0 0 0 14px rgba(8, 90, 179, 0); }
+}
+@keyframes jPlus {
+  0%   { opacity: 0; transform: translate(-50%, 6px); }
+  25%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -16px); }
+}
+
+/* Счётчик на месте значка — компактные кольца, чтобы цена оставалась видна. */
+body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8 .qty-ctl {
+  bottom: -10px;
+  height: 38px;
+}
+
+/* Нет в наличии: метка на фото, а не пустой значок. */
+body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8 .add-btn.is-unavailable {
+  top: 12px;
+  left: 12px;
+  right: auto;
+  bottom: auto;
+  z-index: 3;
+  width: auto;
+  height: 26px;
+  padding: 0 10px !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, .92) !important;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8 .add-btn.is-unavailable::after,
+body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8 .add-btn.is-unavailable::before { display: none; }
+body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8 .add-btn.is-unavailable .v8-action {
+  position: static;
+  box-shadow: none;
+  color: #5f6876;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8:has(.add-btn.is-unavailable) .card-price { padding-right: 0; }
+
+/* ── Телефон ──────────────────────────────────────────────────────── */
+@media (max-width: 899px) {
+  body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-r] .p-card--v8 .card-img { border-radius: min(var(--j-r), 22px); }
+  /* Значок помещается в строку цены — ссылка под ценой больше не нужна. */
+  body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8 { padding-bottom: 0; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8 .card-price { padding-right: 46px; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8.has-qty .card-price { padding-right: 86px; }
+  /* Рядом со счётчиком объём не помещается даже с многоточием — убираем. */
+  body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8.has-qty .v8-size { display: none; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8 .add-btn {
+    left: auto;
+    right: 0;
+    bottom: -10px;
+    width: 38px;
+    height: 38px;
+  }
+  body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8 .add-btn .ab-check { left: 50%; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8 .qty-ctl { left: auto; right: 0; transform-origin: 100% 50%; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv4 [data-j-c^="icon"] .p-card--v8 .add-btn.is-unavailable { top: 8px; left: 8px; }
+}

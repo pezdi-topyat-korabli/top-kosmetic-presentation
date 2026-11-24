@@ -1,0 +1,135 @@
+/* ВАРИАНТ 4 «ЖУРНАЛ». Подключать после tc-cv-base.css; <body class="… tc-cv tc-cv4">.
+
+   Самый тихий регистр: вертикальное фото 4:5, название — антиквой Georgia,
+   той же, что заголовки варианта №8, бренд — серой подписью. Покупка — не
+   плашка, а текстовая ссылка «В корзину» справа от цены: тонкая линия под ней
+   есть всегда, а под курсором прорисовывается синяя слева направо. Область
+   нажатия расширена до 44 px. После добавления на её месте «− N +». */
+
+body.page-redesign.tc-v8.tc-cv.tc-cv4 .cat-grid { gap: 56px 28px; }
+
+/* Кнопка и счётчик крепятся к карточке — им место в строке цены. */
+body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .card-img {
+  position: static;
+  aspect-ratio: 4 / 5;
+  border-radius: 6px;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .card-img > img {
+  height: 100%;
+  aspect-ratio: auto;
+}
+
+body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .card-bottom { gap: 6px; padding-top: 16px; }
+body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .card-brand { color: #6b7482; }
+body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .card-name {
+  height: calc(1.3em * 2);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 16.5px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: -.005em;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .card-price { padding: 8px 104px 0 0; }
+body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .c-price { flex: none; font-size: 15px; font-weight: 600; }
+/* Узкая строка: объём сжимается с многоточием, а не залезает под кнопку
+   или счётчик (так было на «1000 мл» и у товара в корзине). */
+body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .v8-size {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8.has-qty .card-price { padding-right: 92px; }
+
+/* Подпись стоит на одной линии с ценой: низ кнопки чуть ниже карточки,
+   потому что под подписью ещё 4 px на линию. */
+body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .add-btn {
+  right: 0;
+  bottom: -5px;
+  height: 26px;
+  justify-content: flex-end;
+  color: var(--blue);
+}
+/* Невидимое расширение области нажатия до 44 px. */
+body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .add-btn::before {
+  content: '';
+  position: absolute;
+  inset: -7px -6px;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .add-btn .v8-action {
+  padding-bottom: 4px;
+  color: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  background:
+    linear-gradient(currentColor, currentColor) 0 100% / 0% 2px no-repeat,
+    linear-gradient(rgba(8, 90, 179, .3), rgba(8, 90, 179, .3)) 0 100% / 100% 1px no-repeat;
+  transition: background-size .15s cubic-bezier(.16, 1, .3, 1);
+}
+@media (hover: hover) and (pointer: fine) {
+  body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .add-btn:not(:disabled):hover .v8-action {
+    background-size: 100% 2px, 100% 1px;
+    transition-duration: .22s;
+  }
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .add-btn:focus-visible .v8-action { background-size: 100% 2px, 100% 1px; }
+body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .add-btn:not(:disabled):active .v8-action { transform: translateY(1px); }
+
+/* Добавление: подпись гаснет, справа прорисовывается синяя галочка. */
+body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .add-btn .ab-fill { display: none; }
+body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .add-btn .ab-check {
+  left: calc(100% - 10px);
+  width: 20px;
+  height: 20px;
+  stroke: var(--blue);
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .add-btn:is(.is-filling, .is-checking, .is-added) .v8-action { opacity: 0 !important; }
+body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .add-btn.is-added { background: transparent !important; }
+
+/* Счётчик — в строке цены: два тонких кольца и число. */
+body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .qty-ctl {
+  top: auto;
+  left: auto;
+  right: 0;
+  bottom: -8px;
+  height: 34px;
+  padding: 0;
+  gap: 4px;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  transform-origin: 100% 50%;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .qty-ctl__btn {
+  width: 28px;
+  height: 28px;
+  color: #171b24;
+  box-shadow: inset 0 0 0 1px rgba(23, 27, 36, .2);
+  transition: box-shadow .12s ease, color .12s ease, transform .1s ease;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .qty-ctl__btn:hover { color: var(--blue); box-shadow: inset 0 0 0 1px var(--blue); }
+body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .qty-ctl__btn:active { transform: scale(.92); box-shadow: inset 0 0 0 1px var(--blue); }
+body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .qty-ctl__num {
+  min-width: 16px;
+  color: #171b24;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* Нет в наличии: подпись без линии. */
+body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .add-btn.is-unavailable { color: #8a94a3; }
+body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .add-btn.is-unavailable .v8-action { background: none; font-weight: 500; }
+
+/* Телефон: ссылка уходит под цену, иначе не помещается в половину экрана. */
+@media (max-width: 899px) {
+  body.page-redesign.tc-v8.tc-cv.tc-cv4 .cat-grid { gap: 36px 14px; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 { padding-bottom: 38px; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .card-img { border-radius: 4px; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .card-name { font-size: 15px; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .card-price,
+  body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8.has-qty .card-price { padding-right: 0; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .add-btn { left: 0; right: auto; justify-content: flex-start; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .add-btn .ab-check { left: 10px; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv4 .p-card--v8 .qty-ctl { left: 0; right: auto; transform-origin: 0 50%; }
+}

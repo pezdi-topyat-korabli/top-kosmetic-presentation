@@ -1,0 +1,379 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   ВХОД / РЕГИСТРАЦИЯ / ВОССТАНОВЛЕНИЕ — одна карточка с переливом.
+
+   Разметку даёт шаблон компонента system.auth.authorize/flat: он держит три
+   панели в одной стопке, а js/tc-auth.js переключает их.
+
+   Префикс body.page-redesign обязателен (глобальный ресет темы), файл
+   подключается ПОСЛЕ redesign.css — поэтому !important здесь не нужен.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Экран ──────────────────────────────────────────────────────────────
+   Подвал на шаге входа снят: под формой в ~700 px ехал синий блок на 713 px,
+   которому тут нечего сказать. Таб-бар остаётся — это выход с экрана. */
+body.page-redesign.page-auth .site-footer { display: none; }
+
+/* Экран выбирает высоту сам: карточка стоит по центру свободного места между
+   шапкой и таб-баром, а не прижимается к верху с пустотой внизу.
+
+   Здесь svh, а не vh и не dvh. Общее правило по проекту — блоки в потоке
+   от vh не мерить: в Safari высота окна гуляет при прокрутке, и блок прыгает.
+   svh — исключение: это МАЛАЯ высота окна, она постоянна и как раз не плавает.
+   Строкой выше оставлен vh для браузеров, которые svh не знают. */
+body.page-redesign .tc-auth {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 18px var(--gut) 28px;
+  box-sizing: border-box;
+  min-height: calc(100vh - var(--header-h) - var(--tabbar-h) - var(--safe-bottom) - 46px);
+  min-height: calc(100svh - var(--header-h) - var(--tabbar-h) - var(--safe-bottom) - 46px);
+}
+
+/* ── Карточка ───────────────────────────────────────────────────────────
+   Поверхность в тоне холста с мягкой выпуклостью — тот же приём, что
+   у блоков чек-аута. На белом рельефа не было бы: светлая половина тени
+   совпала бы с фоном. */
+/* Полей у карточки нет — их несут панели. Так граница вытеснения проходит
+   от края до края карточки, а не по прямоугольнику внутри неё. */
+body.page-redesign .tc-auth__card {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  box-sizing: border-box;
+  padding: 0;
+  border-radius: 22px;
+  background: var(--bg);
+  box-shadow:
+    5px 6px 16px rgba(16, 32, 64, .13),
+    -4px -4px 12px rgba(255, 255, 255, .95);
+  overflow: hidden;
+}
+
+/* Ширина карточки ОДНА на все три панели. Пробовал расширять её под
+   регистрацию — при переливе высоту замеряешь на старой ширине, а встаёт
+   она на новой, и в конце перехода содержимое дёргалось. Рамка неподвижна,
+   меняется только то, что внутри. */
+
+/* ── Заголовок панели ───────────────────────────────────────────────────
+   Лежит ВНУТРИ панели: при вытеснении он обязан уезжать вместе со своей
+   формой, иначе граница прошла бы мимо него. */
+body.page-redesign .tc-auth__title {
+  margin: 0 0 6px;
+  font-family: var(--font);
+  font-size: clamp(24px, 6.4vw, 28px);
+  font-weight: 600;
+  line-height: 1.12;
+  color: var(--ink);
+  white-space: normal;
+}
+body.page-redesign .tc-auth__sub {
+  margin: 0 0 20px;
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+/* ── Стопка панелей и вытеснение ────────────────────────────────────────
+   Смена — не растворение, а СДВИГ ЧЁТКОЙ ГРАНИЦЫ: новая форма наезжает на
+   старую, граница проходит через всю карточку. Поэтому у панели непрозрачный
+   фон в тоне карточки — сквозь неё не должно просвечивать то, что под ней.
+
+   Направление задаёт то, откуда пришло действие. На узких экранах кнопка
+   «Нет аккаунта? Создать» стоит внизу формы, и новая форма поднимается
+   СНИЗУ ВВЕРХ; возврат ко входу — сверху вниз. На широких то же самое,
+   но по горизонтали: вперёд — слева направо, назад — справа налево.
+
+   Активная панель лежит В ПОТОКЕ: без скриптов стопка берёт её высоту,
+   и экран работает обычными переходами по ссылкам. Остальные сняты в абсолют
+   и спрятаны ЧЕРЕЗ visibility — одной прозрачности мало, в прозрачную форму
+   попадают и табуляция, и автозаполнение паролей. */
+body.page-redesign .tc-auth__stack {
+  position: relative;
+  overflow: hidden;
+  transition: height var(--t-slow) var(--ease);
+}
+body.page-redesign .tc-auth__panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding: clamp(22px, 5.5vw, 32px);
+  background: var(--bg);
+  visibility: hidden;
+}
+body.page-redesign .tc-auth__panel.is-active {
+  position: relative;
+  visibility: visible;
+}
+
+/* Новая форма — не плоская шторка, а ПЛИТА, наезжающая поверх старой.
+   Граница резкая, но у неё есть толщина: по ведущей кромке идёт светлый
+   волосок, а перед ней ложится мягкая тень на то, что она накрывает. Это тот же
+   словарь, что у разделителей-канавок, поэтому смена не выпадает из неоморфа.
+
+   --tc-auth-in   — откуда плита приходит
+   --tc-auth-edge — свет и тень на её ведущей кромке */
+body.page-redesign .tc-auth__panel.is-entering {
+  position: absolute;
+  visibility: visible;
+  z-index: 2;
+  /* Плита обязана закрыть всё поле целиком: если новая форма ниже старой,
+     без этого снизу осталась бы полоска прежнего содержимого. */
+  min-height: 100%;
+  transform: var(--tc-auth-in, translateY(100%));
+  box-shadow: var(--tc-auth-edge);
+  /* Переход объявлен НЕ здесь, а в .is-open — иначе плита с переходом ехала бы
+     и в стартовое положение тоже: вместо хода границы получалось дёрганье
+     на месте, и к концу кадра она уже стояла где надо. */
+  transition: none;
+}
+body.page-redesign .tc-auth__panel.is-entering.is-open {
+  transform: none;
+  transition: transform var(--t-slow) var(--ease);
+}
+
+/* Уходящая не растворяется — она уходит ВГЛУБЬ: чуть отступает назад и
+   притухает, пока её накрывают. Отсюда и ощущение слоёв, а не подмены. */
+body.page-redesign .tc-auth__panel.is-leaving {
+  position: absolute;
+  visibility: visible;
+  z-index: 1;
+  transform-origin: 50% 50%;
+  transition: transform var(--t-slow) var(--ease), filter var(--t-slow) var(--ease);
+}
+body.page-redesign .tc-auth__panel.is-leaving.is-sunk {
+  transform: scale(.975);
+  filter: brightness(.975);
+}
+
+/* Вперёд (к регистрации, к восстановлению) — плита поднимается снизу:
+   кнопка «Нет аккаунта? Создать» стоит внизу формы, оттуда и движение. */
+body.page-redesign .tc-auth {
+  --tc-auth-in: translateY(100%);
+  --tc-auth-edge:
+    0 -14px 26px rgba(16, 32, 64, .20),
+    0 -1px 0 rgba(255, 255, 255, .92);
+}
+/* Назад (к входу) — опускается сверху. */
+body.page-redesign .tc-auth.is-back {
+  --tc-auth-in: translateY(-100%);
+  --tc-auth-edge:
+    0 14px 26px rgba(16, 32, 64, .20),
+    0 1px 0 rgba(255, 255, 255, .92);
+}
+
+/* Широкий экран: то же движение, но поперёк — слева направо и обратно. */
+@media (min-width: 900px) {
+  body.page-redesign .tc-auth {
+    --tc-auth-in: translateX(-100%);
+    --tc-auth-edge:
+      14px 0 26px rgba(16, 32, 64, .20),
+      1px 0 0 rgba(255, 255, 255, .92);
+  }
+  body.page-redesign .tc-auth.is-back {
+    --tc-auth-in: translateX(100%);
+    --tc-auth-edge:
+      -14px 0 26px rgba(16, 32, 64, .20),
+      -1px 0 0 rgba(255, 255, 255, .92);
+  }
+}
+
+/* ── Поля ───────────────────────────────────────────────────────────────
+   Поле вдавлено в карточку: карточка выпуклая, поле в ней — углубление, куда
+   кладут текст. Рамка не нужна, границу держит свет. Тот же приём, что
+   в чек-ауте, — чтобы ввод по сайту выглядел одинаково. */
+body.page-redesign .tc-auth .auth-input {
+  height: 48px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--bg);
+  box-shadow:
+    inset 3px 4px 7px rgba(16, 32, 64, .14),
+    inset -3px -3px 6px rgba(255, 255, 255, .95);
+  transition: box-shadow .2s var(--ease);
+}
+/* Фокус — то же углубление плюс тонкий контур внутри: геометрия не меняется,
+   соседние поля не дёргаются. */
+body.page-redesign .tc-auth .auth-input:focus {
+  outline: none;
+  box-shadow:
+    inset 3px 4px 7px rgba(16, 32, 64, .14),
+    inset -3px -3px 6px rgba(255, 255, 255, .95),
+    inset 0 0 0 1.5px var(--blue);
+}
+body.page-redesign .tc-auth .auth-field__lbl { color: var(--muted); }
+
+/* Поле с ошибкой — не красная рамка поверх рельефа, а тот же рельеф с красным
+   контуром: так ошибка не ломает язык поверхностей. */
+body.page-redesign .tc-auth .auth-input.is-wrong {
+  box-shadow:
+    inset 3px 4px 7px rgba(16, 32, 64, .14),
+    inset -3px -3px 6px rgba(255, 255, 255, .95),
+    inset 0 0 0 1.5px var(--danger);
+}
+
+body.page-redesign .tc-auth .auth-captcha__box {
+  background: var(--bg);
+  border: 0;
+  box-shadow:
+    inset 3px 4px 7px rgba(16, 32, 64, .14),
+    inset -3px -3px 6px rgba(255, 255, 255, .95);
+}
+
+/* ── Кнопка ─────────────────────────────────────────────────────────────
+   Главное действие — ровная синяя заливка (кирпич .tc-btn--primary стоит
+   классом в разметке). Здесь только ширина и высота под палец. */
+body.page-redesign .tc-auth .tc-btn--block { width: 100%; }
+body.page-redesign .tc-auth .auth-form .tc-btn { min-height: 50px; margin-top: 4px; }
+
+/* Состояние «в работе» у кнопок — общий кирпич .tc-btn.is-busy
+   в redesign.css: это состояние кнопки, а не особенность этого экрана. */
+
+/* ── Переход на другую форму ────────────────────────────────────────────
+   Вопрос и действие — ОДНА кнопка, а не строка-подсказка над ней: по смыслу
+   это одно предложение («нет аккаунта? создать»), и разносить его на два
+   элемента значило городить лишний горизонтальный штрих. Вопрос внутри
+   кнопки приглушён, действие — фирменным: иерархия остаётся, элемент один.
+
+   Вид — общий кирпич .tc-btn--ghost: выпуклая плита в тоне поверхности.
+   С неё же начинается ход плиты снизу вверх.
+
+   Разделительной линии здесь НЕТ намеренно: кнопка отделена воздухом,
+   а лишний волосок спорил с кнопкой «Войти» и строкой помощи под карточкой. */
+body.page-redesign .tc-auth__switch {
+  margin-top: 24px;
+}
+/* Высота чуть ниже главной кнопки: одинаковые читались бы как равные по весу. */
+body.page-redesign .tc-auth__switch .tc-btn {
+  min-height: 46px;
+  gap: 6px;
+  font-weight: 600;
+}
+body.page-redesign .tc-auth__switch-q {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* ── Согласие на обработку данных ───────────────────────────────────────
+   Подпись согласия приходит из админки ОДНОЙ ссылкой целиком — разбить её
+   на текст и ссылку нельзя. Поэтому красим не как ссылку, а как обычное
+   предложение с тонким подчёркиванием: три синие строки подряд над главной
+   кнопкой перетягивали на себя всё внимание, хотя это юридическая сноска. */
+body.page-redesign .tc-auth .auth-consent .main-user-consent-request {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  cursor: pointer;
+}
+body.page-redesign .tc-auth .auth-consent .main-user-consent-request-announce a,
+body.page-redesign .tc-auth .auth-consent a {
+  color: var(--muted);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  text-decoration-color: rgba(107, 114, 128, .45);
+}
+body.page-redesign .tc-auth .auth-consent a:hover { text-decoration-color: var(--blue); color: var(--blue); }
+body.page-redesign .tc-auth .auth-consent input[type="checkbox"] {
+  flex: none;
+  margin: 2px 0 0;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--blue);
+}
+
+/* Сноска про обязательные поля — именно сноска: мельче и спокойнее формы. */
+body.page-redesign .tc-auth .auth-reg {
+  margin: 0;
+  text-align: left;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ── Быстрый вход ───────────────────────────────────────────────────────
+   Места под три службы (Яндекс, ВК, Mail.ru) держим заранее: подключат ключи —
+   кнопки встанут сами, вёрстку трогать не придётся. */
+body.page-redesign .tc-auth .auth-social { margin-top: 18px; }
+body.page-redesign .tc-auth .auth-social__lbl {
+  font-family: var(--font);
+  font-size: 12px;
+  color: var(--muted);
+}
+body.page-redesign .tc-auth .auth-social__lbl:before,
+body.page-redesign .tc-auth .auth-social__lbl:after { background: rgba(16, 32, 64, .14); }
+
+/* ── Строка помощи под карточкой ────────────────────────────────────────
+   Всё, что осталось от подвала на этом экране: человеку, который не может
+   войти, нужен телефон, а не карта сайта. */
+body.page-redesign .tc-auth__help {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+}
+body.page-redesign .tc-auth__help a {
+  color: var(--blue);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* ── Сообщения ──────────────────────────────────────────────────────────
+   Отказ — короткая встряска: это отклик на действие, а не украшение. */
+body.page-redesign .tc-auth .auth-msg { margin-bottom: 18px; }
+body.page-redesign .tc-auth__card.is-denied { animation: tcAuthShake .32s var(--ease) 1; }
+@keyframes tcAuthShake {
+  0%, 100% { transform: translateX(0); }
+  22%      { transform: translateX(-6px); }
+  55%      { transform: translateX(5px); }
+  80%      { transform: translateX(-2px); }
+}
+
+/* ── Пары полей ─────────────────────────────────────────────────────────
+   Фамилия с именем встают парой — они короткие. Пароль и повтор в карточке
+   шириной 440 px парой уже тесны, поэтому в колонку: длину пароля видно
+   плохо, а ошибиться тут дороже всего. */
+body.page-redesign .tc-auth .auth-grid2:has(input[type="password"]) {
+  grid-template-columns: 1fr;
+}
+
+/* ── «Показать пароль» (js/tc-auth.js) ────────────────────────────────────
+   Глаз внутри поля справа. Обёртка повторяет блочность поля, поэтому
+   раскладка форм не меняется; полю добавлен отступ под кнопку. */
+body.page-redesign .tc-pw {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+body.page-redesign .tc-pw > input { width: 100%; padding-right: 48px !important; box-sizing: border-box; }
+body.page-redesign .tc-pw__eye {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  width: 36px;
+  height: 36px;
+  margin-top: -18px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--muted, #6b7280);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color .15s ease;
+}
+body.page-redesign .tc-pw__eye:hover { color: var(--blue); }
+body.page-redesign .tc-pw__eye svg { width: 20px; height: 20px; display: block; }
+/* Закрытый глаз — пароль скрыт; открытый — показан. */
+body.page-redesign .tc-pw__eye .tc-pw__open { display: none; }
+body.page-redesign .tc-pw__eye.is-on .tc-pw__open { display: inline; }
+body.page-redesign .tc-pw__eye.is-on .tc-pw__shut { display: none; }
+body.page-redesign .tc-pw__eye.is-on { color: var(--blue); }

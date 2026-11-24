@@ -1,0 +1,460 @@
+/* КАРТОЧКА ТОВАРА — правки поверх redesign.css.
+
+   Карточка стала ссылкой (`<a class="p-card">`), а не блоком с обработчиком.
+   Значит ей нужны свойства, которые ссылка приносит с собой: подчёркивание
+   и наследование цвета. Ни одного !important — свои правила идут после брони. */
+
+.p-card {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Ссылка по умолчанию строчная — раскладку карточки задаёт redesign.css
+   (flex-колонка), но подстрахуемся: без display карточка схлопнется, если
+   старое правило когда-нибудь уедет. */
+a.p-card {
+  display: flex;
+}
+
+/* Фокус с клавиатуры виден по всей карточке, а не тонкой рамкой по тексту. */
+.p-card:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+  border-radius: var(--r-card);
+}
+
+
+/* ── ТЕЛЕФОН: карточка как отдельная плитка ────────────────────────────
+   Было: сетка каталога — одно белое полотно, карточки разделены линиями,
+   фото фиксированной высоты 300px, название в три строки. На узком экране
+   это давало две высокие колонки без воздуха и разъезжающиеся цены.
+
+   Стало: две плитки в ряд, у каждой своя тень и скругление, фото квадратом
+   (пропорция, а не пиксели — иначе на разных ширинах карточки едут),
+   название в две строки. Кнопки «в избранное» и «в корзину» не трогаем:
+   они уже стоят поверх фото и держатся на !important из redesign.css —
+   лезть туда сейчас незачем. */
+
+/* ── ПЛИТКА: общий вид на всех ширинах ─────────────────────────────────
+   Было: на телефоне карточка — отдельная плитка с тенью и скруглением,
+   а на десктопе осталось старое полотно: один белый прямоугольник с рамкой,
+   карточки разделены линиями, высота жёстко 433 px. Два разных языка на
+   одном элементе — самом частом элементе магазина.
+
+   Стало: плитка везде. Различается только то, что и должно различаться
+   с шириной — сколько колонок и какой кегль. */
+
+.cat-grid {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.cat-grid .p-card,
+.prod-track .p-card {
+  height: auto;
+  background: var(--surface);
+  border: 0 !important;
+  border-radius: var(--r-card);
+  overflow: hidden;
+  box-shadow: var(--shadow-lift);
+}
+/* Легаси делило полотно линиями и гасило их у крайних — при плитках и то,
+   и другое лишнее, а стоит на !important. */
+.cat-grid .p-card:nth-child(3n),
+.cat-grid .p-card:nth-last-child(-n+3):nth-child(3n+1),
+.cat-grid .p-card:nth-last-child(-n+3):nth-child(3n+1) ~ .p-card {
+  border: 0 !important;
+}
+
+/* Селектор с .cat-grid обязателен: легаси задаёт картинке flex:1 и белый фон
+   именно так (.cat-grid .p-card .card-img), и короткое правило он перебивает. */
+.p-card .card-img,
+.cat-grid .p-card .card-img,
+.prod-track .p-card .card-img {
+  flex: none;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  background: var(--fill);
+}
+
+/* Только фотография товара — она прямой ребёнок .card-img. Без > правило
+   доставало и картинки внутри кнопок («в корзину», избранное): иконка
+   растягивалась на все 44 px кнопки. Заметно это лишь после добавления,
+   потому что до него белая иконка прозрачна. */
+.p-card .card-img > img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.p-card .card-bottom {
+  background: var(--surface);
+}
+
+.p-card .card-name {
+  -webkit-line-clamp: 2;
+}
+
+/* Скелет повторяет плитку один в один: квадрат фото, те же поля, скругление
+   и тень. Иначе в момент подмены сетка прыгает — скелет выше карточки
+   и с разделителями от старой сетки. */
+.cat-grid .p-card-skeleton {
+  height: auto;
+  background: var(--surface);
+  border: 0;
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-lift);
+}
+.cat-grid .p-card-skeleton:nth-child(3n) { border: 0; }
+
+.p-card-skeleton .sk-img {
+  flex: none;
+  aspect-ratio: 1 / 1;
+}
+
+/* Метка бренда: один ряд капсом 10px/1 — столько же, сколько у настоящей
+   плитки (.p-card .card-brand ниже по файлу). */
+.p-card-skeleton .sk-brand {
+  height: 10px;
+  width: 42%;
+}
+
+/* ── ТЕЛЕФОН ──────────────────────────────────────────────────────────── */
+@media (max-width: 899px) {
+
+  .cat-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  /* Ленты на главной: две карточки в экран с хвостом третьей — видно,
+     что полосу можно листать. Явная ширина, а не flex-basis: WebKit при
+     горизонтальной прокрутке basis игнорирует и оставляет пустой хвост. */
+  .prod-track .p-card {
+    flex: 0 0 auto;
+    width: 46vw;
+    max-width: 220px;
+  }
+
+  .p-card .card-bottom {
+    padding: 9px 11px 12px;
+    gap: 5px;
+  }
+
+  .p-card .card-name {
+    font-size: 13px;
+    line-height: 1.35;
+    /* Две строки вместо трёх: на плитке в половину экрана третья строка
+       съедала место, ради которого всё и затевалось. */
+    height: calc(1.35em * 2);
+  }
+
+  .p-card .c-price { font-size: 15px; font-weight: 700; }
+  .p-card .c-per   { font-size: 10px; }
+
+  /* Поля подписи в СЕТКЕ каталога. Без этого правила сюда доставало
+     десктопное (redesign.css, .cat-grid .p-card .card-bottom — 18/20/22):
+     на плитке в полэкрана двадцать пикселей слева съедали строку названия,
+     а цена упиралась в скруглённый угол. */
+  body.page-redesign .cat-grid .p-card .card-bottom {
+    padding: 11px 13px 14px;
+    gap: 4px;
+  }
+
+  /* Карточка чуть ниже: строка бренда добавила высоты, и в ряду цена
+     оказывалась вровень с нижним углом плитки. */
+  body.page-redesign .cat-grid .p-card .card-img,
+  body.page-redesign .prod-track .p-card .card-img {
+    aspect-ratio: 1 / .94;
+  }
+
+  /* Кнопка избранного меньше и ближе к углу — плитка сама стала меньше. */
+  .p-card .fav-btn { top: 8px; right: 8px; }
+  .p-card .p-badge { top: 8px; left: 8px; }
+
+  /* Корзина — такая же круглая плита, как на широком экране, но крупнее:
+     48 px против 40, чтобы попадать пальцем и не задевать карточку, которая
+     под ней разворачивает быстрый просмотр. Прежний угловой скос
+     «12px 0 0 0» был языком полотна, где у карточки не было своих краёв. */
+  body.page-redesign .p-card .add-btn {
+    right: 8px;
+    bottom: 8px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50% !important;
+    background: var(--bg) !important;
+    box-shadow:
+      3px 4px 9px rgba(16, 32, 64, .14),
+      -3px -3px 8px rgba(255, 255, 255, .95) !important;
+  }
+  body.page-redesign .p-card .add-btn:active {
+    box-shadow:
+      inset 2px 3px 6px rgba(16, 32, 64, .16),
+      inset -2px -2px 5px rgba(255, 255, 255, .9) !important;
+  }
+  body.page-redesign .p-card .add-btn::after { width: 17px; height: 21px; }
+
+  /* Размеры сняты с живой карточки замером: поля низа 18/20/22 приходят к ней
+     из redesign.css и перебивают 9/11/12 выше, название в две строки занимает
+     36,4 px, цена — 15 px, между ними 5 px. Поменяется карточка — поменять и тут. */
+  .p-card-skeleton .sk-bottom { padding: 18px 20px 22px; gap: 5px; }
+  .p-card-skeleton .sk-name-box { height: 36.4px; justify-content: center; gap: 7px; }
+  .p-card-skeleton .sk-name,
+  .p-card-skeleton .sk-name-2 { height: 10px; }
+  .p-card-skeleton .sk-price { height: 15px; width: 45%; }
+}
+
+/* ── МЫШЬ И КЛАВИАТУРА ────────────────────────────────────────────────── */
+@media (min-width: 900px) {
+
+  /* Четыре в ряд. Полотно с линиями разобрано на плитки, поэтому появился
+     зазор — у полотна его не было вовсе (gap: normal). */
+  .cat-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  .cat-grid .p-card { cursor: pointer; }
+
+  .p-card .card-bottom {
+    padding: 14px 16px 16px;
+    gap: 6px;
+  }
+  body.page-redesign .cat-grid .p-card .card-bottom {
+    padding: 14px 16px 16px;
+    gap: 6px;
+  }
+
+  .p-card .card-name {
+    font-size: 14px;
+    line-height: 1.4;
+    height: calc(1.4em * 2);
+  }
+  .p-card .c-price { font-size: 17px; font-weight: 700; }
+  .p-card .c-per   { font-size: 11px; }
+
+  /* Наведение приподнимает плитку вместо синей рамки внутрь: рамка была
+     языком полотна, где у карточки не было собственных краёв. */
+  .cat-grid .p-card:hover,
+  .prod-track .p-card:hover {
+    background: var(--surface);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lift-hover, 0 14px 32px -10px rgba(0, 30, 80, .26));
+  }
+  .cat-grid .p-card:focus-visible {
+    box-shadow: var(--shadow-lift), 0 0 0 2px var(--blue);
+  }
+
+  /* ── Кнопки на плитке ────────────────────────────────────────────────
+     Корзина была белым квадратом с синей обводкой, прижатым в угол скруглением
+     «12px 0 0 0»: язык полотна, где у карточки не было собственных краёв.
+     На плитке это читается как заплатка. Делаем круглой плитой в тоне холста —
+     тем же кирпичом, что кнопки подвала и шторок.
+
+     Трогаем только широкие экраны: вид плитки на телефоне уже принят. */
+  body.page-redesign .p-card .add-btn {
+    right: 10px;
+    bottom: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50% !important;
+    background: var(--bg) !important;
+    box-shadow:
+      3px 4px 9px rgba(16, 32, 64, .14),
+      -3px -3px 8px rgba(255, 255, 255, .95) !important;
+    transition: box-shadow .16s var(--ease), transform .16s var(--ease);
+  }
+  body.page-redesign .p-card .add-btn:hover {
+    background: var(--bg) !important;
+    box-shadow:
+      4px 5px 12px rgba(16, 32, 64, .18),
+      -3px -3px 9px rgba(255, 255, 255, .95) !important;
+  }
+  body.page-redesign .p-card .add-btn:active {
+    box-shadow:
+      inset 2px 3px 6px rgba(16, 32, 64, .16),
+      inset -2px -2px 5px rgba(255, 255, 255, .9) !important;
+  }
+  body.page-redesign .p-card .add-btn::after { width: 15px; height: 19px; }
+
+  /* Подсказка «развернуть» — такой же кружок, а не белая нашлёпка с рамкой.
+     Видна только при наведении: на плитке с собственными краями постоянный
+     значок в углу спорит с кнопками и ничего не добавляет. */
+  body.page-redesign .cat-grid .p-card::after {
+    top: 10px;
+    left: 10px;
+    width: 32px;
+    height: 32px;
+    border: 0;
+    background-color: var(--bg);
+    background-size: 15px;
+    box-shadow:
+      3px 4px 9px rgba(16, 32, 64, .13),
+      -3px -3px 8px rgba(255, 255, 255, .95);
+    opacity: 0;
+  }
+  body.page-redesign .cat-grid .p-card:hover::after,
+  body.page-redesign .cat-grid .p-card:focus-visible::after {
+    opacity: 1;
+    transform: none;
+    background-color: var(--bg);
+  }
+
+  .p-card-skeleton .sk-bottom { padding: 14px 16px 16px; gap: 6px; }
+  .p-card-skeleton .sk-name-box { height: 39.2px; justify-content: center; gap: 7px; }
+  .p-card-skeleton .sk-name,
+  .p-card-skeleton .sk-name-2 { height: 11px; }
+  .p-card-skeleton .sk-price { height: 17px; width: 45%; }
+}
+
+/* ── Бренд отдельной строкой ──────────────────────────────────────────
+   Название из 1С шло одной строкой: «KLAPP Крем дневной … 50мл». В ряду из
+   двух плиток сравнить было нечего — все карточки выглядели одинаково серым
+   текстом. Бренд ушёл наверх меткой капсом, а в названии осталось то, чем
+   товары друг от друга и отличаются (фасовку из него не вынимаем: ею
+   различаются варианты одного средства). Разбор — include/tc-brands.php. */
+
+body.page-redesign .p-card .card-brand {
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: .06em;
+  /* Капс гасит глобальная броня redesign.css (body.page-redesign *), поэтому
+     здесь единственный !important в файле. */
+  text-transform: uppercase !important;
+  color: var(--gray);
+  /* Одна строка: бренд — метка, а не заголовок. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 899px) {
+  /* На плитке в половину экрана строка бренда жмётся к названию: они про одно
+     и то же, а до цены расстояние должно быть больше. */
+  .p-card .card-bottom {
+    gap: 3px;
+  }
+
+  .p-card .card-price {
+    margin-top: 5px;
+  }
+}
+
+
+/* ── Счётчик прямо в плитке ───────────────────────────────────────────
+   Товар в корзине — кнопка «в корзину» уступает место «− N +» на том же
+   углу фото. Раньше добавить второй тюбик можно было только через корзину
+   или быстрый просмотр, а повторное нажатие по плитке не делало ничего.
+   Поведение — js/tc-card-qty.js. Пилюля та же, что у степпера в быстром
+   просмотре: вдавленный желобок, выступающие кнопки. */
+
+body.page-redesign .qty-ctl {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  /* Угол как у кнопки «в корзину», на месте которой счётчик и стоит:
+     круглая четверть выглядела заплаткой. */
+  border-radius: 12px 0 0 0;
+  background: var(--surface);
+  box-shadow:
+    inset 3px 3px 6px rgba(16, 32, 64, .14),
+    inset -2px -2px 5px rgba(255, 255, 255, .95);
+  /* До добавления счётчика нет: он вырастает из кнопки, а не появляется рядом. */
+  transform: scale(.82);
+  transform-origin: 100% 100%;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform .26s cubic-bezier(.34, 1.4, .64, 1),
+    opacity .18s ease;
+}
+
+body.page-redesign .p-card.has-qty .qty-ctl {
+  transform: none;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Кнопка «в корзину» уезжает под счётчик: масштаб, а не display — иначе
+   подмена происходит рывком в один кадр. */
+body.page-redesign .p-card.has-qty .add-btn {
+  transform: scale(.82);
+  opacity: 0 !important;
+  pointer-events: none;
+  transition: transform .2s var(--ease), opacity .16s ease;
+}
+
+body.page-redesign .qty-ctl__btn {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--blue);
+  transition: box-shadow .18s ease, transform .18s ease;
+}
+
+body.page-redesign .qty-ctl__btn svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+}
+
+/* В желобке заливка смотрелась бы пятном — кнопка вместо этого выступает. */
+body.page-redesign .qty-ctl__btn:active {
+  transform: scale(.9);
+  box-shadow:
+    2px 2px 5px rgba(16, 32, 64, .16),
+    -2px -2px 4px rgba(255, 255, 255, .95);
+}
+
+body.page-redesign .qty-ctl__num {
+  min-width: 20px;
+  text-align: center;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 899px) {
+  /* На плитке в пол-экрана счётчик занимал бы треть фото — ужимаем. */
+  body.page-redesign .qty-ctl__btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  body.page-redesign .qty-ctl__num {
+    min-width: 18px;
+    font-size: 13px;
+  }
+}
+
+/* ── ПЛАНШЕТ В ПОРТРЕТЕ И ТЕЛЕФОН В АЛЬБОМЕ (640–899) ─────────────────────
+   Два в ряд на такой ширине — карточки по 380px, крупнее, чем на десктопе.
+   Три в ряд. Порции ленты главной по 12 делятся и на 3, ряды не рвутся. */
+@media (min-width: 640px) and (max-width: 899px) {
+  .cat-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

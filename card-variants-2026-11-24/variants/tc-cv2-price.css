@@ -1,0 +1,193 @@
+/* ВАРИАНТ 2 «ЦЕНА-КНОПКА». Подключать после tc-cv-base.css; <body class="… tc-cv tc-cv2">.
+
+   Цена и покупка — одна пилюля внизу карточки: слева цена и объём, справа
+   синий кружок с корзиной. Кнопка «В корзину» из разметки ложится поверх всей
+   пилюли прозрачным слоем, поэтому нажимается вся пилюля. Под курсором она
+   заливается синим справа налево, цена уступает место подписи «В корзину».
+   После добавления пилюля остаётся синей: «В корзине  − N +». */
+
+/* Кнопка и счётчик крепятся к карточке, чтобы лечь на пилюлю под фото. */
+body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .card-img { position: static; }
+
+body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .card-name { margin-bottom: 8px; }
+
+body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .card-price {
+  align-items: center;
+  height: 46px;
+  margin-top: auto;
+  padding: 0 54px 0 16px;
+  border-radius: 999px;
+  background: #f2f4f7;
+}
+
+body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .add-btn {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 46px;
+  justify-content: flex-start;
+  border-radius: 999px !important;
+  background:
+    linear-gradient(var(--blue), var(--blue)) 100% 50% / 0% 100% no-repeat !important;
+  color: #fff;
+  /* Уход заливки короче входа. */
+  transition: background-size .22s cubic-bezier(.16, 1, .3, 1), transform .12s cubic-bezier(.16, 1, .3, 1);
+}
+
+/* Кружок и корзина внутри него. ::after — та же маска basket.svg, что у
+   штатной кнопки сайта; вариант №8 её прятал. */
+body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .add-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  z-index: 1;
+  width: 36px;
+  height: 36px;
+  margin-top: -18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform .2s cubic-bezier(.16, 1, .3, 1);
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .add-btn::after {
+  display: block;
+  left: auto;
+  right: 17px;
+  z-index: 2;
+  width: 12px;
+  height: 16px;
+  background: var(--blue);
+  transform: translateY(-50%);
+}
+
+body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .add-btn .v8-action {
+  position: absolute;
+  top: 50%;
+  left: 18px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate(14px, -50%);
+  transition: opacity .2s ease, transform .34s cubic-bezier(.2, .7, .2, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .add-btn:not(:disabled):hover {
+    background-size: 100% 100% !important;
+    transition-duration: .42s, .12s;
+  }
+  body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .add-btn:not(:disabled):hover .v8-action {
+    opacity: 1;
+    transform: translate(0, -50%);
+    transition-delay: .08s;
+  }
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .add-btn:focus-visible { background-size: 100% 100% !important; }
+body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .add-btn:focus-visible .v8-action { opacity: 1; transform: translate(0, -50%); }
+body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .add-btn:not(:disabled):active { transform: scale(.985); }
+
+/* Добавление: заливка расходится из кружка на всю пилюлю, галочка — в кружке. */
+body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .add-btn .ab-fill::before {
+  left: calc(100% - 23px);
+  width: 640px;
+  height: 640px;
+  background: var(--blue);
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .add-btn .ab-check {
+  left: calc(100% - 23px);
+  width: 22px;
+  height: 22px;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .add-btn:is(.is-filling, .is-checking, .is-added)::before,
+body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .add-btn:is(.is-filling, .is-checking, .is-added)::after,
+body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .add-btn:is(.is-filling, .is-checking, .is-added) .v8-action {
+  opacity: 0 !important;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .add-btn.is-filling { animation: none; }
+
+/* Счётчик ложится на пилюлю: «В корзине» слева, «− N +» справа. */
+body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .qty-ctl {
+  top: auto;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 46px;
+  padding: 0 5px 0 18px;
+  gap: 4px;
+  justify-content: flex-end;
+  border-radius: 999px;
+  background: var(--blue);
+  box-shadow: none;
+  transform-origin: 100% 50%;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .qty-ctl::before {
+  content: 'В корзине';
+  margin-right: auto;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .qty-ctl__btn {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, .16);
+  color: #fff;
+  transition: background-color .16s ease, transform .16s ease;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .qty-ctl__btn:hover { background: rgba(255, 255, 255, .28); }
+body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .qty-ctl__btn:active { transform: scale(.9); box-shadow: none; }
+body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .qty-ctl__num {
+  min-width: 24px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* Нет в наличии: цена остаётся, справа тихая подпись вместо кружка. */
+body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .add-btn.is-unavailable {
+  background: transparent !important;
+  cursor: default;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .add-btn.is-unavailable::before,
+body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .add-btn.is-unavailable::after { display: none; }
+body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .add-btn.is-unavailable .v8-action {
+  left: auto;
+  right: 16px;
+  color: #8a94a3;
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 1;
+  transform: translateY(-50%);
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8:has(.add-btn.is-unavailable) .card-price { padding-right: 120px; }
+body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8:has(.add-btn.is-unavailable) .c-price { color: #8a94a3; }
+
+@media (max-width: 899px) {
+  body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .card-price {
+    height: 42px;
+    padding: 0 44px 0 12px;
+    gap: 6px;
+  }
+  body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .add-btn { height: 42px; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .add-btn::before { right: 4px; width: 34px; height: 34px; margin-top: -17px; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .add-btn::after { right: 15px; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .c-price { font-size: 14px; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card .v8-size { font-size: 11px; }
+  /* В половине экрана «В корзине» и «− N +» вместе не помещаются: остаётся
+     счётчик на всю пилюлю, синий цвет и так говорит «в корзине». */
+  body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .qty-ctl {
+    height: 42px;
+    padding: 0 4px;
+    justify-content: space-between;
+  }
+  body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .qty-ctl::before { display: none; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .qty-ctl__btn { width: 32px; height: 32px; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .add-btn .ab-fill::before,
+  body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .add-btn .ab-check { left: calc(100% - 21px); }
+  body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8:has(.add-btn.is-unavailable) .card-price { padding-right: 12px; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8 .add-btn.is-unavailable .v8-action { right: 12px; font-size: 11px; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv2 .p-card--v8:has(.add-btn.is-unavailable) .v8-size { display: none; }
+}

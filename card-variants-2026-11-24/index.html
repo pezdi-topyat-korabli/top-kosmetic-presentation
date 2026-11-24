@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ru" class="cv-reveal">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Карточки каталога: пять вариантов</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Стили рабочей копии в порядке header.php: карточка проходит тот же каскад, что на сайте. -->
+  <link rel="stylesheet" href="site-css/redesign.css">
+  <link rel="stylesheet" href="site-css/tc-tokens.css">
+  <link rel="stylesheet" href="site-css/tc-tabbar.css">
+  <link rel="stylesheet" href="site-css/tc-sheet-overlay.css">
+  <link rel="stylesheet" href="site-css/tc-mobile.css">
+  <link rel="stylesheet" href="site-css/tc-static.css">
+  <link rel="stylesheet" href="site-css/tc-footer.css">
+  <link rel="stylesheet" href="site-css/tc-nav.css">
+  <link rel="stylesheet" href="site-css/tc-basket.css">
+  <link rel="stylesheet" href="site-css/tc-catalog.css">
+  <link rel="stylesheet" href="site-css/tc-product.css">
+  <link rel="stylesheet" href="site-css/tc-cards.css">
+  <link rel="stylesheet" href="site-css/tc-home.css">
+  <link rel="stylesheet" href="site-css/tc-row.css">
+  <link rel="stylesheet" href="site-css/tc-fav.css">
+  <link rel="stylesheet" href="site-css/tc-splash.css">
+  <link rel="stylesheet" href="site-css/tc-header.css">
+  <link rel="stylesheet" href="site-css/tc-search.css">
+  <link rel="stylesheet" href="site-css/tc-filter.css">
+  <link rel="stylesheet" href="site-css/personal.css">
+  <link rel="stylesheet" href="site-css/tc-auth.css">
+  <link rel="stylesheet" href="site-css/checkout.css">
+  <link rel="stylesheet" href="site-css/tc-v8-home.css">
+  <link rel="stylesheet" href="site-css/tc-v8-cards.css">
+  <link rel="stylesheet" href="site-css/tc-v8-header.css">
+
+  <!-- Предложение: общий слой без рамки, пять вариантов и движение. На сайт идёт
+       только variants/: база, один выбранный вариант и файлы движения. -->
+  <link rel="stylesheet" href="variants/tc-cv-base.css">
+  <link rel="stylesheet" href="variants/tc-cv1-vitrina.css">
+  <link rel="stylesheet" href="variants/tc-cv2-price.css">
+  <link rel="stylesheet" href="variants/tc-cv3-shelf.css">
+  <link rel="stylesheet" href="variants/tc-cv4-journal.css">
+  <link rel="stylesheet" href="variants/tc-cv4-journal-kit.css">
+  <link rel="stylesheet" href="variants/tc-cv5-contrast.css">
+  <link rel="stylesheet" href="variants/tc-card-motion.css">
+
+  <!-- Только оболочка демонстрации: панель вариантов, упрощённая шапка и таб-бар. -->
+  <link rel="stylesheet" href="lab.css">
+</head>
+<body class="page-redesign tc-v8 page-inner">
+  <div class="lab-bar" role="region" aria-label="Выбор варианта карточек">
+    <div class="lab-bar__in">
+      <div class="lab-bar__title">
+        <strong>Карточки каталога</strong>
+        <span>демонстрация на стилях рабочей копии</span>
+      </div>
+      <div class="lab-bar__tabs" role="tablist" aria-label="Варианты" data-lab-tabs></div>
+      <div class="lab-bar__tools">
+        <button type="button" class="lab-chip" data-lab-reveal aria-pressed="true" title="Появление плиток при прокрутке (советуем для лент главной)">Появление</button>
+        <button type="button" class="lab-chip" data-lab-replay title="Повторить появление карточек">Повторить</button>
+        <button type="button" class="lab-chip" data-lab-motion aria-pressed="false" title="Как видит сайт человек с включённым «Уменьшить движение»">Без движения</button>
+        <button type="button" class="lab-chip" data-lab-reset>Очистить корзину</button>
+      </div>
+    </div>
+    <div class="lab-kit" data-lab-kit hidden></div>
+    <p class="lab-bar__note" data-lab-note></p>
+  </div>
+
+  <header class="lab-head">
+    <div class="lab-head__in">
+      <a class="lab-logo" href="#" aria-label="TOP Cosmetics"><img src="img/logo-header.png" alt="TOP Cosmetics"></a>
+      <a class="lab-pill" href="#">Каталог</a>
+      <div class="lab-search" role="search"><span>Бренд, средство или задача</span><b>Найти</b></div>
+      <div class="lab-icons">
+        <a class="lab-icon" href="#" aria-label="Избранное"><img src="img/heart.svg" alt=""></a>
+        <a class="lab-icon" href="#" aria-label="Корзина" data-basket>
+          <img src="img/basket.svg" alt="">
+          <span class="lab-badge" data-cart-count hidden>0</span>
+        </a>
+        <a class="lab-icon" href="#" aria-label="Личный кабинет"><img src="img/user.svg" alt=""></a>
+      </div>
+    </div>
+  </header>
+
+  <div class="lab-page" data-lab-page>
+  <main class="lab-wrap">
+    <div class="lab-toolbar">
+      <span class="lab-crumbs"><span>Главная</span> / <b>Каталог</b></span>
+      <span class="lab-field">Поиск по каталогу</span>
+      <span class="lab-btn">Фильтры</span>
+      <span class="lab-btn">Сортировка</span>
+    </div>
+    <div class="cat-grid" data-lab-grid></div>
+    <p class="lab-foot">Цены — снимок рабочей копии от 15.11.2026, актуальность не подтверждена. «Нет в наличии» у одной карточки — демонстрационное состояние. Оформление заказа здесь не работает: кнопки показывают поведение интерфейса.</p>
+  </main>
+  </div>
+
+  <nav class="lab-tabbar" aria-label="Нижняя навигация (как на телефоне)">
+    <a href="#"><img src="img/user.svg" alt=""><span>Профиль</span></a>
+    <a href="#"><img src="img/heart.svg" alt=""><span>Избранное</span></a>
+    <a href="#" class="lab-tabbar__o"><i></i><span>Каталог</span></a>
+    <a href="#" data-basket><img src="img/basket.svg" alt=""><span class="lab-badge" data-cart-count hidden>0</span><span>Корзина</span></a>
+    <a href="#"><img src="img/search.svg" alt=""><span>Поиск</span></a>
+  </nav>
+
+  <div class="lab-toast" data-lab-toast role="status" aria-live="polite"></div>
+
+  <script src="data.js"></script>
+  <script src="lab.js"></script>
+  <script src="variants/tc-card-motion.js" defer></script>
+</body>
+</html>

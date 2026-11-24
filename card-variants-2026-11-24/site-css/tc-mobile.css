@@ -1,0 +1,247 @@
+/* МОБИЛЬНАЯ ШАПКА И СПИСОК КАТАЛОГА В ШТОРКЕ.
+   Всё под @media (max-width: 899px): на широких экранах шапка остаётся прежней.
+
+   Подключается ПОСЛЕ redesign.css, поэтому перебивать её !important не нужно —
+   хватает обычной специфичности. Своих !important здесь нет. */
+
+/* Иконки нового слоя. Размер задаём тут, способ отрисовки и цвет — в спрайте. */
+.tc-ico {
+  display: block;
+  width: 22px;
+  height: 22px;
+}
+
+@media (max-width: 899px) {
+
+  /* ── Шапка становится тонкой полосой ─────────────────────────────── */
+
+  /* Бургер и иконки уходят: их работу забрал нижний таб-бар. Меню каталога
+     теперь открывается центральной кнопкой, поиск и корзина — свои табы. */
+  .menu-btn,
+  .h-icons {
+    display: none;
+  }
+
+  /* ── Шапка — объёмная пилюля, одна на все страницы ─────────────────
+     Логотип по центру, слева «назад» (только на внутренних страницах), справа
+     «ещё». Разметка общая (header.php) и постоянная: бесшовный переход её не
+     пересоздаёт, поэтому «назад» не мелькает, а проявляется по классу страницы.
+     Прежняя тонкая полоса во всю ширину выпадала из неоморфа и на главной
+     сменялась плашкой — шапок было две. */
+  :root {
+    --header-top: 24px;
+    /* Зона шапки: отступ сверху + пилюля + воздух под ней. От неё уже считаются
+       отступ содержимого (.main_content) и липкие полосы — фильтр каталога,
+       чипы главной. Правим источник, а не каждое место. */
+    --hh: calc(var(--header-top) + var(--header-h) + 8px);
+  }
+
+  /* Админ-панель Битрикса лежит В ПОТОКЕ сверху, а пилюля — fixed, и ложилась
+     на неё. Сдвиг считает redesign-ui.js (--bxpanel), но полагаться только
+     на замер нельзя: не отработал скрипт — и шапка снова под панелью.
+     Поэтому запасное значение прямо здесь, а точное приезжает инлайном. */
+  body.page-redesign.has-bx-panel .site-header {
+    top: calc(var(--header-top) + var(--bxpanel, 40px));
+  }
+
+  body.page-redesign .site-header {
+    position: fixed;
+    top: var(--header-top);
+    left: 24px;
+    right: 24px;
+    height: var(--header-h);
+    /* Над содержимым, но под затемнением шторок: иначе светлая тень пилюли
+       светится поверх тёмного фона. */
+    z-index: calc(var(--z-overlay) - 1);
+    transition: transform .24s ease;
+  }
+
+  body.page-redesign.header-hidden .site-header {
+    transform: translateY(calc(-100% - var(--header-top) - 8px));
+  }
+
+  /* Подложка до края экрана — только там, где под шапкой прилипает полоса
+     (полоса фильтра в каталоге): без неё товары проезжали бы в просвете между ними.
+     На остальных страницах пилюля парит над содержимым. Привязана к самой шапке и
+     уезжает вместе с ней: fixed внутри сдвинутой (transform) шапки считался бы
+     от шапки и гулял. */
+  body.page-redesign .site-header::before {
+    content: '';
+    position: absolute;
+    top: calc(-1 * var(--header-top));
+    left: -24px;
+    right: -24px;
+    bottom: -8px;
+    z-index: -1;
+    background: var(--bg);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .2s ease;
+  }
+
+  body.page-redesign.header-scrolled.tc-catalog-screen .site-header::before { opacity: 1; }
+
+  body.page-redesign .header-inner {
+    display: grid;
+    grid-template-columns: 44px 1fr 44px;
+    align-items: center;
+    height: 100%;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 999px;
+    /* Объём без светлого ореола: на светлом холсте белая тень вверх-влево
+       читалась засветом. Выпуклость дают лёгкий свет сверху внутри пилюли
+       и мягкая тень под ней. */
+    background: linear-gradient(180deg, #f6f7fa 0%, var(--bg) 100%);
+    box-shadow:
+      inset 0 1px 1px rgba(255, 255, 255, .95),
+      inset 0 -2px 4px rgba(16, 32, 64, .07),
+      0 2px 4px rgba(16, 32, 64, .07),
+      0 10px 22px -6px rgba(16, 32, 64, .22);
+  }
+
+  body.page-redesign .h-logo {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: center;
+  }
+
+  body.page-redesign .h-logo img {
+    height: 28px;
+  }
+
+  /* Круглые кнопки — общий вид с крестиком шторок (tc-sheet-overlay.css),
+     здесь только место в сетке. */
+  body.page-redesign .tc-mh-back {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+  }
+
+  body.page-redesign .tc-mh-back .tc-ico {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* На главной возвращаться некуда: кнопка уходит, а не исчезает рывком. */
+  body.page-redesign.page-index .tc-mh-back {
+    opacity: 0;
+    transform: scale(.6);
+    pointer-events: none;
+  }
+
+  body.page-redesign .tc-mh-more {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+    gap: 3px;
+  }
+
+  body.page-redesign .tc-mh-more i {
+    width: 4px;
+    height: 4px;
+    border-radius: 999px;
+    background: currentColor;
+  }
+}
+
+/* На широких экранах новых элементов нет — там работает прежняя шапка. */
+@media (min-width: 900px) {
+  body.page-redesign .tc-mh-back,
+  body.page-redesign .tc-mh-more {
+    display: none;
+  }
+}
+
+/* ── Каталог в шторке ──────────────────────────────────────────────── */
+
+.tc-cat {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.tc-cat:last-of-type {
+  border-bottom: 0;
+}
+
+.tc-cat__root {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* Подразделы — чипами: их много, а список в столбик заставлял бы листать
+   шторку целиком ради одного раздела. */
+.tc-cat__kids {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tc-cat__kid {
+  padding: 6px 11px;
+  border-radius: var(--r-pill);
+  background: var(--fill);
+  color: var(--icon);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.tc-cat__kid:active {
+  background: var(--fill-2);
+  color: var(--blue);
+}
+
+.tc-cat__all {
+  display: block;
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: var(--r-ctrl);
+  background: var(--fill);
+  color: var(--blue);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tc-cat__kid:hover { background: var(--fill-2); color: var(--blue); }
+  .tc-cat__root:hover { color: var(--blue); }
+}
+
+/* ── Долг, общий для всех экранов ─────────────────────────────────────
+   Три вещи, которые мешали одинаково везде: путь дублировал шапку,
+   центральная кнопка выглядела активной всегда, футер приезжал десктопным
+   блоком под каждый короткий экран. */
+
+@media (max-width: 899px) {
+
+  /* Крошки повторяют то, что уже написано в шапке, а назад ведёт её кнопка.
+     Скрываем на всех экранах: раньше это делалось поштучно — в каталоге,
+     потом на карточке товара, — и каждый новый экран требовал бы правки. */
+  body.page-redesign .breadcrumbs {
+    display: none;
+  }
+
+  /* Центральная кнопка акцентна сама по себе — фирменная «O» с объёмом.
+     Подпись под ней остаётся обычной, как у соседей: синее слово рядом с
+     синей буквой читалось вторым акцентом и спорило с ней. */
+  body.page-redesign .tabbar__item--center,
+  body.page-redesign .tabbar__item--center.is-active {
+    color: var(--ink);
+  }
+
+  /* Футер занимал 934 px и 22 ссылки — на короткой странице это больше половины
+     документа. Все служебные ссылки уже собраны в шторке «Ещё», поэтому здесь
+     оставляем то, ради чего в футер заглядывают с телефона: связь и оплата. */
+  body.page-redesign .site-footer .foot-nav,
+  body.page-redesign .site-footer .foot-col-title {
+    display: none;
+  }
+
+  body.page-redesign .site-footer .foot-pays-col .foot-col-title {
+    display: block;
+  }
+}

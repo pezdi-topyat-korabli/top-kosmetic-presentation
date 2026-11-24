@@ -1,0 +1,1100 @@
+/* КАТАЛОГ НА ТЕЛЕФОНЕ: полоса управления и тишина вокруг товара.
+   Поведение — js/tc-catalog.js. Значения — из tc-tokens.css. */
+
+@media (max-width: 899px) {
+
+  /* ── Первый экран отдаём товару ─────────────────────────────────────
+     H1 повторяет название раздела, уже написанное в шапке. Крошки скрыты
+     общим правилом в tc-mobile.css — там же, где остальной долг всех экранов. */
+  body.page-redesign .catalog__content .title_box,
+  body.page-redesign .catalog__list .title_box {
+    display: none;
+  }
+
+  /* ── Полоса управления ────────────────────────────────────────────── */
+
+  body.page-redesign .tc-cbar {
+    /* Липнет под шапку: фильтр и сортировка нужны на любой глубине списка,
+       а не только в самом верху. */
+    position: sticky;
+    top: var(--hh);
+    z-index: 20;
+    transition: top .24s ease;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 12px;
+    padding: 8px 0;
+    background: var(--bg);
+  }
+
+  /* Фон во всю ширину экрана, а не по полям списка: полоса липкая, и в
+     просветах по краям под неё проезжали карточки. Ширину берём от экрана,
+     чтобы не зависеть от полей контейнера.
+
+     Сверху у подложки хвост: шапка уезжает по своему переходу, полоса
+     поднимается по своему, и на быстром жесте между ними мелькала полоска
+     страницы. Хвост перекрывает этот зазор.
+
+     Снизу — та же кромка, что у таб-бара: одна волосяная линия. Полоса и
+     таб-бар держат экран сверху и снизу, и край у них общий. Тон темнее
+     таб-барного: тот лежит на белой поверхности, а подложка — на холсте,
+     и светлая линия на нём не читалась. */
+  body.page-redesign .tc-cbar::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    width: 100vw;
+    transform: translateX(-50%);
+    top: -40px;
+    bottom: 0;
+    /* Не минус: под нулём псевдоэлемент уходит за фон родителя, и карточки
+       ехали поверх подложки. Ноль держит его над содержимым страницы, но под
+       кнопками самой полосы — те идут следом по документу. */
+    z-index: 0;
+    background: var(--bg);
+    border-bottom: 1px solid rgba(45, 50, 58, .2);
+    pointer-events: none;
+  }
+
+  /* Шапка прячется при прокрутке вниз (класс на body ставит redesign-ui.js) —
+     полоса поднимается на её место, иначе под ней зияла бы полоска контента. */
+  body.page-redesign.header-hidden .tc-cbar {
+    top: 0;
+  }
+
+  /* Кнопки — те же выпуклые пилюли, что и чипы фильтра: рамки нет, границу
+     очерчивает свет.
+
+     position:relative обязателен: подложка полосы — позиционированный
+     псевдоэлемент, и непозиционированные кнопки оказывались ПОД ней. Полоса
+     на экране просто пропадала. */
+  body.page-redesign .tc-cbar__btn,
+  body.page-redesign .tc-cbar__clear,
+  body.page-redesign .tc-cbar__search {
+    position: relative;
+    /* Над кромкой полосы: она поднята, чтобы её не закрывали карточки. */
+    z-index: 2;
+  }
+
+  /* ── Поиск в полосе ──────────────────────────────────────────────────
+     Занимает всё, что осталось от кнопок: искать в каталоге — частое дело,
+     и ради него не надо уходить на отдельный экран. Поверхность вдавленная,
+     в отличие от выпуклых кнопок рядом: в это поле пишут, а не нажимают. */
+  body.page-redesign .tc-cbar__search {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 38px;
+    padding: 0 10px 0 12px;
+    border-radius: var(--r-pill);
+    background: var(--bg);
+    box-shadow:
+      inset 2px 3px 6px rgba(16, 32, 64, .13),
+      inset -2px -2px 5px rgba(255, 255, 255, .92);
+  }
+
+  body.page-redesign .tc-cbar__search-ico {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    color: var(--gray);
+  }
+
+  body.page-redesign .tc-cbar__input {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 100%;
+    border: 0;
+    background: none;
+    outline: none;
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+    /* Системный крестик убираем: у нас свой, он же гасит и выдачу. */
+    appearance: none;
+  }
+  body.page-redesign .tc-cbar__input::-webkit-search-cancel-button { display: none; }
+  body.page-redesign .tc-cbar__input::placeholder { color: var(--gray); font-weight: 500; }
+
+  body.page-redesign .tc-cbar__wipe {
+    flex: none;
+    width: 22px;
+    height: 22px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    color: var(--gray);
+    cursor: pointer;
+  }
+  body.page-redesign .tc-cbar__wipe svg { width: 14px; height: 14px; }
+
+  body.page-redesign .tc-cbar__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    /* Кнопки — значки: подписи «Фильтры» и «Популярные» занимали полосу,
+       а место нужно полю поиска. Высоту держим прежнюю, а ширину растим:
+       палец промахивается по узкому, но высокая кнопка утяжелила бы полосу
+       и съела высоту первого экрана. Выходит лежачая пилюля. */
+    height: 38px;
+    width: 54px;
+    padding: 0;
+    justify-content: center;
+    border: 0;
+    border-radius: var(--r-pill);
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    box-shadow:
+      3px 4px 9px rgba(16, 32, 64, .13),
+      -3px -3px 8px rgba(255, 255, 255, .95),
+      inset 1px 1px 1px rgba(255, 255, 255, .8);
+    transition: box-shadow var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
+  }
+
+  body.page-redesign .tc-cbar__btn:active {
+    box-shadow:
+      1px 1px 3px rgba(16, 32, 64, .10),
+      inset 2px 3px 6px rgba(16, 32, 64, .14),
+      inset -2px -2px 5px rgba(255, 255, 255, .9);
+  }
+
+  body.page-redesign .tc-cbar__btn[data-cbar-sort] {
+    flex: 0 0 auto;
+    font-weight: 500;
+  }
+
+  /* Порядок не обычный — рядом со значком появляется короткое слово
+     («дешёвые», «дорогие»): иначе непонятно, почему список другой.
+     Кнопка при этом перестаёт быть квадратом ровно на ширину слова. */
+  body.page-redesign .tc-cbar__btn[data-cbar-sort]:has(.tc-cbar__label:not([hidden])) {
+    width: auto;
+    padding: 0 12px 0 10px;
+  }
+
+  body.page-redesign .tc-cbar__label {
+    max-width: 92px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+  }
+
+  body.page-redesign .tc-cbar.is-sorted .tc-cbar__btn[data-cbar-sort] { color: var(--blue); }
+
+  body.page-redesign .tc-cbar__ico {
+    flex: none;
+    width: 21px;
+    height: 21px;
+  }
+
+  /* Есть выбранные условия — кнопка фильтра это показывает, не открываясь. */
+  /* С условиями кнопка вдавлена и синяя — то же, что у выбранного чипа. */
+  body.page-redesign .tc-cbar.is-filtered .tc-cbar__btn[data-cbar-filter] {
+    color: var(--blue);
+    box-shadow:
+      1px 1px 3px rgba(16, 32, 64, .10),
+      inset 2px 3px 6px rgba(16, 32, 64, .14),
+      inset -2px -2px 5px rgba(255, 255, 255, .9);
+  }
+
+  /* Число условий — меткой в углу значка, а не в строке: кнопка теперь
+     квадратная, и в потоке бейдж распирал бы её. */
+  /* Разметка идёт «значок — счётчик — подпись»: на телефоне подписи нет,
+     и счётчик стоит сразу за значком. Здесь подпись есть, и число должно быть
+     после неё, а не вклиниваться в середину. */
+  body.page-redesign .tc-cbar__btn[data-cbar-filter] { position: relative; }
+  body.page-redesign .tc-cbar__btn[data-cbar-filter]::after { order: 1; }
+  body.page-redesign .tc-cbar__count { order: 2; }
+
+  body.page-redesign .tc-cbar__count {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    border-radius: var(--r-pill);
+    background: var(--blue);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    box-shadow: 0 0 0 2px var(--bg);
+  }
+
+  body.page-redesign .tc-cbar__clear {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* Тот же палец, что и у соседних кнопок: 30 px было заметно меньше. */
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--bg);
+    color: var(--muted);
+    cursor: pointer;
+    box-shadow:
+      2px 3px 7px rgba(16, 32, 64, .12),
+      -2px -2px 6px rgba(255, 255, 255, .95);
+  }
+
+  body.page-redesign .tc-cbar__clear svg { width: 14px; height: 14px; }
+
+  body.page-redesign .tc-cbar__clear:active {
+    box-shadow:
+      inset 2px 2px 5px rgba(16, 32, 64, .14),
+      inset -2px -2px 4px rgba(255, 255, 255, .9);
+  }
+
+  /* Сброс прижат к правому краю: слева — что выбрать, справа — как отменить. */
+  body.page-redesign .tc-cbar__clear { margin-left: auto; }
+}
+
+/* Полоса — мобильная. На широком экране фильтр стоит колонкой слева,
+   а сортировка живёт в своей строке над списком. */
+/* ── Полоса управления на мыши и клавиатуре ───────────────────────────
+   Прежде её тут не было вовсе: на широком экране оставались фильтр сбоку
+   и страницы — старая модель каталога. Модель теперь одна, но подача своя:
+   места хватает, поэтому у кнопок есть подписи, а не только значки. */
+
+@media (min-width: 900px) {
+
+  /* Колонка каталога больше не делится надвое: слева стоял фильтр, и список
+     занимал остаток. Фильтра сбоку нет — список и полоса идут во всю ширину.
+
+     Порядок больше не настраиваем: заголовок, путь и управление собраны
+     в полосу раздела, и она стоит первой сама. */
+  body.page-redesign .catalog__content { display: block !important; }
+
+  /* Заголовок — просто заголовок. Липкая плашка с подложкой и затуханием была
+     нужна, когда в одной строке с ним жила сортировка: та уехала в полосу. */
+  body.page-redesign:has(.catalog__list) .title_box {
+    position: static;
+    background: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  body.page-redesign:has(.catalog__list) .title_box::after { content: none; }
+  body.page-redesign .catalog__list > .title_box { display: none; }
+
+  /* До плитки была пропасть в 64 px: поля самой полосы плюс 30 px сверху
+     у списка — они держали отступ от прежнего заголовка, которого больше нет. */
+  body.page-redesign .catalog__content > .catalog__list { padding-top: 0; }
+  body.page-redesign .tc-pagebar { margin-bottom: 10px; }
+
+  /* ── Полоса раздела ───────────────────────────────────────────────────
+     «Назад», путь и управление — один объект в одну строку, а не четыре
+     элемента подряд. Разметку собирает js/tc-catalog.js, перенося сюда готовые
+     крошки и H1.
+
+     Названия раздела отдельной строкой нет: его роль играет последняя крошка,
+     она и так называет текущую страницу. H1 остаётся в разметке для поисковика,
+     но не показывается. */
+  body.page-redesign .tc-pagebar {
+    position: sticky;
+    top: var(--hh);
+    /* Выше сплошной подложки (900), но ниже шапки (1000): подложка закрывает
+       содержимое страницы, а сама полоса должна быть видна поверх неё. */
+    z-index: 950;
+    /* Сетка, а не флекс: «1fr auto 1fr» ставит поиск ровно по центру полосы,
+       а крайние блоки при этом НЕ растягиваются под свою долю — они жмутся
+       к краям по содержимому (justify-self). Флексом так не выходит: доля
+       заставляла бы плиту пути тянуться во всю треть. */
+    display: grid;
+    /* Ширину середины задаёт КОЛОНКА, а не само поле: при колонке «auto»
+       и ширине поля в процентах получался замкнутый круг — колонка жалась
+       по содержимому, а 100% считались от неё же, и поиск схлопывался. */
+    /* Крайние колонки не уже своего содержимого: при minmax(0, 1fr) они
+       сжимались до нуля, и крошки или кнопки (с активным фильтром их больше —
+       счётчик и крестик сброса) наезжали на поиск. Слева min-content: крошки
+       умеют сокращаться, текущая страница — нет. Справа max-content: кнопки
+       не сокращаются. Поиск — гибкий, от 160 до 480: сжимается первым. */
+    grid-template-columns: minmax(min-content, 1fr) minmax(160px, 480px) minmax(max-content, 1fr);
+    align-items: center;
+    gap: 16px;
+    margin: 0 0 20px;
+    padding: 10px 0;
+    /* Своего фона нет: его даёт сплошная подложка под шапкой и полосой.
+       Пока он был, полоса закрашивала собой нижнюю кромку подложки —
+       линия оставалась видна только по бокам, мимо полосы. */
+    transition: top .24s ease;
+  }
+
+  body.page-redesign .tc-pagebar__h1 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* Шапка прячется при прокрутке вниз (класс на body ставит redesign-ui.js) —
+     полоса поднимается на её место, иначе под ней зияла бы полоска контента. */
+  body.page-redesign.header-hidden .tc-pagebar { top: 0; }
+
+  /* Подложка — ОДНА на шапку и полосу, во всю ширину окна и до низа полосы.
+
+     Шапка здесь не плашка во всю ширину, а прозрачная обёртка с белой
+     карточкой внутри: над ней и по её бокам просвечивает страница, и при
+     прокрутке там едут карточки. Отдельная подложка у полосы эту щель
+     не закрывала — она шире полосы и выше её.
+
+     Держим на body, а не на самой шапке: шапка при прокрутке уезжает
+     трансформацией, и фиксированный слой внутри неё считался бы от неё
+     и гулял. `position: fixed` даёт ширину видимой области БЕЗ полосы
+     прокрутки — в отличие от 100vw, от которого страница ездит вбок.
+
+     Докуда тянуть, говорит --pagebar-h из js/tc-catalog.js: высота полосы
+     зависит от кегля и полей, в CSS её не вычислить. */
+  body.page-redesign.tc-catalog-screen::before {
+    content: '';
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: calc(var(--hh) + var(--pagebar-h, 66px));
+    z-index: 900;
+    background: var(--bg);
+    border-bottom: 1px solid rgba(45, 50, 58, .2);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .2s ease;
+  }
+  /* У самого верха подложка не нужна: шапка и полоса и так стоят на холсте. */
+  body.page-redesign.tc-catalog-screen.header-scrolled::before { opacity: 1; }
+  /* Шапка уехала — остаётся закрыть только полосу. */
+  body.page-redesign.tc-catalog-screen.header-hidden::before {
+    height: var(--pagebar-h, 66px);
+  }
+
+  body.page-redesign .tc-pagebar__mark { height: 1px; }
+
+  /* Путь: кнопка возврата стоит в его НАЧАЛЕ — она часть пути, а не отдельная
+     кнопка в углу. Высота у всей строки общая, поэтому кнопка и крошки ростом
+     с поле поиска, а не мельче его. */
+  /* Путь — такая же плита, как кнопки: возврат и крошки живут в ней вместе,
+     и строка читается как один набор кирпичей, а не как текст рядом с ними. */
+  body.page-redesign .tc-pagebar__path {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    /* Левый блок полосы: жмётся к краю, но не уже правого — ширину обоих
+       выравнивает --pagebar-side (её считает js/tc-catalog.js по более
+       широкому из двух). Иначе путь и кнопки были бы разной длины, и полоса
+       выглядела бы собранной из случайных кусков. Растёт сам, когда крошек
+       становится больше. */
+    justify-self: start;
+    min-width: var(--pagebar-side, 0px);
+    max-width: 100%;
+    height: 46px;
+    padding: 0 16px 0 4px;
+    border-radius: 14px;
+    background: var(--bg);
+    box-shadow:
+      3px 4px 9px rgba(16, 32, 64, .13),
+      -3px -3px 8px rgba(255, 255, 255, .95);
+  }
+
+  /* Возврат — часть плиты пути, поэтому своей тени у него нет: он не отдельная
+     кнопка рядом, а начало дорожки. Продавливается при нажатии, как и всё. */
+  body.page-redesign .tc-pagebar__back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 38px;
+    height: 38px;
+    border: 0;
+    border-radius: 11px;
+    background: none;
+    color: var(--ink);
+    cursor: pointer;
+    transition: box-shadow .16s var(--ease), color .15s ease;
+  }
+  body.page-redesign .tc-pagebar__back:hover { color: var(--blue); }
+  body.page-redesign .tc-pagebar__back:active {
+    box-shadow:
+      inset 2px 3px 6px rgba(16, 32, 64, .16),
+      inset -2px -2px 5px rgba(255, 255, 255, .9);
+  }
+  body.page-redesign .tc-pagebar__back svg { width: 18px; height: 18px; }
+
+  /* Тесная полоса (узкий планшет, активный фильтр): от пути остаётся одна
+     кнопка «назад», крошки сворачиваются. Решает js/tc-catalog.js — по тому,
+     сколько при полном пути осталось бы поиску. */
+  body.page-redesign .tc-pagebar.is-tight .tc-pagebar__path { padding: 0 4px; }
+  body.page-redesign .tc-pagebar.is-tight .tc-pagebar__path .breadcrumbs { max-width: 0; }
+  body.page-redesign .tc-pagebar.is-tight .tc-pagebar__back {
+    margin-right: 0;
+    border-right: 0;
+    box-shadow: none;
+    border-radius: 11px;
+  }
+  body.page-redesign .tc-pagebar.is-tight .tc-pagebar__back:active {
+    box-shadow:
+      inset 2px 3px 6px rgba(16, 32, 64, .16),
+      inset -2px -2px 5px rgba(255, 255, 255, .9);
+  }
+
+  /* Канавка между возвратом и путём: без неё шеврон читался как часть текста
+     крошек и терялся. Это по-прежнему одна плита — просто с перегородкой. */
+  body.page-redesign .tc-pagebar__back {
+    margin-right: 10px;
+    border-right: 1px solid rgba(16, 32, 64, .16);
+    box-shadow: 1px 0 0 rgba(255, 255, 255, .75);
+    border-radius: 11px 0 0 11px;
+  }
+
+  /* До запуска скрипта крошки стоят на своём обычном месте, над содержимым,
+     и на медленной загрузке было видно, как они туда встают, а потом уезжают
+     в полосу. Прячем их там, где они лежат изначально; переехав в полосу,
+     они перестают подходить под этот селектор и показываются сами. */
+  body.page-redesign:has(.catalog__content) .main_content > .tc-crumbs-row { display: none; }
+
+  /* Крошки переехали внутрь полосы — свои поля и обёртка им здесь не нужны. */
+  body.page-redesign .tc-pagebar .breadcrumbs,
+  body.page-redesign .tc-pagebar .breadcrumbs .wrapper-inner {
+    margin: 0;
+    padding: 0;
+    max-width: none;
+    min-width: 0;
+  }
+  body.page-redesign .tc-pagebar .breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow: hidden;
+    font-size: 15px;
+  }
+  body.page-redesign .tc-pagebar .breadcrumbs_item {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+  }
+  /* Текущая страница видна ВСЕГДА и целиком: без отдельного заголовка именно
+     она говорит, где человек находится. Сокращаются ближние к корню — они
+     лишь путь сюда. */
+  body.page-redesign .tc-pagebar .breadcrumbs_item.item {
+    display: flex;
+    flex: 0 0 auto;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  body.page-redesign .tc-pagebar .breadcrumbs_item:not(.item) {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+  body.page-redesign .tc-pagebar .breadcrumbs_item:not(.item) span,
+  body.page-redesign .tc-pagebar .breadcrumbs_item:not(.item) a {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  body.page-redesign .tc-pagebar .breadcrumbs_item:not(.item)::after {
+    content: '/';
+    flex: none;
+    margin-left: 6px;
+    color: var(--gray);
+  }
+
+  /* Полоса из трёх блоков: путь слева, поиск по центру, управление справа.
+     Крайние блоки равной ширины (flex: 1 1 0), поэтому поиск стоит ровно
+     посередине полосы, а не «где получилось».
+
+     .tc-cbar прозрачна: её дети должны встать блоками самой полосы, иначе
+     поиск и кнопки оказались бы внутри одного куска и центр поплыл бы. */
+  body.page-redesign .tc-cbar {
+    display: contents;
+  }
+  body.page-redesign .tc-cbar__acts {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    justify-self: end;
+    min-width: var(--pagebar-side, 0px);
+  }
+
+  /* Поиск — главное поле полосы, остальное прижато вправо. */
+  /* Поиск не тянется во всю свободную ширину: с длинным полем вес строки
+     заваливался влево, а кнопки жались к правому краю. Потолок оставляет
+     воздух между путём и управлением.
+
+     Поиск прижат ВПРАВО, к фильтру и сортировке: он про то, что показать,
+     как и они. Свободное место остаётся слева — это запас, в который растёт
+     путь, когда крошек становится больше. */
+  body.page-redesign .tc-cbar__search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+    height: 46px;
+    padding: 0 14px;
+    border-radius: 14px;
+    background: var(--bg);
+    box-shadow:
+      inset 3px 4px 7px rgba(16, 32, 64, .13),
+      inset -3px -3px 6px rgba(255, 255, 255, .95);
+  }
+  body.page-redesign .tc-cbar__search-ico {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+    color: var(--gray);
+  }
+  body.page-redesign .tc-cbar__input {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 100%;
+    border: 0;
+    background: none;
+    outline: none;
+    font-family: var(--font);
+    font-size: 15px;
+    color: var(--ink);
+  }
+  body.page-redesign .tc-cbar__input::-webkit-search-cancel-button { display: none; }
+  body.page-redesign .tc-cbar__input::placeholder { color: var(--gray); }
+
+  body.page-redesign .tc-cbar__wipe {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    color: var(--gray);
+    cursor: pointer;
+  }
+  body.page-redesign .tc-cbar__wipe svg { width: 14px; height: 14px; }
+
+  /* Кнопки — плиты в тоне холста с продавливанием, как везде. */
+  body.page-redesign .tc-cbar__btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    flex: none;
+    height: 46px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 14px;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow:
+      3px 4px 9px rgba(16, 32, 64, .13),
+      -3px -3px 8px rgba(255, 255, 255, .95);
+    transition: box-shadow .16s var(--ease), color .15s ease;
+  }
+  body.page-redesign .tc-cbar__btn:hover { color: var(--blue); }
+  body.page-redesign .tc-cbar__btn:active {
+    box-shadow:
+      inset 2px 3px 6px rgba(16, 32, 64, .16),
+      inset -2px -2px 5px rgba(255, 255, 255, .9);
+  }
+  body.page-redesign .tc-cbar__ico { width: 18px; height: 18px; }
+
+  /* Подписи у кнопок дорисовываем стилями: разметка одна на все ширины,
+     а на телефоне места под слова нет. */
+  body.page-redesign .tc-cbar__btn[data-cbar-filter]::after { content: 'Фильтры'; }
+  body.page-redesign .tc-cbar__btn[data-cbar-sort]::after   { content: 'Сортировка'; }
+  /* Когда порядок не обычный, скрипт показывает его подпись — тогда слово
+     «Сортировка» лишнее, иначе в кнопке было бы два заголовка подряд. */
+  body.page-redesign .tc-cbar__btn[data-cbar-sort]:has(.tc-cbar__label:not([hidden]))::after {
+    content: none;
+  }
+  body.page-redesign .tc-cbar__label { font-weight: 600; color: var(--blue); }
+
+  /* Число условий — то, ради чего ссылки с предустановленным фильтром вообще
+     понятны: человек видит, что каталог открылся не целиком. */
+  /* Разметка идёт «значок — счётчик — подпись»: на телефоне подписи нет,
+     и счётчик стоит сразу за значком. Здесь подпись есть, и число должно быть
+     после неё, а не вклиниваться в середину. */
+  body.page-redesign .tc-cbar__btn[data-cbar-filter] { position: relative; }
+  body.page-redesign .tc-cbar__btn[data-cbar-filter]::after { order: 1; }
+  body.page-redesign .tc-cbar__count { order: 2; }
+
+  body.page-redesign .tc-cbar__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: var(--blue);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  body.page-redesign .tc-cbar.is-filtered .tc-cbar__btn[data-cbar-filter] { color: var(--blue); }
+
+  body.page-redesign .tc-cbar__clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 46px;
+    height: 46px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--bg);
+    color: var(--gray);
+    cursor: pointer;
+    box-shadow:
+      3px 4px 9px rgba(16, 32, 64, .13),
+      -3px -3px 8px rgba(255, 255, 255, .95);
+    transition: box-shadow .16s var(--ease), color .15s ease;
+  }
+  body.page-redesign .tc-cbar__clear:hover { color: var(--blue); }
+  body.page-redesign .tc-cbar__clear:active {
+    box-shadow:
+      inset 2px 3px 6px rgba(16, 32, 64, .16),
+      inset -2px -2px 5px rgba(255, 255, 255, .9);
+  }
+  body.page-redesign .tc-cbar__clear svg { width: 17px; height: 17px; }
+
+  /* Фильтр сбоку и верхняя сортировка — прежняя модель каталога. Условия
+     теперь выбирают в той же шторке, что на телефоне, только показанной
+     боковой панелью. Из разметки блок не убираем: он отдаёт поисковикам
+     ссылки на разделы. */
+  /* !important обязателен: легаси объявляет сайдбар через display:flex!important. */
+  body.page-redesign .catalog__content > .catalog__filter { display: none !important; }
+  body.page-redesign .catalog__list .title_box .sorting_box { display: none !important; }
+  /* Отступ под сайдбар больше не нужен — он держал «показать ещё» по центру
+     плитки, а плитка теперь во всю ширину. */
+  body.page-redesign .catalog__after { padding-left: 0; }
+}
+
+/* ── Шторка сортировки ────────────────────────────────────────────────
+   Вариантов немного, поэтому панель короткая: во весь экран растягивать нечего. */
+
+.tc-sort {
+  padding-bottom: 8px;
+}
+
+.tc-sort__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 2px;
+  border: 0;
+  border-bottom: 1px solid var(--line-soft);
+  background: none;
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tc-sort__row:last-child {
+  border-bottom: 0;
+}
+
+.tc-sort__row.is-on {
+  color: var(--blue);
+  font-weight: 600;
+}
+
+.tc-sort__tick {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  opacity: 0;
+  transition: opacity var(--t-fast) var(--ease);
+}
+
+.tc-sort__row.is-on .tc-sort__tick {
+  opacity: 1;
+}
+
+/* ── Категория как условие фильтра ────────────────────────────────────
+   Раньше это был список ссылок-переходов по разделам. Теперь — обычные
+   чекбоксы рядом с брендом и ценой: каталог единый, категория его сужает.
+   Разметку строит catalog.section.list/section-menu. */
+
+.tc-cat__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tc-cat__label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 2px;
+  cursor: pointer;
+}
+
+.tc-cat__box {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--blue);
+}
+
+.tc-cat__name {
+  font-family: var(--font);
+  font-size: 14px;
+  color: var(--ink);
+}
+
+/* Корневые категории — опора списка, подразделы читаются как их продолжение. */
+.tc-cat__row--root .tc-cat__name {
+  font-weight: 600;
+}
+
+.tc-cat__row:not(.tc-cat__row--root) .tc-cat__label {
+  padding-left: 18px;
+}
+
+.tc-cat__row:not(.tc-cat__row--root) .tc-cat__name {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* Обёртка кнопок нужна только широкому экрану, где она образует правый блок
+   полосы. На телефоне она не должна ничего менять. */
+@media (max-width: 899px) {
+  body.page-redesign .tc-cbar__acts { display: contents; }
+}
+
+/* ── Бесконечная лента (js/tc-catalog-feed.js) ─────────────────────── */
+
+/* Пока работает лента, прежние способы листать не нужны. Из разметки их НЕ
+   убираем: по ним ходят поисковики и те, у кого нет JS.
+
+   ⚠ Правило вне медиазапроса намеренно. Сама лента никогда не делилась по
+   ширине — она поднимается везде, где есть сетка и навигация, — а скрытие
+   лежало только в мобильном блоке. Поэтому на широком экране поверх ленты
+   оставалась пагинация Битрикса, и она же давала вылет вправо: у неё
+   `margin-left:-344px` и `width:100% + 344px` под сайдбар, что при колонке
+   1236 px даёт 1580 и не влезает в окно. */
+body.page-redesign.tc-feed-on .bx_pagination_bottom,
+body.page-redesign.tc-feed-on .show-more-btn { display: none; }
+
+body.page-redesign .tc-feed-sentinel { height: 1px; }
+
+/* Конец ленты — плашка по центру, вдавленная в холст, как выбранная плитка
+   сортировки: это отметка «дальше ничего», а не кнопка. Раньше стиль был
+   только у телефона, и на широком экране оставался голый абзац у левого
+   края, впритык к последним карточкам. */
+body.page-redesign .tc-feed-end:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin: 36px auto 12px;
+  animation: pcReveal .4s cubic-bezier(.2, .75, .25, 1) both;
+}
+body.page-redesign .tc-feed-end__note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 11px 20px;
+  border-radius: 999px;
+  background: var(--bg);
+  box-shadow:
+    inset 2px 3px 6px rgba(16, 32, 64, .11),
+    inset -2px -2px 5px rgba(255, 255, 255, .9);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--muted);
+}
+body.page-redesign .tc-feed-end__acts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+body.page-redesign .tc-feed-end__note::before {
+  content: '';
+  flex: none;
+  width: 14px;
+  height: 14px;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / contain no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+@media (max-width: 899px) {
+  body.page-redesign .tc-feed-end:not([hidden]) { margin: 24px auto 8px; gap: 12px; }
+}
+
+/* ── Выдача поиска в каталоге (js/tc-catalog.js) ───────────────────── */
+
+@media (max-width: 899px) {
+  /* Строка над списком: что нашлось и как вернуться к каталогу. Плоская,
+     без своей карточки — это подпись к сетке, а не отдельный блок. */
+  body.page-redesign .tc-found {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 0 0 10px;
+    font-size: 13px;
+    color: var(--muted);
+    animation: pcReveal .32s cubic-bezier(.2, .75, .25, 1) both;
+  }
+
+  body.page-redesign .tc-found__text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  body.page-redesign .tc-found__reset {
+    flex: none;
+    border: 0;
+    background: none;
+    padding: 4px 0;
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--blue);
+    cursor: pointer;
+  }
+
+  /* Пока показан поиск, постраничная навигация каталога не к месту:
+     у выдачи своя кнопка дозагрузки. */
+  body.page-redesign.tc-search-mode .bx_pagination_bottom,
+  body.page-redesign.tc-search-mode .show-more-btn,
+  body.page-redesign.tc-search-mode .tc-feed-end { display: none; }
+
+  body.page-redesign .tc-found__more {
+    display: block;
+    width: 100%;
+    margin: 14px 0 4px;
+    height: 44px;
+    border: 0;
+    border-radius: var(--r-pill);
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow:
+      3px 4px 9px rgba(16, 32, 64, .13),
+      -3px -3px 8px rgba(255, 255, 255, .95),
+      inset 1px 1px 1px rgba(255, 255, 255, .8);
+  }
+  body.page-redesign .tc-found__more:active {
+    box-shadow:
+      1px 1px 3px rgba(16, 32, 64, .10),
+      inset 2px 3px 6px rgba(16, 32, 64, .14),
+      inset -2px -2px 5px rgba(255, 255, 255, .9);
+  }
+}
+
+@media (max-width: 899px) {
+  /* Запрос исправлен (опечатка, раскладка, транслит) — говорим об этом тише
+     самого результата, но говорим: иначе непонятно, почему по «крм» кремы.
+     Отдельной строкой под результатом: в одну строку это не помещается. */
+  body.page-redesign .tc-found__fix {
+    flex: 1 0 100%;
+    margin-top: 2px;
+    color: var(--gray);
+    font-size: 12px;
+  }
+}
+
+
+/* ── Пустые состояния ────────────────────────────────────────────────
+   Их четыре (см. include/tc-empty.php), и все четыре — про «что делать
+   дальше», а не про «ничего нет». Поэтому в каждом есть действие: снять
+   фильтр, уйти в соседнюю категорию, посмотреть весь каталог, повторить.
+   Старый экран с серой корзиной не предлагал ничего. */
+
+body.page-redesign .tc-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 44px 20px 40px;
+  text-align: center;
+}
+
+body.page-redesign .tc-empty__ico {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 4px;
+  border-radius: 50%;
+  /* Та же вдавленная лунка, что у поля поиска: иконка лежит в ней, а не
+     висит сама по себе. */
+  background: var(--bg);
+  box-shadow:
+    inset 3px 4px 8px rgba(16, 32, 64, .13),
+    inset -3px -3px 7px rgba(255, 255, 255, .95);
+}
+
+body.page-redesign .tc-empty__ico svg {
+  width: 30px;
+  height: 30px;
+  fill: none;
+  stroke: var(--gray);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+body.page-redesign .tc-empty__title {
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text);
+}
+
+body.page-redesign .tc-empty__text {
+  margin: 0;
+  max-width: 320px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--gray);
+}
+
+body.page-redesign .tc-empty__act {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+/* Кнопка — синяя пилюля, как у остальных решающих действий. */
+body.page-redesign .tc-empty__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 20px;
+  border-radius: var(--r-pill);
+  background: var(--blue);
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* Чипы соседних категорий — те же выпуклые пилюли, что в фильтре. */
+body.page-redesign .tc-empty__chip {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  box-shadow:
+    2px 3px 6px rgba(16, 32, 64, .12),
+    -2px -2px 5px rgba(255, 255, 255, .92);
+}
+
+body.page-redesign .tc-empty__chip:active {
+  box-shadow:
+    inset 2px 3px 6px rgba(16, 32, 64, .14),
+    inset -2px -2px 5px rgba(255, 255, 255, .92);
+}
+
+/* Кнопка — с новой строки: чипы это варианты, а кнопка — другое действие,
+   и в одном ряду они читались как один список. */
+body.page-redesign .tc-empty__act .tc-empty__btn {
+  /* Своя строка и своя ширина: растянутая во весь блок кнопка выглядела бы
+     как полоса, а в ряду с чипами читалась как ещё один чип. */
+  flex: 0 0 100%;
+  max-width: 220px;
+  margin: 6px auto 0;
+}
+
+/* ── Плита пути на остальных страницах (header.php) ───────────────────────
+   Та же плита, что в полосе каталога: стрелка «назад» и крошки. Здесь она
+   одна в строке и не прилипает — прилипание нужно полосе каталога ради
+   фильтра и сортировки, а путю на странице «Доставка» ни к чему.
+   На телефоне её нет: стрелка — в шапке, крошки там не показываются. */
+@media (max-width: 899px) {
+  body.page-redesign .tc-crumbs-row { display: none; }
+}
+@media (min-width: 900px) {
+  body.page-redesign .tc-crumbs-row { padding-top: 8px; }
+  body.page-redesign .tc-pagebar--crumbs {
+    position: static;
+    display: flex;
+    margin: 0 0 22px;
+    padding: 0;
+  }
+  body.page-redesign .tc-pagebar--crumbs .tc-pagebar__path { min-width: 0; max-width: 100%; }
+  /* Текущая страница — целиком. Старое правило крошек режет каждый пункт
+     до 14 знаков (redesign.css, --crumb-max), и «Оплата и доставка»
+     превращалась в «Оплата и достав…». Сокращаются только пункты пути. */
+  body.page-redesign .tc-pagebar .breadcrumbs .breadcrumbs_item.item > span,
+  body.page-redesign .tc-pagebar .breadcrumbs .breadcrumbs_item:last-child > span,
+  body.page-redesign .tc-pagebar .breadcrumbs .breadcrumbs_item:last-child .breadcrumbs_item-link {
+    max-width: none;
+  }
+}
+
+/* ── Купить нельзя (canBuy=false) ─────────────────────────────────────
+   redesign-grid выводит кнопку с disabled и без data-product-id, когда товара
+   нет в наличии или нет базовой цены. Без этого правила она выглядела бы
+   активной: .add-btn в redesign.css держит opacity:1!important. */
+body.page-redesign .p-card .add-btn.is-unavailable,
+.p-card .add-btn.is-unavailable {
+  opacity: .4 !important;
+  cursor: not-allowed;
+  box-shadow: inset 0 0 0 1.5px #b9c2d0 !important;
+}
+.p-card .add-btn.is-unavailable::after { background: #8a94a6; }

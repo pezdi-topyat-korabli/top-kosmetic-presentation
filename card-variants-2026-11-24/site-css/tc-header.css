@@ -1,0 +1,127 @@
+/* ШАПКА НА МЫШИ И КЛАВИАТУРЕ — в общем языке переделки.
+
+   До этого файла шапка оставалась от старой темы: белая карточка с радиусом
+   20, прозрачные иконки и подсветка ссылок бледно-синей заливкой. Рядом с
+   плитками каталога, кнопками и шторками, которые уже живут в неоморфе, она
+   читалась как кусок другого сайта.
+
+   Правило одно: поверхность — тон ХОЛСТА (--bg), форму держит свет. Белого
+   в шапке больше нет. Кирпичи те же, что у кнопок плитки и шторок:
+   приподнятый рельеф 3/4/9 + −3/−3/8, нажатие — вдавленность.
+
+   Телефон не трогаем: там своя шапка (include/tc-mobile-header.php) и своя
+   раскладка, и она уже доведена. Отсюда гейт @media (min-width: 900px) на
+   весь файл.
+
+   Подключается в header.php ПОСЛЕ redesign.css: там шапка описана с
+   !important в броне старой темы, и перебить её можно только порядком. */
+
+@media (min-width: 900px) {
+
+  /* ── Плита ────────────────────────────────────────────────────────────
+     Одна и та же на главной (поверх hero) и на внутренних: держать два вида
+     незачем, --inverted остаётся только ради тёмных глифов. Тень мягкая и
+     направленная вниз — плита лежит НАД страницей, а не висит в рамке.
+     Белого блика сверху-слева у неё нет: неоморфный блик — свет на общей
+     поверхности, а шапка плавает над прокручиваемым содержимым, и светлый
+     ореол на фото hero и на карточках читался как грязь. Иконкам внутри
+     плиты блик оставлен — у них поверхность есть, это сама плита. */
+  body.page-redesign .site-header .header-inner,
+  body.page-redesign .site-header--inverted .header-inner {
+    background: var(--bg) !important;
+    border-radius: 18px;
+    box-shadow:
+      0 12px 28px -10px rgba(16, 32, 64, .22),
+      0 3px 8px -4px rgba(16, 32, 64, .10) !important;
+  }
+
+  /* ── Иконки ───────────────────────────────────────────────────────────
+     Круглые кнопки того же рельефа, что «в корзину» на плитке товара: одна
+     фигура на весь сайт. Прозрачные глифы с синей подсветкой ушли. */
+  body.page-redesign .site-header .h-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bg) !important;
+    box-shadow:
+      3px 4px 9px rgba(16, 32, 64, .13),
+      -3px -3px 8px rgba(255, 255, 255, .95);
+    transition:
+      box-shadow var(--t-base, .24s) var(--ease, cubic-bezier(.2, .7, .2, 1)),
+      transform var(--t-base, .24s) var(--ease, cubic-bezier(.2, .7, .2, 1));
+  }
+
+  body.page-redesign .site-header .h-icon + .h-icon,
+  body.page-redesign .site-header .h-search + .h-icon { margin-left: 10px; }
+
+  /* Наведение приподнимает, нажатие продавливает — так же, как плитка. */
+  body.page-redesign .site-header .h-icon:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      4px 6px 12px rgba(16, 32, 64, .16),
+      -3px -4px 10px rgba(255, 255, 255, .95);
+  }
+  body.page-redesign .site-header .h-icon:active {
+    transform: none;
+    box-shadow:
+      inset 2px 3px 6px rgba(16, 32, 64, .16),
+      inset -2px -2px 5px rgba(255, 255, 255, .9);
+  }
+
+  body.page-redesign .site-header .h-icon img {
+    width: 19px;
+    height: 19px;
+    /* Глифы одного тона с текстом: разноцветные иконки из старой темы
+       спорили со знаком, залитым фирменным градиентом. */
+    filter: none;
+    opacity: .72;
+    transition: opacity var(--t-base, .24s) ease;
+  }
+  body.page-redesign .site-header .h-icon:hover img { opacity: 1; transform: none; }
+
+  /* Счётчик корзины — на кромке кнопки, а не поверх глифа. */
+  body.page-redesign .site-header .h-badge {
+    top: -2px;
+    right: -2px;
+  }
+
+  /* ── Навигация ────────────────────────────────────────────────────────
+     Пункт подсвечивается вдавленной канавкой, а не бледной заливкой: это тот
+     же язык, что у выбранной плитки сортировки (.m-sort-cat). */
+  body.page-redesign .site-header .site-nav a {
+    border-radius: 999px;
+    transition:
+      box-shadow var(--t-base, .24s) ease,
+      color var(--t-base, .24s) ease;
+  }
+  body.page-redesign .site-header .site-nav a:hover,
+  body.page-redesign .site-header .site-nav a:focus-visible {
+    background: transparent !important;
+    color: var(--blue) !important;
+    box-shadow:
+      inset 2px 3px 6px rgba(16, 32, 64, .13),
+      inset -2px -2px 5px rgba(255, 255, 255, .9);
+  }
+}
+
+/* ── Планшет 900–1199: то же меню, что на десктопе ───────────────────────
+   Старый слой (redesign.css, «планшеты 769–1199») прятал меню в бургер со
+   своей выдвижной панелью — прежний интерфейс, которого больше нигде нет.
+   Здесь меню остаётся, просто встаёт в поток между логотипом и иконками,
+   а не по центру шапки: по центру на 900px оно наезжало бы на логотип. */
+@media (min-width: 900px) and (max-width: 1199px) {
+  body.page-redesign .site-header .menu-btn { display: none !important; }
+
+  body.page-redesign .site-header .site-nav {
+    display: flex !important;
+    position: static !important;
+    transform: none !important;
+    left: auto !important;
+    margin: 0 auto;
+    gap: 4px;
+  }
+  body.page-redesign .site-header .site-nav a {
+    padding: 6px 8px;
+    font-size: 13px;
+  }
+}

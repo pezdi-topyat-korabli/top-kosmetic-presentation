@@ -1,0 +1,63 @@
+/* ДВИЖЕНИЕ КАРТОЧЕК — стили к tc-card-motion.js. Классы ставит только скрипт. */
+
+/* Появление (только при html.cv-reveal): скрыта лишь плитка, которую скрипт
+   сам «взвёл»; без скрипта всё видно сразу. */
+html.cv-motion .p-card.cv-arm {
+  opacity: 0;
+  translate: 0 10px;
+}
+html.cv-motion .p-card.cv-arm.cv-in {
+  opacity: 1;
+  translate: 0 0;
+  transition:
+    opacity .32s ease var(--cv-delay, 0ms),
+    translate .42s cubic-bezier(.16, 1, .3, 1) var(--cv-delay, 0ms);
+}
+
+/* Летящее фото — маленькое поле карточки с товаром. */
+.cv-ghost {
+  position: fixed;
+  z-index: 1000;
+  pointer-events: none;
+  will-change: transform;
+}
+.cv-ghost__y {
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+}
+.cv-ghost__img {
+  width: 100%;
+  height: 100%;
+  border-radius: 14px;
+  background: #f2f2f2 center / 100% no-repeat;
+  box-shadow: 0 1px 2px rgba(16, 32, 64, .06), 0 14px 32px -18px rgba(16, 32, 64, .35);
+  will-change: transform, opacity;
+}
+
+/* Толчок значка корзины без перелёта и мягкая смена цифры. */
+.cv-bump {
+  animation: cvBump .36s cubic-bezier(.16, 1, .3, 1);
+}
+.cv-bump [data-cart-count] {
+  animation: cvDigit .24s cubic-bezier(.16, 1, .3, 1);
+}
+@keyframes cvBump {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+@keyframes cvDigit {
+  0%   { opacity: 0; translate: 0 3px; }
+  100% { opacity: 1; translate: 0 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.cv-motion .p-card.cv-arm { opacity: 1; translate: none; }
+  .cv-bump { animation: none; }
+  .cv-bump [data-cart-count] { animation: cvFade .15s linear; }
+}
+html.cv-reduced .p-card.cv-arm { opacity: 1; translate: none; transition: none; }
+html.cv-reduced .cv-bump { animation: none; }
+html.cv-reduced .cv-bump [data-cart-count] { animation: cvFade .15s linear; }
+@keyframes cvFade { from { opacity: 0; } to { opacity: 1; } }

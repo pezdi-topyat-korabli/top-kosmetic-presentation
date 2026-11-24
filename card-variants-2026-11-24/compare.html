@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Карточки каталога: сравнение</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --ink: #171b24; --muted: #6b7482; --blue: #085ab3; --line: #e5eaf0; --bg: #f6f7f9; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 500 14px/1.5 'Montserrat', system-ui, sans-serif; }
+    header { max-width: 1320px; margin: 0 auto; padding: 32px 20px 8px; }
+    h1 { margin: 0 0 6px; font: 700 30px/1.15 Georgia, serif; letter-spacing: -.02em; }
+    header p { margin: 0; color: var(--muted); max-width: 820px; }
+    nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    nav a { padding: 8px 14px; border-radius: 999px; background: #fff; color: var(--ink); text-decoration: none; font-weight: 600; font-size: 13px; box-shadow: inset 0 0 0 1px var(--line); }
+    nav a:hover { box-shadow: inset 0 0 0 1px var(--blue); color: var(--blue); }
+    section { max-width: 1320px; margin: 0 auto; padding: 28px 20px; border-bottom: 1px solid var(--line); }
+    h2 { margin: 0 0 4px; font: 700 22px/1.2 Georgia, serif; }
+    .lead { margin: 0 0 16px; color: var(--muted); max-width: 900px; }
+    .row { display: grid; grid-template-columns: minmax(0, 3.2fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+    .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+    figure { margin: 0; }
+    figcaption { margin: 0 0 6px; color: var(--muted); font-size: 12px; font-weight: 600; }
+    img { display: block; width: 100%; height: auto; border-radius: 10px; background: #fff; box-shadow: 0 1px 2px rgba(16, 32, 64, .06), 0 14px 32px -22px rgba(16, 32, 64, .35); }
+    .phones { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; }
+    .live { display: grid; grid-template-columns: repeat(3, 390px); justify-content: space-between; gap: 28px 16px; }
+    .live figcaption { color: var(--ink); font-size: 14px; font-weight: 700; text-align: center; }
+    .live iframe { display: block; width: 390px; height: 760px; border: 0; border-radius: 28px; background: #fff;
+      box-shadow: 0 0 0 10px #171b24, 0 24px 48px -24px rgba(16, 32, 64, .5); margin: 10px auto 12px; }
+    @media (max-width: 1300px) { .live { grid-template-columns: repeat(2, 390px); justify-content: space-around; } }
+    @media (max-width: 860px) { .live { grid-template-columns: 1fr; } .live iframe { width: 100%; max-width: 390px; } }
+    .overview { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 16px; }
+    .jgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 16px; }
+    .jgrid figcaption { color: var(--ink); font-size: 14px; font-weight: 700; }
+    .jgrid figcaption span { color: var(--muted); font-weight: 500; }
+    .jgrid a { display: block; border-radius: 10px; }
+    .jgrid a:hover img { box-shadow: 0 0 0 2px var(--blue); }
+    .jphones { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+    @media (max-width: 900px) { .jgrid { grid-template-columns: 1fr; } .jphones { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .overview figcaption { color: var(--ink); font-size: 14px; font-weight: 700; }
+    .overview figcaption span { color: var(--muted); font-weight: 500; }
+    .phones figcaption { text-align: center; }
+    footer { max-width: 1320px; margin: 0 auto; padding: 24px 20px 48px; color: var(--muted); font-size: 12px; }
+    @media (max-width: 900px) {
+      .row, .pair { grid-template-columns: 1fr; }
+      .phones { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Карточки каталога без рамки: пять вариантов</h1>
+    <p>Снимки шоурума на стилях рабочей копии варианта №8: одинаковые экраны 1440×900 и 390×844 (WebKit). Живая версия с переключателем и анимациями — <a href="index.html">index.html</a>.</p>
+    <nav>
+      <a href="index.html">Живой шоурум</a><a href="#journal">Журнал: 8 наборов</a><a href="#live">Живые телефоны</a><a href="#motion">Анимации</a><a href="#v8">Сейчас · №8</a><a href="#v1">1 · Витрина</a><a href="#v2">2 · Цена-кнопка</a><a href="#v3">3 · Полка</a><a href="#v4">4 · Журнал</a><a href="#v5">5 · Контраст</a><a href="#phones">Телефон</a>
+    </nav>
+  </header>
+  <section id="overview">
+    <h2>Коротко: под курсором</h2>
+    <p class="lead">Первый ряд каталога; курсор на второй карточке.</p>
+    <div class="overview" data-overview></div>
+  </section>
+  <section id="journal">
+    <h2>Журнал: набор вариаций</h2>
+    <p class="lead">Вариант 4 в восьми наборах: скругление, поле фото и значок корзины вместо надписи. Нажмите на снимок — откроется живой шоурум с этим сочетанием. Там же конструктор: 4 скругления × 7 полей × 4 кнопки = 112 сочетаний, любое сохраняется ссылкой.</p>
+    <div class="jgrid" data-journal></div>
+    <div class="row" style="margin-top:18px">
+      <figure><figcaption>Значок корзины: наведение, добавление, «+1», полёт (MP4)</figcaption>
+        <video src="video/journal-kit.mp4" poster="shots/journal/4.7-1440.png" controls muted playsinline preload="metadata" style="display:block;width:100%;border-radius:10px;background:#fff"></video>
+      </figure>
+      <figure><figcaption>Кадр добавления: заливка, галочка, кольцо, «+1»</figcaption><img loading="lazy" src="shots/journal/add-frame.png" alt="Значок корзины в момент добавления"></figure>
+    </div>
+    <h2 style="margin-top:26px;font-size:18px">Наборы на телефоне</h2>
+    <div class="phones jphones" data-journal-phones></div>
+  </section>
+  <section id="live">
+    <h2>Живые телефоны</h2>
+    <p class="lead">Каждый экран — настоящий шоурум шириной 390 px: прокручивайте внутри, нажимайте «В корзину», «+», «−» и сердечко. Компьютерный вид со всеми наведениями — <a href="index.html">index.html</a>, варианты переключаются вверху.</p>
+    <div class="live" data-live></div>
+  </section>
+  <section id="motion">
+    <h2>Анимации</h2>
+    <p class="lead">Видео 44 с: каждый вариант — наведение, «В корзину», галочка, полёт фото в корзину, счётчик и «+1». Полёт начинается только после ответа сервера; при системной настройке «Уменьшить движение» его нет, а переходы мгновенные.</p>
+    <div class="row">
+      <figure><figcaption>Поведение всех вариантов (MP4)</figcaption>
+        <video src="video/cards-motion.mp4" poster="video/flight-frame.png" controls muted playsinline preload="metadata" style="display:block;width:100%;border-radius:10px;background:#fff"></video>
+      </figure>
+      <figure><figcaption>Кадр полёта в корзину (вариант 1)</figcaption><img loading="lazy" src="video/flight-frame.png" alt="Фото товара летит к значку корзины в шапке"></figure>
+    </div>
+  </section>
+  <main data-board></main>
+  <section id="phones">
+    <h2>Телефон, 390 px</h2>
+    <p class="lead">Первый экран каталога в каждом варианте. Наведения на телефоне нет, поэтому покупка видна всегда.</p>
+    <div class="phones" data-phones></div>
+  </section>
+  <footer>Цены — снимок рабочей копии от 15.11.2026, актуальность не подтверждена. «Нет в наличии» у одной карточки — демонстрационное состояние. Действующий сайт не изменялся.</footer>
+  <script>
+    var V = [
+      ['v8', 'Сейчас · вариант №8', 'Карточка в рамке, синяя кнопка «В корзину» на всю ширину под каждой карточкой.'],
+      ['1', '1 · Витрина', 'Синий круг «+» на фото, под курсором открывается в «В корзину»; после добавления в том же углу белый счётчик.'],
+      ['2', '2 · Цена-кнопка', 'Цена и покупка — одна пилюля; под курсором заливается синим, цена уступает «В корзину»; после добавления — «В корзине − N +».'],
+      ['3', '3 · Полка', 'Под курсором снизу фото выезжает полка «В корзину»; после добавления на фото остаётся «− N шт +». На телефоне — контурная кнопка под ценой.'],
+      ['4', '4 · Журнал', 'Фото 4:5, название антиквой Georgia, покупка — тонкая ссылка с прорисовкой линии; после добавления — «− N +» в строке цены.'],
+      ['5', '5 · Контраст', 'Контурная кнопка и квадрат «в избранное» под ценой; под курсором чернильная заливка; после добавления — синий счётчик.']
+    ];
+    var SHORT = { v8: 'рамка, синяя полоса', '1': 'круг «+» → «В корзину»', '2': 'цена и покупка — одна пилюля',
+      '3': 'полка выезжает снизу фото', '4': 'ссылка, антиква, фото 4:5', '5': 'контурная кнопка + избранное' };
+    var overview = document.querySelector('[data-overview]');
+    V.forEach(function (v) {
+      overview.insertAdjacentHTML('beforeend', '<figure><figcaption>' + v[1] + ' <span>— ' + SHORT[v[0]] + '</span></figcaption>' +
+        '<img src="shots/v' + v[0] + '-1440-hover.png" alt="' + v[1] + ' под курсором"></figure>');
+    });
+    var J = [
+      ['4.1', 'Классика', 'скругление 6, серое поле, надпись', 'r=6&s=gray&c=text'],
+      ['4.2', 'Мягкий', '22, светлое поле, корзина-контур', 'r=22&s=light&c=icon-line'],
+      ['4.3', 'Белый лист', '14, белое с линией, корзина-контур', 'r=14&s=white&c=icon-line'],
+      ['4.4', 'Голубая пилюля', '32, голубое поле, синяя корзина', 'r=32&s=tint&c=icon-solid'],
+      ['4.5', 'Градиент', '22, градиент, синяя корзина', 'r=22&s=gradient&c=icon-solid'],
+      ['4.6', 'Матовое стекло', '22, матовое стекло, корзина-стекло', 'r=22&s=frost&c=icon-glass'],
+      ['4.7', 'Стекло', '32, стекло на голубом, корзина-стекло', 'r=32&s=glass&c=icon-glass'],
+      ['4.8', 'Стекло и синий', '22, стекло на голубом, синяя корзина', 'r=22&s=glass&c=icon-solid']
+    ];
+    var jbox = document.querySelector('[data-journal]');
+    var jphones = document.querySelector('[data-journal-phones]');
+    J.forEach(function (j) {
+      jbox.insertAdjacentHTML('beforeend', '<figure><figcaption>' + j[0] + ' ' + j[1] + ' <span>— ' + j[2] + '</span></figcaption>' +
+        '<a href="index.html#v=4&' + j[3] + '" title="Открыть в шоуруме"><img loading="lazy" src="shots/journal/' + j[0] + '-1440.png" alt="Журнал ' + j[0] + ' ' + j[1] + '"></a></figure>');
+      jphones.insertAdjacentHTML('beforeend', '<figure><figcaption>' + j[0] + ' ' + j[1] + '</figcaption><img loading="lazy" src="shots/journal/' + j[0] + '-390.png" alt="Журнал ' + j[0] + ' на телефоне"></figure>');
+    });
+
+    var live = document.querySelector('[data-live]');
+    V.forEach(function (v) {
+      live.insertAdjacentHTML('beforeend', '<figure><figcaption>' + v[1] + '</figcaption>' +
+        '<iframe loading="lazy" title="' + v[1] + ' на телефоне" src="index.html?embed=1#v=' + v[0] + '"></iframe></figure>');
+    });
+    var board = document.querySelector('[data-board]');
+    var phones = document.querySelector('[data-phones]');
+    V.forEach(function (v) {
+      var s = document.createElement('section');
+      s.id = 'v' + v[0].replace('v', '');
+      s.innerHTML = '<h2>' + v[1] + '</h2><p class="lead">' + v[2] + '</p>' +
+        '<div class="row"><figure><figcaption>Компьютер, первый экран</figcaption><img loading="lazy" src="shots/v' + v[0] + '-1440.png" alt="' + v[1] + ': каталог на компьютере"></figure>' +
+        '<figure><figcaption>Телефон</figcaption><img loading="lazy" src="shots/v' + v[0] + '-390.png" alt="' + v[1] + ': каталог на телефоне"></figure></div>' +
+        '<div class="pair"><figure><figcaption>Под курсором</figcaption><img loading="lazy" src="shots/v' + v[0] + '-1440-hover.png" alt="' + v[1] + ': наведение"></figure>' +
+        '<figure><figcaption>После «В корзину» (третья карточка)</figcaption><img loading="lazy" src="shots/v' + v[0] + '-1440-added.png" alt="' + v[1] + ': товар в корзине"></figure></div>';
+      board.appendChild(s);
+      phones.insertAdjacentHTML('beforeend', '<figure><figcaption>' + v[1] + '</figcaption><img loading="lazy" src="shots/v' + v[0] + '-390.png" alt="' + v[1] + ' на телефоне"></figure>');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,493 @@
+/* КОРЗИНА. Одна разметка на два места: страница /basket/ и шторка поверх экрана.
+   Стили самой шторки — tc-sheet-overlay.css, здесь только содержимое.
+   Значения — из tc-tokens.css, своих чисел не заводим. */
+
+.tc-basket {
+  font-family: var(--font);
+  color: var(--ink);
+}
+
+/* ── Список ─────────────────────────────────────────────────────────── */
+
+.tcb-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Сетку строки держит слой .tc-row__slide (его добавляет кирпич действий):
+   именно он едет при свайпе, а сама строка остаётся неподвижной рамкой
+   с разделителем. Крестика в разметке больше нет — удаление живёт в панели. */
+.tcb-item {
+  position: relative;
+  padding: 14px 0;
+
+  /* Разделитель-канавка вместо плоской линии — общий приём (.nm-line
+     в redesign.css). Здесь повторён селектором, а не классом, потому что
+     разметку строки рисует шаблон компонента корзины. */
+  border-bottom: 1px solid rgba(16, 32, 64, .16);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .75);
+}
+
+.tcb-item:last-child {
+  border-bottom: 0;
+  box-shadow: none;
+}
+
+.tcb-item > .tc-row__slide,
+.tcb-item {
+  --tcb-cols: 80px 1fr;
+  /* Панель действий накрывает всё правее фотографии: фотография — то, по чему
+     строку узнают, и прятать её незачем. Ширина снимка плюс промежуток. */
+  --tc-row-panel-left: 92px;
+  /* Язычок и панель доходят до самой кромки экрана — так язычок и читается
+     как край, за который тянут. Тело шторки отступает от края на --gut,
+     поэтому оба выходят за поле ровно на этот отступ. Объявлено на строке,
+     а не на слое содержимого: панель — его сосед и оттуда переменную не
+     увидит. */
+  --tc-row-tab-edge: calc(-1 * var(--gut));
+  /* Поля строки: панель встаёт вровень с содержимым, а не с ними. */
+  --tc-row-panel-inset: 14px;
+}
+
+.tcb-item > .tc-row__slide {
+  display: grid;
+  grid-template-columns: var(--tcb-cols);
+  gap: 12px;
+  align-items: start;
+  /* Содержимое отходит от язычка с запасом: вплотную к нему название и
+     счётчик читались как задетые краем. */
+  padding-right: 30px;
+}
+
+.tcb-item__pic {
+  display: block;
+  width: 80px;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--r-card);
+  overflow: hidden;
+  background: var(--fill);
+}
+
+.tcb-item__pic img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.tcb-item__body {
+  min-width: 0;                 /* иначе длинное название распирает сетку */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tcb-item__name {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.35;
+  text-decoration: none;
+}
+
+.tcb-item__gone {
+  margin: 0;
+  color: var(--danger);
+  font-size: 12px;
+}
+
+/* Цена и счётчик прижаты к низу карточки — так строка читается как одна полка,
+   даже когда названия у соседних товаров разной длины. */
+.tcb-item__row {
+  margin-top: auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* ── Цена ───────────────────────────────────────────────────────────── */
+
+.tcb-price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.tcb-price__now {
+  font-size: 17px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tcb-price__was {
+  color: var(--muted);
+  font-size: 12px;
+  text-decoration: line-through;
+  white-space: nowrap;
+}
+
+/* «за шт.» уходит на свою строку: рядом с суммой две цены путают. */
+.tcb-price__each {
+  flex-basis: 100%;
+  color: var(--muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+/* ── Счётчик количества ─────────────────────────────────────────────── */
+
+/* Счётчик — вдавленная пилюля: форма уже круглая, и углубление читается как
+   желобок, в котором лежат «минус», число и «плюс». Рамка после этого лишняя —
+   границу держит свет. Тон общий с поверхностью, иначе рельефа не будет. */
+.tcb-qty {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--bg);
+  box-shadow:
+    inset 3px 3px 6px rgba(16, 32, 64, .15),
+    inset -2px -2px 5px rgba(255, 255, 255, .95);
+}
+
+.tcb-qty__btn {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--icon);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
+}
+
+/* Наведение не меняет цвет: в желобке заливка выглядела бы пятном. Вместо этого
+   кнопка чуть выступает из него. */
+.tcb-qty__btn:hover {
+  background: var(--bg);
+  box-shadow:
+    2px 2px 5px rgba(16, 32, 64, .16),
+    -2px -2px 4px rgba(255, 255, 255, .95);
+}
+
+.tcb-qty__btn:active {
+  box-shadow: none;
+}
+
+.tcb-qty__btn:disabled {
+  color: var(--line);
+  cursor: default;
+}
+
+.tcb-qty__btn:disabled:hover {
+  background: transparent;
+  box-shadow: none;
+}
+
+.tcb-qty__val {
+  min-width: 22px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;   /* цифры не пляшут при 9 → 10 */
+}
+
+/* Пока идёт запрос — счётчик глушим, но не двигаем: подмена кнопок спиннером
+   заставила бы строку прыгать. */
+.tcb-item.is-busy .tcb-qty,
+.tcb-item.is-busy .tcb-item__del {
+  opacity: .5;
+  pointer-events: none;
+}
+
+/* Уходящая позиция: уезжает вбок за край списка и одновременно отдаёт свою
+   высоту соседям — те стягиваются, занимая освободившееся место. Оба движения
+   в одном переходе, поэтому строка не «моргает» на месте, а именно уходит.
+   Высоту в пикселях перед стартом проставляет JS: с auto анимировать нечего. */
+.tcb-item.is-removing {
+  overflow: hidden;
+  height: 0 !important;
+  min-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-bottom-color: transparent;
+  box-shadow: none;
+  opacity: 0;
+  transform: translateX(105%);
+  pointer-events: none;
+  transition:
+    height .32s cubic-bezier(.4, 0, .2, 1),
+    padding .32s cubic-bezier(.4, 0, .2, 1),
+    transform .3s cubic-bezier(.4, 0, .2, 1),
+    opacity .26s ease;
+}
+
+.tcb-item.is-gone .tcb-item__pic,
+.tcb-item.is-gone .tcb-item__name {
+  opacity: .55;
+}
+
+/* ── Крестик ────────────────────────────────────────────────────────── */
+
+.tcb-item__del {
+  align-self: start;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
+}
+
+.tcb-item__del:hover {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+/* ── Недоступные ────────────────────────────────────────────────────── */
+
+.tcb-gone {
+  margin-top: 20px;
+  padding-top: 4px;
+  border-top: 1px solid var(--line);
+}
+
+.tcb-gone__title {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ── Предупреждения компонента ──────────────────────────────────────── */
+
+.tcb-warn {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border-radius: var(--r-card);
+  background: var(--danger-bg);
+  color: var(--danger);
+  font-size: 12px;
+}
+
+.tcb-warn p {
+  margin: 0;
+}
+
+.tcb-warn p + p {
+  margin-top: 6px;
+}
+
+/* ── Итог ───────────────────────────────────────────────────────────── */
+
+.tcb-total {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.tcb-total__line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.tcb-total__line + .tcb-total__line {
+  margin-top: 8px;
+}
+
+.tcb-total__off {
+  color: var(--ok);
+}
+
+.tcb-total__sum {
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tcb-total__go {
+  width: 100%;
+  margin-top: 14px;
+}
+
+/* ── Пустая корзина ─────────────────────────────────────────────────── */
+
+.tcb-empty {
+  padding: 40px 0 24px;
+  text-align: center;
+}
+
+.tcb-empty__title {
+  margin: 0 0 6px;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.tcb-empty__text {
+  margin: 0 0 20px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* ── Страница /basket/ ──────────────────────────────────────────────── */
+
+/* На отдельной странице колонка не должна растягиваться на всю ширину монитора:
+   строка товара длиной в экран читается тяжело.
+
+   Всё в этом блоке — про СТРАНИЦУ, поэтому и селекторы начинаются с
+   .main_content. Раньше правила висели на одной ширине окна и доставались
+   заодно шторке: панель шириной 520 px на мониторе 1920 получала раскладку,
+   рассчитанную на колонку 720 px — снимок 96 px, кнопка в 240 px, прижатая
+   к левому краю. Шторка одинаково узкая на любом экране, и ей подходят
+   те же размеры, что телефону. */
+@media (min-width: 900px) {
+  .main_content .tc-basket {
+    max-width: 720px;
+  }
+
+  .main_content .tcb-item > .tc-row__slide,
+  .main_content .tcb-item {
+    --tcb-cols: 96px 1fr;
+    --tc-row-panel-left: 108px;
+  }
+
+  .main_content .tcb-item__pic {
+    width: 96px;
+  }
+
+  .main_content .tcb-item__name {
+    font-size: 14px;
+  }
+
+  /* Кнопка по центру колонки, а не у её левого края: она одна и главная. */
+  .main_content .tcb-total__go {
+    width: auto;
+    min-width: 240px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* ── Загрузка ───────────────────────────────────────────────────────── */
+
+/* Силуэты строк вместо пустоты, пока едет состав.
+
+   Строка повторяет настоящую позицию корзины: квадрат фотографии слева,
+   две строки текста справа — длинная под название и короткая под цену.
+   Сплошной прямоугольник на 80 px этого не делал: он обещал «сейчас тут
+   что-то появится», но не подсказывал ЧТО, и появление состава читалось как
+   подмена, а не как проявление. Перелив — общий `.skeleton` (redesign.css),
+   свой второй здесь не заводим. */
+.tcb-skeleton {
+  padding: 14px 0;
+}
+
+.tcb-sk-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.tcb-sk-row + .tcb-sk-row {
+  margin-top: 18px;
+}
+
+.tcb-sk-pic {
+  flex: 0 0 auto;
+  width: 72px;
+  height: 72px;
+  border-radius: var(--r-ctrl);
+}
+
+.tcb-sk-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  /* Строки начинаются не от самого верха: у настоящей позиции название
+     стоит чуть ниже кромки фотографии. */
+  padding-top: 6px;
+}
+
+.tcb-sk-line {
+  height: 14px;
+  border-radius: 999px;
+}
+
+.tcb-sk-line.is-short { width: 62%; }
+
+/* Силуэт закреплённого низа: строка итога и кнопка. Геометрию берём у
+   настоящего низа, чтобы шторка не меняла высоту, когда состав приедет. */
+.tcb-sk-foot {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 0 2px;
+}
+
+.tcb-sk-foot__line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.tcb-sk-foot__line .tcb-sk-line.is-short { width: 96px; }
+.tcb-sk-foot__line .tcb-sk-line.is-sum { width: 120px; height: 18px; }
+
+.tcb-sk-btn {
+  height: 50px;
+  border-radius: var(--r-ctrl, 12px);
+}
+
+.tcb-fail {
+  padding: 32px 0;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+/* Отмена удаления — общий кирпич .tc-undo (redesign.css + js/tc-undo.js).
+   Своей полоски у корзины больше нет: то же сообщение нужно и в чек-ауте. */
+
+/* ── Внутри шторки ──────────────────────────────────────────────────── */
+
+/* В шторке итог уезжает в закреплённый низ, поэтому своя верхняя черта и отступ
+   ему больше не нужны — их даёт сама панель. */
+.sheet__foot .tcb-total {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* Первая строка списка не должна прилипать к шапке шторки. */
+.sheet__body .tc-basket .tcb-list {
+  padding-top: 2px;
+}

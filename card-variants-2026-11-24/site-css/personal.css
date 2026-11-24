@@ -1,0 +1,1653 @@
+/* ==========================================================================
+   ЛИЧНЫЙ КАБИНЕТ — «Мои заказы» и «Детали заказа»
+   Подключается в header.php по /personal/.
+
+   Язык тот же, что у чек-аута и страницы «Заказ принят»: белые карточки,
+   рамка 1px, радиус 16, без теней и градиентов. Кнопки — общая система
+   `.tc-btn` из redesign.css, бейджи статусов — `.tc-badge` оттуда же.
+   Своих кнопок и своих цветов статусов здесь НЕТ намеренно.
+   ========================================================================== */
+
+body.page-redesign .lk-orders {
+  --lk-border: #E5EAF5;
+  --lk-control: #CAD5F0;
+  --lk-divider: #EEF2F9;
+  --lk-muted: #6b7280;
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Вкладки «Текущие / Завершённые / Отменённые» ───────────────────────── */
+body.page-redesign .lk-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+/* Вкладки — те же выпуклые пилюли, что чипы фильтра и кнопки полосы каталога:
+   рамки нет, границу держит свет. Выбранная вдавлена и залита фирменным —
+   это единственная залитая плашка в ряду, её видно сразу. */
+body.page-redesign .lk-tab {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--bg);
+  box-shadow:
+    3px 4px 9px rgba(16, 32, 64, .13),
+    -3px -3px 8px rgba(255, 255, 255, .95);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue);
+  text-decoration: none;
+  transition: box-shadow .18s var(--ease, ease), background .15s ease, color .15s ease;
+}
+body.page-redesign .lk-tab:hover { color: var(--blue); }
+body.page-redesign .lk-tab.is-active {
+  background: var(--blue);
+  color: #fff;
+  box-shadow:
+    inset 2px 3px 6px rgba(0, 30, 70, .35),
+    inset -2px -2px 5px rgba(255, 255, 255, .20);
+}
+
+/* ── Карточка заказа ─────────────────────────────────────────────────────
+   02.10.2026: белая коробка с рамкой заменена выпуклой плитой в тоне холста.
+   Кабинет оставался в прежнем «белом» виде, пока корзина, оформление и вход
+   уже говорили неоморфом — на одном экране встречались два языка. Рамка
+   не нужна: границу очерчивает свет. */
+body.page-redesign .lk-order {
+  border: 0;
+  border-radius: 18px;
+  background: var(--bg);
+  box-shadow:
+    5px 6px 16px rgba(16, 32, 64, .13),
+    -4px -4px 12px rgba(255, 255, 255, .95);
+  overflow: hidden;
+}
+
+body.page-redesign .lk-order__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 16px 22px;
+  /* Канавка вместо плоской линии — общий приём (.nm-line). */
+  border-bottom: 1px solid rgba(16, 32, 64, .16);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .75);
+}
+body.page-redesign .lk-order__num {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #12233D;
+  text-decoration: none;
+}
+body.page-redesign .lk-order__num:hover { color: var(--blue); }
+body.page-redesign .lk-order__date {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  color: var(--lk-muted);
+}
+/* бейдж всегда прижат вправо — глаз ищет статус в одном месте по всему списку */
+body.page-redesign .lk-order__head .tc-badge { margin-left: auto; }
+
+/* ── Шкала пути в карточке ──────────────────────────────────────────────────
+   Заменила бейдж со статусом: название статуса — точка без контекста, а шкала
+   отвечает на вопрос «сколько ещё ждать». Сегменты, а не сплошная полоса с
+   заливкой: ступени дискретны, и дробная заливка обманывала бы — «примерно
+   на две трети» у заказа не бывает. */
+body.page-redesign .lk-path {
+  padding: 12px 22px 0;
+}
+body.page-redesign .lk-path__bar {
+  display: flex;
+  gap: 4px;
+}
+body.page-redesign .lk-path__seg {
+  flex: 1 1 0;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--lk-divider);
+  transition: background var(--t-base, .25s) var(--ease, ease);
+}
+body.page-redesign .lk-path__seg.is-done { background: var(--blue); }
+
+/* Текущая ступень светлее пройденных: видно не только «докуда дошли», но и
+   «на чём стоим сейчас». */
+body.page-redesign .lk-path__seg.is-now { background: #7CB8F5; }
+
+body.page-redesign .lk-path--done .lk-path__seg.is-done,
+body.page-redesign .lk-path--done .lk-path__seg.is-now { background: var(--ok, #1DA97C); }
+
+body.page-redesign .lk-path__now {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  font-family: 'Montserrat', sans-serif;
+}
+body.page-redesign .lk-path__now b {
+  font-weight: 600;
+  font-size: 14px;
+  color: #12233D;
+}
+body.page-redesign .lk-path__now span {
+  font-size: 13px;
+  color: var(--lk-muted);
+}
+body.page-redesign .lk-path--done .lk-path__now b { color: var(--ok, #1DA97C); }
+body.page-redesign .lk-path--off .lk-path__now b { color: var(--lk-muted); }
+
+body.page-redesign .lk-order__body {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 22px;
+}
+
+/* Миниатюры товаров */
+body.page-redesign .lk-order__thumbs {
+  display: flex;
+  gap: 8px;
+  text-decoration: none;
+  flex: 0 0 auto;
+}
+body.page-redesign .lk-thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border: 1px solid var(--lk-divider);
+  border-radius: 12px;
+  background: #F8FAFD;
+  overflow: hidden;
+  flex: 0 0 auto;
+}
+body.page-redesign .lk-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  mix-blend-mode: multiply;   /* у фото товаров белый фон — так он сливается с плашкой */
+}
+body.page-redesign .lk-thumb--more {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--lk-muted);
+  background: #fff;
+}
+
+/* Факты справа от миниатюр */
+body.page-redesign .lk-order__facts {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  margin-left: auto;
+  text-align: right;
+}
+body.page-redesign .lk-order__sum {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  color: #12233D;
+}
+body.page-redesign .lk-order__count,
+body.page-redesign .lk-order__delivery {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--lk-muted);
+}
+body.page-redesign .lk-order__track { font-variant-numeric: tabular-nums; color: #33455C; }
+
+/* Подвал карточки: слева главное действие, справа управление pill-кнопками */
+body.page-redesign .lk-order__foot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 16px 22px;
+  /* Канавка вместо линии и почти-белой заливки: подвал — часть той же плиты,
+     а не приклеенная снизу полоска. */
+  border-top: 1px solid rgba(16, 32, 64, .16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .75);
+  background: transparent;
+}
+
+/* Управление всегда прижато вправо — «Оплатить» и вспомогательные действия
+   не должны читаться как один ряд равнозначных кнопок. */
+body.page-redesign .lk-order__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+/* Pill с иконкой: прозрачный фон, рамка. Это не «ещё одна кнопка» — вид взят
+   у второстепенной .tc-btn--ghost, отличается только формой и размером. */
+body.page-redesign .lk-act {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 0 16px;
+  /* Выпуклая пилюля в тоне поверхности — как кнопки полосы каталога и чипы
+     фильтра. Рамки нет, границу очерчивает свет. */
+  border: 0;
+  border-radius: var(--r-pill, 999px);
+  background: var(--bg);
+  box-shadow:
+    3px 4px 9px rgba(16, 32, 64, .13),
+    -3px -3px 8px rgba(255, 255, 255, .95);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+body.page-redesign .lk-act svg { width: 15px; height: 15px; flex: 0 0 15px; }
+/* Нажатие вдавливает — тот же жест, что у плиток выбора в чек-ауте. */
+body.page-redesign .lk-act:active {
+  box-shadow:
+    inset 2px 3px 6px rgba(16, 32, 64, .16),
+    inset -2px -2px 5px rgba(255, 255, 255, .9);
+}
+
+/* Опасное действие отличается только тоном текста: вторая форма рамки
+   делала бы его заметнее основного. */
+body.page-redesign .lk-act--danger { color: #B4232A; }
+
+body.page-redesign .lk-link {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--blue);
+  text-decoration: none;
+}
+body.page-redesign .lk-link:hover { text-decoration: underline; }
+
+/* ── Пусто ─────────────────────────────────────────────────────────────── */
+body.page-redesign .lk-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 40px 20px 48px;
+  text-align: center;
+}
+body.page-redesign .lk-empty__title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: #12233D;
+}
+
+body.page-redesign .lk-note {
+  padding: 14px 18px;
+  border: 1px solid var(--lk-border);
+  border-radius: 14px;
+  background: #F8FAFD;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  color: #33455C;
+}
+body.page-redesign .lk-note--err { border-color: #F3C9CA; background: #FDF3F3; color: #A33; }
+
+/* ── Всплывающая карточка товара ────────────────────────────────────────
+   Показывается по наведению (на тач — по тапу) на миниатюру в заказе.
+   Позиционируется скриптом от точки курсора, поэтому здесь только вид. */
+body.page-redesign .lk-preview {
+  position: absolute;
+  z-index: 60;
+  width: 260px;
+  padding: 14px;
+  border: 1px solid var(--lk-border);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 12px 32px rgba(0, 30, 80, .14);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity .14s ease, transform .14s ease;
+  pointer-events: none;
+}
+body.page-redesign .lk-preview.is-open { opacity: 1; transform: translateY(0); }
+
+body.page-redesign .lk-preview__img {
+  display: block;
+  width: 100%;
+  height: 150px;
+  object-fit: contain;
+  margin-bottom: 10px;
+  mix-blend-mode: multiply;
+}
+body.page-redesign .lk-preview__name {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  line-height: 19px;
+  font-weight: 600;
+  color: #12233D;
+  margin-bottom: 6px;
+}
+body.page-redesign .lk-preview__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  color: var(--lk-muted);
+}
+body.page-redesign .lk-preview__sum { font-weight: 600; color: #12233D; }
+
+/* ── Меню кабинета: на мобильном подписи прячем, остаются иконки ───────── */
+body.page-redesign .lk__nav_item a { display: flex; align-items: center; gap: 10px; }
+body.page-redesign .lk__nav_ico { display: inline-flex; flex: 0 0 20px; }
+body.page-redesign .lk__nav_ico svg { width: 20px; height: 20px; }
+
+@media (max-width: 900px) {
+  body.page-redesign .lk__nav { padding: 8px; gap: 8px; }
+  body.page-redesign .lk__nav_item { flex: 1 1 0; min-width: 0; }
+  /* подписи трёх пунктов в строку не помещаются и переносятся — оставляем иконку */
+  body.page-redesign .lk__nav_txt { display: none; }
+  body.page-redesign .lk__nav_item a {
+    justify-content: center;
+    padding: 12px 0 !important;
+    border-radius: 12px;
+    background: #fff;
+    color: var(--blue) !important;
+    border: 1px solid var(--lk-control) !important;
+  }
+  /* активный — единственный залитый; было залито всё подряд и выбор не читался */
+  body.page-redesign .lk__nav_item.current a,
+  body.page-redesign .lk__nav_item.selected a {
+    background: var(--blue) !important;
+    border-color: var(--blue) !important;
+    color: #fff !important;
+    box-shadow: none !important;
+  }
+}
+
+/* ── 901–1024 px: гасим легаси-таббар темы krayt ───────────────────────────
+   В template_styles.css есть @media screen and (max-width:1024px), где .lk__nav
+   свёрстан горизонтальной полосой вкладок: align-items:center, отрицательные
+   поля, нижняя граница, пунктам width:24.5%, а ссылкам — сплошная синяя заливка
+   и скруглённые «язычки». Наша боковая колонка включается с 901px, поэтому
+   в полосе 901–1024 действуют оба набора сразу: пункт схлопывается до ~56px,
+   подпись вылезает за карточку, а неактивные пункты заливаются синим с тёмным
+   текстом. Ниже 901px этого не видно — там строчный флекс, и flex-basis:0
+   перебивает width. Здесь возвращаем десктопный вид, который действует выше 1024. */
+@media (min-width: 901px) {
+  /* .lk__nav-wrap ещё несёт padding-right:4% и padding-top:30px от старой
+     раскладки в 25% ширины. Внутри нашего flex:0 0 250px это резало карточку
+     до ~204px и добавляло мёртвый зазор к и без того имеющемуся gap:28px.
+     Ниже 1024 легаси само гасит эти отступы — сводим обе полосы к одному виду. */
+  body.page-redesign .lk__nav-wrap { padding: 0; margin: 0; }
+  body.page-redesign .lk__nav {
+    align-items: stretch;
+    justify-content: flex-start;
+    text-align: left;
+    margin: 0;
+    padding: 10px;
+    border-bottom: 0;
+  }
+  body.page-redesign .lk__nav .lk__nav_item {
+    display: block;
+    width: 100%;
+    margin-bottom: 0;
+    text-align: left;
+  }
+  body.page-redesign .lk__nav .lk__nav_item a {
+    padding: 12px 16px;
+    margin-bottom: 0;
+    border-radius: 12px;
+    background-color: transparent;
+    color: var(--text);
+  }
+  /* ховер переопределяем здесь же: селектор в redesign.css той же силы,
+     а personal.css грузится позже и иначе перебил бы его. */
+  body.page-redesign .lk__nav .lk__nav_item a:hover {
+    background-color: #f0f4ff;
+    color: var(--blue);
+  }
+  /* белый «язычок» под активной вкладкой — часть той же полосы, в колонке лишний */
+  body.page-redesign .lk__nav .lk__nav_item.current a:before,
+  body.page-redesign .lk__nav .lk__nav_item.selected a:before {
+    content: none;
+  }
+}
+
+/* ── Мобильные ─────────────────────────────────────────────────────────── */
+@media (max-width: 700px) {
+  /* Вкладки фильтра — всегда одной строкой, ширина делится поровну */
+  body.page-redesign .lk-tabs { gap: 6px; flex-wrap: nowrap; }
+  body.page-redesign .lk-tab {
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: center;
+    padding: 0 6px;
+    font-size: 12px;
+    text-align: center;
+  }
+  body.page-redesign .lk-tab.is-active { padding: 0 5px; }
+
+  body.page-redesign .lk-order__head { padding: 14px 16px; gap: 8px; }
+  /* бейдж с новой строки: вместе с номером и датой он не помещается и рвёт шапку */
+  body.page-redesign .lk-order__head .tc-badge { margin-left: 0; flex-basis: 100%; }
+
+  body.page-redesign .lk-order__body {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    padding: 16px;
+  }
+  body.page-redesign .lk-thumb { width: 48px; height: 48px; border-radius: 10px; }
+
+  /* Сумма уходит вправо, напротив количества и способа доставки */
+  body.page-redesign .lk-order__facts {
+    flex-direction: row-reverse;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-left: 0;
+    text-align: right;
+  }
+  body.page-redesign .lk-order__meta { text-align: left; min-width: 0; }
+  /* сумма — единственное число в карточке, за которым тянется глаз: на узком экране
+     она соседствует с мелкой метой и теряется, поэтому крупнее десктопной */
+  body.page-redesign .lk-order__sum {
+    font-size: 21px;
+    line-height: 1.2;
+    /* Не сжимаем и не переносим: длинная строка доставки («СДЭК (Доставка
+       курьером) · отследить») отжимала сумму, и «14 176 ₽» разрывалось на
+       «14 176» и «₽». Уступает мета — она и так в две строки. */
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  /* Кнопки управления — как на десктопе, но резиновые и равными долями */
+  body.page-redesign .lk-order__foot { padding: 14px 16px; gap: 10px; }
+  body.page-redesign .lk-order__foot .tc-btn { width: 100%; }
+  body.page-redesign .lk-order__actions {
+    width: 100%;
+    margin-left: 0;
+    gap: 8px;
+  }
+  body.page-redesign .lk-act {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0 6px;
+    gap: 5px;
+    font-size: 12px;
+  }
+  body.page-redesign .lk-act svg { width: 14px; height: 14px; flex-basis: 14px; }
+
+  body.page-redesign .lk-preview { width: min(260px, calc(100vw - 32px)); }
+}
+
+/* ==========================================================================
+   ДЕТАЛИ ЗАКАЗА
+   Раскладка повторяет чек-аут: слева блоки, справа липкая сводка.
+   На мобильном сводка уходит НАВЕРХ — «Оплатить» должно быть видно сразу,
+   а не после списка товаров.
+   ========================================================================== */
+
+body.page-redesign .lk-detail {
+  --lk-border: #E5EAF5;
+  --lk-control: #CAD5F0;
+  --lk-divider: #EEF2F9;
+  --lk-muted: #6b7280;
+}
+
+body.page-redesign .lk-detail__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+body.page-redesign .lk-detail__title {
+  margin: 0 !important;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: clamp(22px, 3vw, 30px) !important;
+  color: #12233D;
+}
+body.page-redesign .lk-detail__date {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  color: var(--lk-muted);
+}
+
+body.page-redesign .lk-back {
+  display: inline-block;
+  margin-bottom: 20px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--blue);
+  text-decoration: none;
+}
+body.page-redesign .lk-back:hover { text-decoration: underline; }
+
+body.page-redesign .lk-detail__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  align-items: start;
+  gap: 20px;
+}
+body.page-redesign .lk-detail__main {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+/* ── Блок ──────────────────────────────────────────────────────────────── */
+body.page-redesign .lk-block,
+body.page-redesign .lk-summary {
+  border: 1px solid var(--lk-border);
+  border-radius: 16px;
+  background: #fff;
+  padding: 20px 22px;
+}
+body.page-redesign .lk-block__title {
+  margin: 0 0 14px !important;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 16px !important;
+  color: #12233D;
+}
+
+/* ── «Где заказ»: положение и лента шагов ──────────────────────────────────
+   Первый блок страницы. Заголовок здесь крупнее заголовков остальных блоков
+   намеренно: это ответ на вопрос, ради которого страницу открыли, а «Состав
+   заказа» и «Оплата» — уже справка. */
+body.page-redesign .lk-where__now {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+body.page-redesign .lk-where__title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 1.25;
+  color: #12233D;
+}
+body.page-redesign .lk-where__note {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  color: var(--lk-muted);
+}
+body.page-redesign .lk-where--off .lk-where__title { color: var(--lk-muted); }
+body.page-redesign .lk-where--off .lk-where__now { margin-bottom: 0; }
+
+/* Лента шагов. Вертикальная, а не горизонтальная: подписи ступеней разной
+   длины («Ждёт в пункте выдачи» против «Собран»), в строку они либо
+   переносятся, либо режутся. */
+body.page-redesign .lk-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+body.page-redesign .lk-step {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 0 0 18px 26px;
+  font-family: 'Montserrat', sans-serif;
+}
+body.page-redesign .lk-step:last-child { padding-bottom: 0; }
+
+/* Линия между точками — псевдоэлемент шага, а не общая полоса за лентой:
+   так она обрывается ровно на последнем шаге и не торчит под ним. */
+body.page-redesign .lk-step::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 14px;
+  bottom: -4px;
+  width: 2px;
+  background: var(--lk-divider);
+}
+body.page-redesign .lk-step:last-child::before { display: none; }
+body.page-redesign .lk-step.is-done::before { background: var(--blue); }
+body.page-redesign .lk-step.is-now::before { background: var(--lk-divider); }
+
+body.page-redesign .lk-step__dot {
+  position: absolute;
+  left: 0;
+  top: 5px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--lk-control);
+  background: #fff;
+  box-sizing: border-box;
+}
+body.page-redesign .lk-step.is-done .lk-step__dot {
+  border-color: var(--blue);
+  background: var(--blue);
+}
+
+/* Точка «сейчас» с ореолом — единственная подвижная деталь на экране,
+   она же и цель взгляда. */
+body.page-redesign .lk-step.is-now .lk-step__dot {
+  box-shadow: 0 0 0 4px rgba(0, 89, 185, .14);
+}
+
+body.page-redesign .lk-step__name {
+  font-size: 14px;
+  color: var(--lk-muted);
+}
+body.page-redesign .lk-step.is-done .lk-step__name { color: #12233D; }
+body.page-redesign .lk-step.is-now .lk-step__name { font-weight: 600; }
+body.page-redesign .lk-step__date {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--lk-muted);
+  white-space: nowrap;
+}
+
+/* Трек-номер: отделён от ленты, потому что это не ступень, а данные. */
+body.page-redesign .lk-where__track {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--lk-divider);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+}
+body.page-redesign .lk-where__track-lbl { color: var(--lk-muted); }
+
+/* ── Строка «метка → значение» ─────────────────────────────────────────── */
+body.page-redesign .lk-rows { display: flex; flex-direction: column; }
+body.page-redesign .lk-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--lk-divider);
+}
+body.page-redesign .lk-row:last-child { border-bottom: 0; padding-bottom: 0; }
+body.page-redesign .lk-row:first-child { padding-top: 0; }
+body.page-redesign .lk-row__lbl {
+  flex: 0 0 auto;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  color: var(--lk-muted);
+}
+body.page-redesign .lk-row__val {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  color: #12233D;
+  text-align: right;
+  min-width: 0;
+}
+/* Действие в работе: повтор заказа — полный проход Битрикса, и до ответа
+   кнопка не должна выглядеть живой. */
+body.page-redesign .lk-act.is-busy { opacity: .5; pointer-events: none; }
+
+body.page-redesign .lk-track { font-variant-numeric: tabular-nums; font-weight: 600; }
+/* Номер накладной длинный и его переписывают руками — даём нажать и скопировать. */
+body.page-redesign .lk-track[data-lk-copy] { cursor: pointer; }
+body.page-redesign .lk-track.is-copied { color: var(--ok, #1DA97C); }
+
+/* ── Позиция заказа ────────────────────────────────────────────────────── */
+body.page-redesign .lk-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--lk-divider);
+}
+body.page-redesign .lk-item:last-child { border-bottom: 0; padding-bottom: 0; }
+body.page-redesign .lk-item:first-of-type { padding-top: 0; }
+
+body.page-redesign .lk-item__img {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  flex: 0 0 64px;
+  border: 1px solid var(--lk-divider);
+  border-radius: 12px;
+  background: #F8FAFD;
+  overflow: hidden;
+}
+body.page-redesign .lk-item__img img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+body.page-redesign .lk-item__info { flex: 1 1 auto; min-width: 0; }
+body.page-redesign .lk-item__name {
+  display: block;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  color: #12233D;
+  text-decoration: none;
+}
+body.page-redesign .lk-item__name:hover { color: var(--blue); }
+body.page-redesign .lk-item__qty {
+  margin-top: 4px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  color: var(--lk-muted);
+}
+body.page-redesign .lk-item__sum {
+  flex: 0 0 auto;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  color: #12233D;
+  white-space: nowrap;
+}
+
+/* ── Липкая сводка ─────────────────────────────────────────────────────── */
+body.page-redesign .lk-detail__side { min-width: 0; }
+body.page-redesign .lk-summary {
+  position: sticky;
+  top: calc(var(--hh, 120px) + 16px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+body.page-redesign .lk-summary .lk-rows { gap: 0; }
+body.page-redesign .lk-summary__total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--lk-divider);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  color: var(--lk-muted);
+}
+body.page-redesign .lk-summary__total b { font-size: 20px; font-weight: 600; color: #12233D; }
+
+body.page-redesign .lk-summary__actions { display: flex; gap: 8px; }
+body.page-redesign .lk-summary__actions .lk-act { flex: 1 1 0; min-width: 0; padding: 0 10px; }
+
+/* «Ручка» шторки — только на мобильном */
+body.page-redesign .lk-peek { display: none; }
+
+/* ── Мобилка: сводка — липкая нижняя шторка ────────────────────────────────
+   Ровно тот же приём, что на чек-ауте (.co__side / .co__peek / .co__collapse):
+   всегда видно «К оплате» и кнопку, детали разворачиваются тапом по ручке.
+   Высоту резервирует personal.js — иначе низ страницы уезжает под шторку. */
+@media (max-width: 900px) {
+  body.page-redesign .lk-detail__grid { grid-template-columns: 1fr; }
+
+  body.page-redesign .lk-detail__side {
+    position: fixed;
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: auto;
+    z-index: 900;
+  }
+  body.page-redesign .lk-summary {
+    position: static;
+    gap: 10px;
+    padding: 8px 16px max(12px, env(safe-area-inset-bottom, 12px));
+    border-bottom: 0;
+    border-radius: 18px 18px 0 0;
+    box-shadow: 0 -8px 28px rgba(16, 32, 64, .12);
+  }
+
+  /* «ручка» — грабер как в нативных шторках: тап разворачивает, свайпом панель
+     тянется за пальцем. Площадь нажатия задаётся padding-ом, полоска — общий .tc-grab. */
+  body.page-redesign .lk-peek {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 10px 0 8px;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    touch-action: none;          /* тянем шторку, а не скроллим страницу */
+  }
+
+  body.page-redesign .lk-collapse {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .32s cubic-bezier(.4, 0, .2, 1);
+  }
+  /* dvh, а не vh: во встроенных браузерах (ссылка из мессенджера на iOS) видимая
+     область ~90% экрана, и на vh шторка вылезала бы за него */
+  body.page-redesign .lk-detail__side.is-open .lk-collapse { max-height: 55dvh; overflow-y: auto; }
+
+  body.page-redesign .lk-summary .lk-block__title { margin-bottom: 10px !important; }
+  body.page-redesign .lk-summary__total { padding-top: 10px; }
+
+  /* Действия видны всегда, наравне с «Оплатить». Раньше они появлялись только
+     в раскрытой шторке — и в конце свайпа выскакивали рывком, ломая ощущение
+     плавной тяги. Разворачивается только то, что внутри .lk-collapse. */
+}
+
+@media (max-width: 700px) {
+  body.page-redesign .lk-block,
+  body.page-redesign .lk-summary { padding: 16px; }
+  body.page-redesign .lk-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+  body.page-redesign .lk-row__val { justify-content: flex-start; text-align: left; }
+  body.page-redesign .lk-item__img { width: 56px; height: 56px; flex-basis: 56px; }
+}
+
+/* ── ОТМЕНА ЗАКАЗА ────────────────────────────────────────────────────────────
+   Две ипостаси одной страницы: подтверждение отмены и отказ с выходом на связь.
+   Кнопки — общие .tc-btn, своих здесь не заводим. Карточка — та же плита, что
+   у заказа в списке (.lk-order): белая коробка с рамкой была языком старой темы. */
+body.page-redesign .lk-cancel { max-width: 640px; }
+
+body.page-redesign .lk-cancel__box {
+  padding: 22px;
+  border: 0;
+  border-radius: 18px;
+  background: var(--bg);
+  box-shadow:
+    5px 6px 16px rgba(16, 32, 64, .13),
+    -4px -4px 12px rgba(255, 255, 255, .95);
+}
+
+/* Отказ — не ошибка сайта, а сообщение о положении дел, поэтому карточка
+   обычная: ни красной плашки ShowError, ни выделения цветом. */
+
+body.page-redesign .lk-cancel__title {
+  margin-bottom: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+body.page-redesign .lk-cancel__lead { margin: 0 0 8px; font-size: 15px; line-height: 1.5; color: var(--ink); }
+body.page-redesign .lk-cancel__help { margin: 0; font-size: 14px; line-height: 1.55; color: var(--muted); }
+body.page-redesign .lk-cancel__warn { margin: 0 0 16px; font-size: 14px; color: #c81e2b; }
+body.page-redesign .lk-cancel__link { color: var(--ink); text-decoration: underline; }
+
+body.page-redesign .lk-cancel__field { margin-bottom: 18px; }
+body.page-redesign .lk-cancel__field label,
+body.page-redesign .cbk__field label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Поля — вдавленные в холст, как поиск каталога: в них кладут, а не нажимают. */
+body.page-redesign .lk-cancel__field textarea,
+body.page-redesign .cbk__field input,
+body.page-redesign .cbk__field textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--bg);
+  box-shadow:
+    inset 3px 4px 7px rgba(16, 32, 64, .13),
+    inset -3px -3px 6px rgba(255, 255, 255, .95);
+  font: inherit;
+  font-size: 15px;
+  color: var(--ink);
+  transition: box-shadow var(--t-fast, .18s) var(--ease, ease);
+}
+body.page-redesign .lk-cancel__field textarea,
+body.page-redesign .cbk__field textarea { resize: vertical; min-height: 92px; }
+body.page-redesign .lk-cancel__field textarea:focus,
+body.page-redesign .cbk__field input:focus,
+body.page-redesign .cbk__field textarea:focus {
+  outline: none;
+  box-shadow:
+    inset 3px 4px 7px rgba(16, 32, 64, .13),
+    inset -3px -3px 6px rgba(255, 255, 255, .95),
+    0 0 0 2px rgba(0, 89, 185, .28);
+}
+body.page-redesign .cbk__field input::placeholder,
+body.page-redesign .cbk__field textarea::placeholder { color: var(--muted); }
+
+body.page-redesign .lk-cancel__actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+@media (max-width: 700px) {
+  body.page-redesign .lk-cancel__box { padding: 18px 16px; }
+  body.page-redesign .lk-cancel__actions .tc-btn { flex: 1 1 100%; }
+}
+
+/* ── ЗАЯВКА НА СВЯЗЬ ──────────────────────────────────────────────────────────
+   Показывается там, где клиент упёрся: отказ в отмене. Живёт на странице отмены
+   и в шторке «Связаться» (js/personal.js) — разметка одна. */
+body.page-redesign .cbk {
+  margin-top: 20px;
+  padding-top: 20px;
+  /* Канавка, а не линия: тёмный волосок и светлый под ним. */
+  border-top: 1px solid rgba(16, 32, 64, .10);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8);
+}
+body.page-redesign .cbk__title { margin-bottom: 4px; font-size: 15px; font-weight: 600; color: var(--ink); }
+body.page-redesign .cbk__hint { margin: 0 0 14px; font-size: 13px; color: var(--muted); }
+
+body.page-redesign .cbk__channels { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+
+/* Способ связи — объёмный чип, как условие в фильтре: выбран — залит синим.
+   Квадратик чекбокса не нужен, состояние читается заливкой; прячем через
+   display — размеры чекбоксов в общем правиле стоят с !important. */
+body.page-redesign .cbk__ch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: var(--r-pill, 999px);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  box-shadow:
+    3px 4px 9px rgba(16, 32, 64, .13),
+    -3px -3px 8px rgba(255, 255, 255, .95),
+    inset 1px 1px 1px rgba(255, 255, 255, .8);
+  transition: box-shadow var(--t-fast, .18s) var(--ease, ease),
+              background var(--t-fast, .18s) var(--ease, ease),
+              color var(--t-fast, .18s) var(--ease, ease);
+}
+body.page-redesign .cbk__ch input[type="checkbox"] { display: none; }
+body.page-redesign .cbk__half:first-child { display: none; }
+body.page-redesign .cbk__half { display: inline-flex; align-items: center; justify-content: center; }
+body.page-redesign .cbk__ico { flex: 0 0 18px; width: 18px; height: 18px; color: var(--blue); }
+body.page-redesign .cbk__label { white-space: nowrap; }
+
+body.page-redesign .cbk__ch:not(:has(input:checked)):active {
+  box-shadow:
+    inset 2px 3px 6px rgba(16, 32, 64, .14),
+    inset -2px -2px 5px rgba(255, 255, 255, .9);
+}
+body.page-redesign .cbk__ch:has(input:checked) {
+  background: var(--blue);
+  color: #fff;
+  font-weight: 600;
+  box-shadow:
+    2px 3px 8px rgba(0, 60, 140, .28),
+    inset 1px 1px 1px rgba(255, 255, 255, .25);
+}
+body.page-redesign .cbk__ch:has(input:checked) .cbk__ico { color: #fff; }
+
+body.page-redesign .cbk__field { margin-bottom: 14px; }
+
+/* Поле контакта выезжает, а не возникает: та же кривая и длительность, что у
+   расхождения чипов, поэтому движение читается как одно.
+   visibility выключаем с задержкой на время сворачивания - иначе закрытое поле
+   осталось бы доступным с клавиатуры. */
+body.page-redesign .cbk__field[data-cbk-field] {
+  max-height: 0;
+  margin-bottom: 0;
+  opacity: 0;
+  overflow: hidden;
+  visibility: hidden;
+  /* Место под тень вдавленного поля: без него overflow срезал бы её края. */
+  padding: 0 3px;
+  margin-left: -3px;
+  margin-right: -3px;
+  transition: max-height .32s cubic-bezier(.4, 0, .2, 1),
+              margin-bottom .32s cubic-bezier(.4, 0, .2, 1),
+              opacity .18s ease,
+              visibility 0s linear .32s;
+}
+body.page-redesign .cbk__field[data-cbk-field].is-open {
+  max-height: 120px;
+  margin-bottom: 14px;
+  opacity: 1;
+  visibility: visible;
+  transition: max-height .32s cubic-bezier(.4, 0, .2, 1),
+              margin-bottom .32s cubic-bezier(.4, 0, .2, 1),
+              opacity .22s ease .06s,
+              visibility 0s;
+}
+
+/* Согласие и кнопка живут одной строкой: подпись слева, действие справа. */
+body.page-redesign .cbk__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 6px;
+}
+body.page-redesign .cbk__footer .tc-btn { flex: 0 0 auto; }
+
+body.page-redesign .cbk__consent {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted);
+  cursor: pointer;
+}
+body.page-redesign .cbk__consent a { color: var(--blue); }
+
+/* Ошибка — короткой строкой под формой, без плашки: это подсказка, что
+   поправить, а не авария. */
+body.page-redesign .cbk__msg {
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+body.page-redesign .cbk__msg.is-err { color: #c81e2b; }
+
+/* Заявка принята — плита в канавке с галочкой: итог, к которому пришли. */
+body.page-redesign .cbk__msg.is-ok {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 0;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--bg);
+  box-shadow:
+    inset 2px 3px 6px rgba(16, 32, 64, .11),
+    inset -2px -2px 5px rgba(255, 255, 255, .9);
+  font-size: 14px;
+  color: var(--ink);
+}
+body.page-redesign .cbk__msg.is-ok::before {
+  content: '';
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--blue) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.5l4 4L18 8'/%3E%3C/svg%3E") center / 16px no-repeat;
+  box-shadow: 2px 3px 8px rgba(0, 60, 140, .28);
+}
+
+/* Отправленную заявку не даём отправить повторно: остаётся только итог. */
+body.page-redesign .cbk.is-sent .cbk__title,
+body.page-redesign .cbk.is-sent .cbk__hint,
+body.page-redesign .cbk.is-sent .cbk__channels,
+body.page-redesign .cbk.is-sent .cbk__fields,
+body.page-redesign .cbk.is-sent .cbk__field,
+body.page-redesign .cbk.is-sent .cbk__footer { display: none; }
+
+/* «Готово» — только в шторке: закрывает её. На странице отмены к заказам
+   ведёт ссылка над карточкой. */
+body.page-redesign .cbk__done { display: none; }
+body.page-redesign .sheet .cbk.is-sent .cbk__done { display: flex; width: 100%; margin-top: 14px; }
+
+/* В шторке канавка над формой не нужна: шапка шторки уже отделяет её. */
+body.page-redesign .sheet .cbk { margin-top: 18px; }
+body.page-redesign .lk-contact__sk { display: grid; gap: 12px; padding-top: 4px; }
+body.page-redesign .lk-contact__sk-chips { width: 100%; height: 40px; border-radius: 999px; margin-top: 10px; }
+body.page-redesign .lk-contact__sk-field { width: 100%; height: 92px; border-radius: 14px; }
+
+@media (max-width: 700px) {
+  body.page-redesign .cbk__footer { flex-direction: column; align-items: stretch; gap: 14px; }
+  body.page-redesign .cbk__footer .tc-btn { width: 100%; }
+
+  /* Способы связи - одной строкой, без переносов. В покое чип держит только
+     знак способа; подпись показывает тот, который тронули последним, и на него
+     же уходит освободившаяся ширина. Выбранные видны заливкой.
+
+     Ширину распределяем через flex-grow: анимация grow работает везде, где
+     переходы для grid ещё не живые. */
+  body.page-redesign .cbk__channels { flex-wrap: nowrap; gap: 8px; }
+  body.page-redesign .cbk__ch {
+    flex: 1 1 0;
+    min-width: 0;
+    gap: 6px;
+    padding: 0 8px;
+    overflow: hidden;
+    transition: flex-grow .32s cubic-bezier(.4, 0, .2, 1),
+                box-shadow var(--t-fast, .18s) var(--ease, ease),
+                background var(--t-fast, .18s) var(--ease, ease),
+                color var(--t-fast, .18s) var(--ease, ease);
+  }
+  body.page-redesign .cbk__ch .cbk__label {
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-width .32s cubic-bezier(.4, 0, .2, 1), opacity .22s ease;
+  }
+  body.page-redesign .cbk__ch.is-expanded { flex-grow: 2.7; }
+  body.page-redesign .cbk__ch.is-expanded .cbk__label { max-width: 96px; opacity: 1; }
+}
+
+
+/* ==========================================================================
+   ХАБ КАБИНЕТА — /personal/
+   Было: три плитки по 182 px, 546 px пустых кнопок и ни одной живой цифры.
+   Стало: кто вошёл → текущий заказ → строки переходов по 56 px.
+   Разбор — from-server/ПЛАН-ЛК.md, раздел 4.
+   ========================================================================== */
+
+body.page-redesign .lk-hub {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ── Кто вошёл ──────────────────────────────────────────────────────────── */
+body.page-redesign .lk-hub__me {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 2px 2px 0;
+}
+/* Инициалы в лунке: это не кнопка и не действие, поэтому вдавлено, а не выпукло. */
+body.page-redesign .lk-hub__avatar {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow:
+    inset 3px 4px 7px rgba(16, 32, 64, .14),
+    inset -3px -3px 6px rgba(255, 255, 255, .95);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--blue);
+  letter-spacing: .02em;
+}
+body.page-redesign .lk-hub__who {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+body.page-redesign .lk-hub__name {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--ink, #1a1a2e);
+  /* Почта вместо имени бывает длинной — режем, а не ломаем строку. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+body.page-redesign .lk-hub__sub {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  color: var(--lk-muted, #6b7280);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* Выход — выпуклая круглая кнопка. На хабе меню кабинета не печатается,
+   и до сих пор выйти отсюда было нельзя вообще. */
+body.page-redesign .lk-hub__out {
+  flex: none;
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--icon, #475886);
+  box-shadow:
+    3px 4px 9px rgba(16, 32, 64, .13),
+    -3px -3px 8px rgba(255, 255, 255, .95);
+  transition: box-shadow .18s var(--ease, ease), color .15s ease;
+}
+body.page-redesign .lk-hub__out svg { width: 20px; height: 20px; }
+body.page-redesign .lk-hub__out:active {
+  color: var(--blue);
+  box-shadow:
+    inset 2px 3px 6px rgba(16, 32, 64, .16),
+    inset -2px -2px 5px rgba(255, 255, 255, .9);
+}
+
+/* ── Текущий заказ ──────────────────────────────────────────────────────── */
+/* Список внутри хаба не держит своих отступов: расстояния задаёт сам хаб. */
+body.page-redesign .lk-orders--hub { gap: 0; }
+
+body.page-redesign .lk-hub__none {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: var(--bg);
+  box-shadow:
+    inset 3px 4px 7px rgba(16, 32, 64, .12),
+    inset -3px -3px 6px rgba(255, 255, 255, .95);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  color: var(--lk-muted, #6b7280);
+}
+body.page-redesign .lk-hub__none .tc-btn { flex: none; min-height: 40px; padding: 0 18px; }
+
+/* ── Строки переходов ───────────────────────────────────────────────────── */
+/* Одна плита, строки внутри разделены канавками: четыре отдельные карточки
+   дали бы ту же простыню, от которой уходим. */
+body.page-redesign .lk-hub__rows {
+  border-radius: 18px;
+  background: var(--bg);
+  box-shadow:
+    5px 6px 16px rgba(16, 32, 64, .13),
+    -4px -4px 12px rgba(255, 255, 255, .95);
+  overflow: hidden;
+}
+body.page-redesign .lk-hub__row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 56px;
+  padding: 0 18px;
+  text-decoration: none;
+  color: var(--ink, #1a1a2e);
+  border-bottom: 1px solid rgba(16, 32, 64, .16);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .75);
+  transition: background .15s ease;
+}
+body.page-redesign .lk-hub__row:last-child { border-bottom: 0; box-shadow: none; }
+body.page-redesign .lk-hub__row:active { background: rgba(16, 32, 64, .04); }
+
+body.page-redesign .lk-hub__row-ico {
+  flex: none;
+  display: inline-flex;
+  color: var(--icon, #475886);
+}
+body.page-redesign .lk-hub__row-svg { width: 22px; height: 22px; display: block; }
+body.page-redesign .lk-hub__row-name {
+  flex: 1 1 auto;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+}
+/* Цифра — факт, а не бейдж: тон спокойный, иначе четыре счётчика в столбик
+   читаются как четыре уведомления. */
+body.page-redesign .lk-hub__row-val {
+  flex: none;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  color: var(--lk-muted, #6b7280);
+}
+body.page-redesign .lk-hub__row-go {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  color: #9AA7BF;
+}
+
+/* ── Служебные ссылки ───────────────────────────────────────────────────── */
+body.page-redesign .lk-hub__service {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 18px;
+  padding: 4px 0 2px;
+}
+body.page-redesign .lk-hub__service a {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  color: var(--lk-muted, #6b7280);
+  text-decoration: none;
+}
+body.page-redesign .lk-hub__service a:hover { color: var(--blue); }
+
+/* ==========================================================================
+   ЛИЧНЫЕ ДАННЫЕ — /personal/private/
+   Было: анкета темы krayt, одиннадцать полей подряд без группировки.
+   Стало: четыре блока по смыслу, свёрнутое второстепенное, липкое сохранение.
+   Разбор — from-server/ПЛАН-ЛК.md, раздел 5.
+   ========================================================================== */
+
+body.page-redesign .lk-prof-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+body.page-redesign .lk-prof {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Блок ───────────────────────────────────────────────────────────────── */
+body.page-redesign .lk-prof__block {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 18px;
+  background: var(--bg);
+  box-shadow:
+    5px 6px 16px rgba(16, 32, 64, .13),
+    -4px -4px 12px rgba(255, 255, 255, .95);
+}
+body.page-redesign .lk-prof__legend {
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--lk-muted, #6b7280);
+}
+
+/* ── Поле ───────────────────────────────────────────────────────────────── */
+body.page-redesign .lk-prof__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+body.page-redesign .lk-prof__lbl {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--lk-muted, #6b7280);
+}
+/* Поле вдавлено в блок: блок выпуклый, поле в нём — углубление, куда кладут
+   текст. Тот же приём, что в чек-ауте и карточке входа. */
+/* Селектор с .lk-prof намеренно: у темы остались правила
+   `.lk__content input[type=text]` и соседние — они перебивали наш класс
+   по весу (у них лишний элемент в селекторе), и поля оставались белыми
+   коробками с рамкой. Атрибут [type] добавляет нам тот самый вес. */
+body.page-redesign .lk-prof .lk-prof__input[type] {
+  width: 100%;
+  box-sizing: border-box;
+  height: 48px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--bg);
+  box-shadow:
+    inset 3px 4px 7px rgba(16, 32, 64, .14),
+    inset -3px -3px 6px rgba(255, 255, 255, .95);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  color: var(--ink, #1a1a2e);
+  transition: box-shadow .2s var(--ease, ease);
+}
+/* Старое правило кабинета (redesign.css, `.lk__content input[type=…]`) держало
+   поле узким (max-width:520px) и с рамкой через !important — у пароля это было
+   видно: поле короче блока, «глаз» вставал у края блока, а не поля. */
+body.page-redesign .lk-prof .lk-prof__input[type] {
+  max-width: none;
+  border: 0 !important;
+}
+body.page-redesign .lk-prof .lk-prof__input[type]:focus {
+  outline: none;
+  box-shadow:
+    inset 3px 4px 7px rgba(16, 32, 64, .14),
+    inset -3px -3px 6px rgba(255, 255, 255, .95),
+    inset 0 0 0 1.5px var(--blue);
+}
+/* Родной выбор даты рисует свою иконку — поле не должно казаться пустым. */
+body.page-redesign .lk-prof .lk-prof__input[type="date"] { -webkit-appearance: none; appearance: none; }
+
+body.page-redesign .lk-prof__hint {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--lk-muted, #6b7280);
+}
+body.page-redesign .lk-prof__hint * { font-size: 12px; margin: 0; color: inherit; }
+
+/* ── Свёрнутое ──────────────────────────────────────────────────────────── */
+body.page-redesign .lk-prof__field.is-folded,
+body.page-redesign .lk-prof__pass.is-folded { display: none; }
+
+body.page-redesign .lk-prof__pass {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Кнопка-приглашение: не действие формы, а приписка — поэтому строкой,
+   а не плитой. */
+body.page-redesign .lk-prof__more {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--blue);
+}
+body.page-redesign .lk-prof__more.is-gone,
+body.page-redesign .lk-prof__block .tc-btn.is-gone { display: none; }
+
+/* ── Выбор пола ─────────────────────────────────────────────────────────── */
+body.page-redesign .lk-prof__pick {
+  display: flex;
+  gap: 10px;
+}
+body.page-redesign .lk-prof__pill {
+  flex: 1 1 0;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  border-radius: var(--r-pill, 999px);
+  background: var(--bg);
+  box-shadow:
+    3px 4px 9px rgba(16, 32, 64, .13),
+    -3px -3px 8px rgba(255, 255, 255, .95);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--blue);
+  cursor: pointer;
+  transition: box-shadow .18s var(--ease, ease), background .15s ease, color .15s ease;
+}
+/* Сам переключатель не рисуем: плитка И ЕСТЬ переключатель. */
+body.page-redesign .lk-prof__pill input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+body.page-redesign .lk-prof__pill:has(input:checked) {
+  background: var(--blue);
+  color: #fff;
+  box-shadow:
+    inset 2px 3px 6px rgba(0, 30, 70, .35),
+    inset -2px -2px 5px rgba(255, 255, 255, .20);
+}
+
+/* ── Сохранение ─────────────────────────────────────────────────────────── */
+/* Липкое: анкета длиннее экрана, и кнопка внизу страницы заставляла бы
+   прокручивать ради неё. Встаёт над таб-баром, а не под ним. */
+body.page-redesign .lk-prof__save {
+  position: sticky;
+  bottom: calc(var(--tabbar-h, 58px) + var(--safe-bottom, 0px) + 10px);
+  z-index: 2;
+  padding-top: 4px;
+}
+body.page-redesign .lk-prof__save .tc-btn { width: 100%; min-height: 50px; }
+
+/* ── Служебное ──────────────────────────────────────────────────────────── */
+body.page-redesign .lk-prof__foot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0 2px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+}
+body.page-redesign .lk-prof__meta { color: var(--lk-muted, #6b7280); }
+body.page-redesign .lk-prof__out {
+  color: #B4232A;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+body.page-redesign .lk-note--ok {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #e8f8ee;
+  color: #1f9254;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+}
+
+/* ==========================================================================
+   МЕНЮ КАБИНЕТА (внутренние страницы)
+   Белая пилюля с синей заливкой активного осталась от прежнего вида — рядом
+   с плитами хаба и анкеты она читалась как чужая. Переводим на тот же язык:
+   выпуклые кнопки в тоне холста, выбранная вдавлена и залита фирменным.
+   `!important` вынужденный: исходные правила в redesign.css объявлены с ним.
+   ========================================================================== */
+
+body.page-redesign .lk__nav {
+  padding: 6px !important;
+  gap: 6px !important;
+  background: var(--bg) !important;
+  border: 0 !important;
+  border-radius: var(--r-pill, 999px) !important;
+  box-shadow:
+    inset 3px 4px 7px rgba(16, 32, 64, .13),
+    inset -3px -3px 6px rgba(255, 255, 255, .95) !important;
+}
+body.page-redesign .lk__nav_item a {
+  border-radius: var(--r-pill, 999px) !important;
+  background: var(--bg);
+  color: var(--icon, #475886) !important;
+  box-shadow:
+    3px 4px 9px rgba(16, 32, 64, .13),
+    -3px -3px 8px rgba(255, 255, 255, .95);
+  transition: box-shadow .18s var(--ease, ease), background .15s ease, color .15s ease;
+}
+body.page-redesign .lk__nav_item a:hover { background: var(--bg); color: var(--blue) !important; }
+body.page-redesign .lk__nav_item a:active {
+  box-shadow:
+    inset 2px 3px 6px rgba(16, 32, 64, .16),
+    inset -2px -2px 5px rgba(255, 255, 255, .9);
+}
+/* Выбранный — единственная залитая плашка в ряду, её видно сразу. */
+body.page-redesign .lk__nav_item.current a,
+body.page-redesign .lk__nav_item.selected a {
+  background: var(--blue) !important;
+  color: #fff !important;
+  box-shadow:
+    inset 2px 3px 6px rgba(0, 30, 70, .35),
+    inset -2px -2px 5px rgba(255, 255, 255, .20) !important;
+}
+/* На широком экране меню — колонка, а не полоса вкладок. Вдавленная подложка
+   с радиусом «пилюля» придумана под строку на телефоне; на высокой колонке тот
+   же радиус сворачивал её в овал, и над кнопками висел неоморфный «круг».
+   Здесь подложки нет: отдельные выпуклые кнопки прямо на холсте, как в хабе. */
+@media (min-width: 901px) {
+  body.page-redesign .lk__nav {
+    padding: 4px !important;
+    gap: 12px !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+}
+
+/* Выход — не раздел кабинета, а выход из него: тон другой. */
+body.page-redesign .lk__nav_item--out a { color: #B4232A !important; }
+body.page-redesign .lk__nav_item--out a:hover { color: #B4232A !important; }
+
+/* ── Подвал в кабинете ──────────────────────────────────────────────────────
+   Снят целиком (решение владельца 03.10.2026). Кабинет — страницы за входом,
+   поисковик туда не попадает, значит ссылки подвала не работают ни на выдачу,
+   ни на вес. Юридические ссылки обязаны быть там, где данные СОБИРАЮТ —
+   на регистрации и в оформлении заказа, — а не там, где их смотрят. Служебные
+   ссылки у хаба свои.
+
+   Классом тела, а не отсутствием разметки: подвал помечен data-tc-keep и при
+   бесшовных переходах не перерисовывается, зато класс тела tc-nav синхронизирует
+   (swap) — уходишь из кабинета, подвал возвращается сам. */
+body.page-redesign.page-cabinet .site-footer { display: none; }
+
+/* ── Переключение разделов кабинета ─────────────────────────────────────
+   Меню и рамка остаются на месте, меняется только панель под ними: уходящая
+   уезжает в сторону, новая приходит ей на смену. Направление задаёт порядок
+   пунктов меню (--lk-dir: 1 вправо, -1 влево) — так переход читается
+   вкладками, а не сменой страницы. Механика — js/lk-tabs.js. */
+body.page-redesign .lk__content.is-switching {
+  position: relative;
+  overflow: hidden;
+  transition: height .3s var(--ease, cubic-bezier(.4, 0, .2, 1));
+}
+body.page-redesign .lk__pane {
+  width: 100%;
+}
+body.page-redesign .lk__content.is-switching .lk__pane--out {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+body.page-redesign .lk__content.is-switching .lk__pane--in {
+  position: relative;
+  transform: translateX(calc(var(--lk-dir, 1) * 28px));
+  opacity: 0;
+}
+/* Переход объявлен только на конечном состоянии: иначе панель анимированно
+   уезжала бы и в стартовое положение — вместо хода вышло бы дёрганье. */
+body.page-redesign .lk__content.is-moving .lk__pane--in {
+  transform: none;
+  opacity: 1;
+  transition: transform .3s var(--ease, cubic-bezier(.4, 0, .2, 1)), opacity .22s ease;
+}
+body.page-redesign .lk__content.is-moving .lk__pane--out {
+  transform: translateX(calc(var(--lk-dir, 1) * -22px));
+  opacity: 0;
+  transition: transform .3s var(--ease, cubic-bezier(.4, 0, .2, 1)), opacity .18s ease;
+}
+
+/* Полоска под выбранной вкладкой кабинета. Рисовал её НЕ сам пункт, а строка
+   списка: в template_styles.css у `.lk__nav .lk__nav_item` стоит прозрачная
+   рамка, а выбранной строке её красят фирменным. Пилюля меньше строки, и от
+   рамки оставался виден нижний край — короткий штрих под кнопкой.
+   Гасим рамку и отступ строки, заодно закрываем вендорские псевдоэлементы. */
+body.page-redesign .lk__nav .lk__nav_item,
+body.page-redesign .lk__nav .lk__nav_item:hover,
+body.page-redesign .lk__nav .lk__nav_item.current,
+body.page-redesign .lk__nav .lk__nav_item.current:hover {
+  border: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+body.page-redesign .lk__nav .lk__nav_item::before,
+body.page-redesign .lk__nav .lk__nav_item::after,
+body.page-redesign .lk__nav .lk__nav_item a::before,
+body.page-redesign .lk__nav .lk__nav_item a::after { content: none !important; }

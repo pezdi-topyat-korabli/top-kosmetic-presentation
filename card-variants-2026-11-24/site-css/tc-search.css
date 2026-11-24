@@ -1,0 +1,321 @@
+/* ШТОРКА ПОИСКА (include/tc-search-sheet.php, js/tc-search.js).
+   Сетка и карточки — общие с каталогом, здесь поле, подписи, чипы, пустые состояния. */
+
+/* Высота постоянная, а не по содержимому: выдача меняется на каждый символ,
+   и шторка прыгала бы вверх-вниз. Низ стоит над экранной клавиатурой —
+   её высоту кладёт в --kb скрипт. */
+body.page-redesign .sheet--search {
+  bottom: var(--kb, 0px);
+}
+
+body.page-redesign .sheet--search .sheet__panel {
+  height: calc(100% - var(--sheet-top, 90px));
+  max-height: none;
+}
+
+@media (min-width: 900px) {
+  body.page-redesign .sheet--search .sheet__panel { height: 100%; }
+}
+
+/* ── Поле ──────────────────────────────────────────────────────────── */
+
+/* Поле выше заголовка обычной шторки — шапку растим. Ручка стоит в 12px
+   от кромки (полоска 12–16px), поле начинается на столько же ниже неё:
+   отступы у ручки сверху и снизу равны. */
+body.page-redesign .sheet--search .sheet__head {
+  min-height: 84px;
+  padding-top: 28px;
+  padding-bottom: 12px;
+}
+
+body.page-redesign .tc-search {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  height: 44px;
+  margin: 0;
+  padding: 0 6px 0 42px;
+  border-radius: 999px;
+  background: var(--bg);
+  /* Поле — лунка в полке шапки. */
+  box-shadow:
+    inset 3px 3px 6px rgba(16, 32, 64, .14),
+    inset -2px -2px 5px rgba(255, 255, 255, .95);
+  /* В шапке шторки жест перетаскивания; в поле палец должен ставить курсор. */
+  touch-action: manipulation;
+}
+
+body.page-redesign .tc-search__ico {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  margin-top: -9px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+body.page-redesign .tc-search__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+  font-family: 'Montserrat', sans-serif;
+  /* 16px — меньше iOS увеличивает страницу при фокусе. */
+  font-size: 16px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+body.page-redesign .tc-search__input::placeholder { color: var(--muted); opacity: 1; }
+body.page-redesign .tc-search__input::-webkit-search-cancel-button { display: none; }
+
+body.page-redesign .tc-search__clear {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  animation: tcSearchPop .2s cubic-bezier(.2, .75, .25, 1) both;
+}
+
+body.page-redesign .tc-search__clear[hidden] { display: none; }
+body.page-redesign .tc-search__clear svg { width: 16px; height: 16px; }
+
+@keyframes tcSearchPop {
+  from { opacity: 0; transform: scale(.6); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ── Подписи, чипы ─────────────────────────────────────────────────── */
+
+body.page-redesign .sheet--search .sheet__body { padding-top: 14px; }
+
+body.page-redesign .tc-search-idle,
+body.page-redesign .tc-search-results {
+  animation: pcReveal .32s cubic-bezier(.2, .75, .25, 1) both;
+}
+
+body.page-redesign .tc-search-idle[hidden],
+body.page-redesign .tc-search-results[hidden] { display: none; }
+
+body.page-redesign .tc-search-caption {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 0 2px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+body.page-redesign .tc-search-caption__act {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+body.page-redesign .tc-search-recent { margin-bottom: 18px; }
+body.page-redesign .tc-search-recent[hidden] { display: none; }
+
+body.page-redesign .tc-search-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 2px 2px 4px;
+}
+
+/* Тот же чип, что на главной, чуть компактнее. */
+body.page-redesign .tc-search-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow:
+    3px 3px 8px rgba(16, 32, 64, .12),
+    -3px -3px 7px rgba(255, 255, 255, .95);
+  transition: box-shadow .2s ease, color .18s ease;
+}
+
+body.page-redesign .tc-search-chip:active {
+  color: var(--blue);
+  box-shadow:
+    inset 2px 2px 5px rgba(16, 32, 64, .15),
+    inset -2px -2px 4px rgba(255, 255, 255, .95);
+}
+
+body.page-redesign .tc-search-count {
+  margin: 0 2px 10px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+body.page-redesign .tc-search-count:empty { display: none; }
+
+/* Порции идут одна под другой без шва — как одна сетка. */
+body.page-redesign .tc-search-results .cat-grid + .cat-grid { margin-top: 12px; }
+
+body.page-redesign .tc-search-sentinel { height: 1px; }
+
+/* ── Ничего не нашли ───────────────────────────────────────────────── */
+
+body.page-redesign .tc-search-none {
+  padding: 18px 4px 8px;
+  text-align: center;
+  animation: pcReveal .32s cubic-bezier(.2, .75, .25, 1) both;
+}
+
+body.page-redesign .tc-search-none__title {
+  margin: 0 0 6px;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+body.page-redesign .tc-search-none__text {
+  margin: 0 0 18px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+body.page-redesign .tc-search-none .tc-search-chips { justify-content: center; }
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   МЫШЬ И КЛАВИАТУРА: поиск — окно под шапкой, а не боковая панель
+
+   Остальные шторки на широком экране приезжают сбоку, и это верно: корзина
+   и избранное — отдельные списки, человек уходит в них. Поиск другой: он
+   начинается в шапке, продолжает её и возвращает к той же странице. Поэтому
+   он выпадает ИЗ шапки вниз, во всю ширину колонки, — и в такой ширине
+   помещается плитка результатов, та же, что в каталоге.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@media (min-width: 900px) {
+
+  body.page-redesign .sheet--search {
+    align-items: flex-start;
+    justify-content: center;
+    /* Выше шапки: окно продолжает её, а не прячется под ней. */
+    z-index: 1100;
+  }
+
+  body.page-redesign .sheet--search .sheet__panel {
+    /* Ровно по карточке шапки: у неё контейнер с полями по 20 px, и окно
+       должно продолжать её, а не быть шире или уже. */
+    width: min(calc(var(--container) - 40px), 92vw);
+    max-width: none;
+    height: auto;
+    /* Потолок, а не вся высота: под окном должна оставаться страница —
+       видно, что поиск это слой, а не новый экран. */
+    max-height: min(70vh, 720px);
+    /* Прямо под шапкой: --hh это её высота вместе с верхним отступом. */
+    margin-top: calc(var(--hh, 90px) + 4px);
+    padding-bottom: 8px;
+    border-radius: 18px;
+    /* Выпадает сверху, а не выезжает сбоку: общий десктопный стиль шторок
+       здесь перебиваем — у него translateX(100%). */
+    transform: translateY(-16px) scale(.985);
+    opacity: 0;
+    transition:
+      transform var(--t-base) var(--ease),
+      opacity var(--t-base) var(--ease);
+  }
+
+  body.page-redesign .sheet--search.is-open .sheet__panel {
+    transform: none;
+    opacity: 1;
+  }
+
+  /* Затемнение мягче, чем у боковых панелей: страница под окном остаётся
+     читаемой, человек не уходит с неё. */
+  body.page-redesign .sheet--search .sheet__scrim { background: rgba(10, 25, 55, .22); }
+
+  /* Содержимое листается внутри окна. */
+  body.page-redesign .sheet--search .sheet__body {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
+/* ── Бренды (include/tc-search-brands.php) ───────────────────────────────
+   Тот же чип, что «Недавно искали», с числом товаров: видно, где выбор
+   богаче. До ввода — все бренды, при вводе — совпавшие над товарами. */
+body.page-redesign .tc-search-brands { margin-bottom: 18px; }
+body.page-redesign .tc-search-results .tc-search-brands { margin: 2px 0 16px; }
+
+body.page-redesign .tc-search-brands__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 2px;
+}
+
+body.page-redesign .tc-search-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-decoration: none;
+  box-shadow:
+    3px 3px 8px rgba(16, 32, 64, .12),
+    -3px -3px 7px rgba(255, 255, 255, .95);
+  transition: box-shadow .2s ease, color .18s ease;
+}
+body.page-redesign .tc-search-brand__count {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+}
+body.page-redesign .tc-search-brand:hover { color: var(--blue); }
+body.page-redesign .tc-search-brand:active {
+  color: var(--blue);
+  box-shadow:
+    inset 2px 2px 5px rgba(16, 32, 64, .15),
+    inset -2px -2px 4px rgba(255, 255, 255, .95);
+}
+
+/* Свёрнуто — два ряда. Кнопка «Все бренды» встаёт последней в видимой
+   части: скрипт прячет чипы, которые не влезли (js/tc-search.js). */
+body.page-redesign .tc-search-brands.is-fold:not(.is-open) .tc-search-brand.is-over { display: none; }
+body.page-redesign .tc-search-brand--all {
+  border: 0;
+  font-family: inherit;
+  color: var(--blue);
+  cursor: pointer;
+}

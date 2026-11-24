@@ -1,0 +1,142 @@
+/* ВАРИАНТ 3 «ПОЛКА». Подключать после tc-cv-base.css; <body class="… tc-cv tc-cv3">.
+
+   В покое карточка — только фото и текст. На компьютере под курсором (и при
+   фокусе с клавиатуры) снизу фото выезжает белая полка «В корзину» на всю
+   ширину поля: вход 0,22 с, уход 0,15 с. Покупка не прячется совсем: на
+   телефоне это постоянная контурная кнопка под ценой. После добавления полка
+   остаётся на фото и показывает «− N шт +». */
+
+/* ── Компьютер: полка внутри фото ─────────────────────────────────── */
+body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 .add-btn {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 48px;
+  gap: 8px;
+  justify-content: center;
+  border-radius: 0 !important;
+  background: #fff !important;
+  box-shadow: 0 -1px 0 rgba(23, 27, 36, .06) !important;
+  color: #171b24;
+  transform: translateY(101%);
+  transition:
+    transform .15s cubic-bezier(.16, 1, .3, 1),
+    background-color .15s ease,
+    color .15s ease;
+}
+/* Значок корзины — маска basket.svg сайта, цвет берёт от текста. */
+body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 .add-btn::after {
+  display: block;
+  position: static;
+  order: -1;
+  width: 13px;
+  height: 17px;
+  background: currentColor;
+  transform: none;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 .add-btn .v8-action {
+  color: inherit;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8:is(:hover, :focus-within) .add-btn {
+    transform: none;
+    transition-duration: .22s, .15s, .15s;
+  }
+  body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 .add-btn:not(:disabled):hover {
+    background: var(--blue) !important;
+    color: #fff;
+  }
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 .add-btn:focus-visible {
+  transform: none;
+  outline-offset: -4px;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 .add-btn:not(:disabled):active .v8-action {
+  transform: translateY(1px);
+}
+
+/* Добавление: синяя заливка из центра, галочка; полка не уезжает. */
+body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 .add-btn:is(.is-loading, .is-filling, .is-checking, .is-added) {
+  transform: none;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 .add-btn .ab-fill::before {
+  width: 420px;
+  height: 420px;
+  background: var(--blue);
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 .add-btn:is(.is-filling, .is-checking, .is-added)::after,
+body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 .add-btn:is(.is-filling, .is-checking, .is-added) .v8-action {
+  opacity: 0 !important;
+}
+
+/* Счётчик — та же полка: «−» слева, «N шт» по центру, «+» справа. */
+body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 .qty-ctl {
+  top: auto;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 48px;
+  padding: 0 6px;
+  justify-content: space-between;
+  border-radius: 0;
+  background: #fff;
+  box-shadow: 0 -1px 0 rgba(23, 27, 36, .06);
+  opacity: 0;
+  transform: translateY(101%);
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8.has-qty .qty-ctl { opacity: 1; transform: none; }
+body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 .qty-ctl__btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  color: var(--blue);
+  transition: background-color .12s ease, transform .1s ease;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 .qty-ctl__btn:hover { background: #eef4fb; }
+body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 .qty-ctl__btn:active { transform: scale(.92); box-shadow: none; }
+body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 .qty-ctl__num {
+  color: #171b24;
+  font-size: 13.5px;
+  font-weight: 700;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 .qty-ctl__num::after { content: ' шт'; font-weight: 500; color: #6b7482; }
+
+/* Нет в наличии: полка с тихой подписью, без значка. */
+body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 .add-btn.is-unavailable::after { display: none; }
+body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 .add-btn.is-unavailable { color: #6b7482; }
+
+/* ── Телефон и планшет: контурная кнопка под ценой, всегда видна ───── */
+@media (max-width: 899px), (hover: none) {
+  body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 { padding-bottom: 50px; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 .card-img { position: static; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 .add-btn {
+    height: 40px;
+    border-radius: 12px !important;
+    background: #fff !important;
+    box-shadow: inset 0 0 0 1px rgba(8, 90, 179, .38) !important;
+    color: var(--blue);
+    transform: none;
+  }
+  body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 .add-btn .v8-action { font-size: 12.5px; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 .add-btn.is-unavailable {
+    box-shadow: inset 0 0 0 1px rgba(23, 27, 36, .14) !important;
+    color: #6b7482;
+    opacity: .55 !important;
+  }
+  body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 .add-btn .ab-fill::before { width: 260px; height: 260px; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 .qty-ctl {
+    height: 40px;
+    padding: 0 3px;
+    border-radius: 12px;
+    background: var(--blue);
+    box-shadow: none;
+    transform: none;
+  }
+  body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 .qty-ctl__btn { width: 34px; height: 34px; color: #fff; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 .qty-ctl__btn:hover { background: rgba(255, 255, 255, .16); }
+  body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 .qty-ctl__num,
+  body.page-redesign.tc-v8.tc-cv.tc-cv3 .p-card--v8 .qty-ctl__num::after { color: #fff; }
+}

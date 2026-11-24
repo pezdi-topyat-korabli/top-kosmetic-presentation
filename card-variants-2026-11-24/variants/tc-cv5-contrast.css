@@ -1,0 +1,125 @@
+/* ВАРИАНТ 5 «КОНТРАСТ». Подключать после tc-cv-base.css; <body class="… tc-cv tc-cv5">.
+
+   Решительная, но не кричащая покупка. Под ценой — пара: широкая кнопка
+   «В корзину» и квадрат «в избранное» (он переезжает с фото сюда). В покое
+   кнопка — тонкий тёмный контур на светлом фоне, без заливки: в сетке из
+   десятка карточек нет десятка ярких плашек. Под курсором она заливается
+   чернильным, подпись уезжает вверх и приходит снизу уже белой.
+   После добавления на её месте синий счётчик «− N шт +». */
+
+body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 { padding-bottom: 62px; }
+
+/* Кнопки и счётчик крепятся к карточке: они под ценой, а не на фото. */
+body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 .card-img { position: static; border-radius: 14px; }
+
+body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 .add-btn {
+  left: 0;
+  right: 56px;
+  bottom: 0;
+  height: 48px;
+  overflow: hidden;
+  justify-content: center;
+  border-radius: 4px !important;
+  background: #f4f5f7 !important;
+  box-shadow: inset 0 0 0 1px #171b24 !important;
+  color: #171b24;
+  transition: background-color .12s ease, box-shadow .12s ease, transform .1s cubic-bezier(.16, 1, .3, 1);
+}
+/* Подпись и её белая копия ниже (тенью текста) — подпись «прокручивается». */
+body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 .add-btn .v8-action {
+  color: #171b24;
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: .01em;
+  text-shadow: 0 48px 0 #fff;
+  transition: transform .24s cubic-bezier(.16, 1, .3, 1);
+}
+@media (hover: hover) and (pointer: fine) {
+  body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 .add-btn:not(:disabled):hover {
+    background: #171b24 !important;
+    transition-duration: .15s, .15s, .1s;
+  }
+  body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 .add-btn:not(:disabled):hover .v8-action {
+    transform: translateY(-48px);
+    transition-duration: .32s;
+  }
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 .add-btn:not(:disabled):active { transform: translateY(1px) scale(.985); }
+
+/* «В избранное» рядом с кнопкой — тот же язык: квадрат с тонким контуром. */
+body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 .fav-btn {
+  top: auto;
+  right: 0;
+  bottom: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px rgba(23, 27, 36, .22);
+  transition: box-shadow .12s ease, transform .1s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 .fav-btn:hover {
+    transform: none;
+    box-shadow: inset 0 0 0 1px #171b24;
+  }
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 .fav-btn img,
+body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 .fav-btn::before { width: 20px; height: 20px; }
+body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 .fav-btn::before { margin: -10px 0 0 -10px; }
+
+/* Добавление: синяя заливка из центра и белая галочка. */
+body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 .add-btn .ab-fill::before {
+  width: 360px;
+  height: 360px;
+  background: var(--blue);
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 .add-btn:is(.is-filling, .is-checking, .is-added) .v8-action { opacity: 0 !important; }
+body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 .add-btn:is(.is-filling, .is-checking, .is-added) { box-shadow: none !important; }
+
+/* Счётчик на месте кнопки. */
+body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 .qty-ctl {
+  top: auto;
+  left: 0;
+  right: 56px;
+  bottom: 0;
+  height: 48px;
+  padding: 0 6px;
+  justify-content: space-between;
+  border-radius: 4px;
+  background: var(--blue);
+  box-shadow: none;
+  transform-origin: 50% 50%;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 .qty-ctl__btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 3px;
+  color: #fff;
+  transition: background-color .12s ease, transform .1s ease;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 .qty-ctl__btn:hover { background: rgba(255, 255, 255, .16); }
+body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 .qty-ctl__btn:active { transform: scale(.92); box-shadow: none; }
+body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 .qty-ctl__num {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 .qty-ctl__num::after { content: ' шт'; font-weight: 500; opacity: .8; }
+
+/* Нет в наличии: приглушённая кнопка, без заливки под курсором. */
+body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 .add-btn.is-unavailable {
+  box-shadow: inset 0 0 0 1px rgba(23, 27, 36, .2) !important;
+  opacity: .55 !important;
+}
+body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 .add-btn.is-unavailable .v8-action { text-shadow: none; font-weight: 600; }
+
+@media (max-width: 899px) {
+  body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 { padding-bottom: 52px; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 .add-btn { right: 48px; height: 42px; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 .add-btn .v8-action { font-size: 12.5px; text-shadow: 0 42px 0 #fff; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 .fav-btn { width: 42px; height: 42px; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 .qty-ctl { right: 48px; height: 42px; padding: 0 3px; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 .qty-ctl__btn { width: 32px; height: 32px; }
+  body.page-redesign.tc-v8.tc-cv.tc-cv5 .p-card--v8 .qty-ctl__num::after { content: ''; }
+}

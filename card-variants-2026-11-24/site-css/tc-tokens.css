@@ -1,0 +1,107 @@
+/* ТОКЕНЫ. Единственное место, где живут константы оформления.
+   Источник — from-server/visual-language.html, раздел 01–04.
+   Правило шаблона top: значения цвета, радиуса, тени и отступа в коде НЕ пишем,
+   только через переменные отсюда. Ни одного !important в этом шаблоне. */
+
+:root {
+  /* Фирменный синий */
+  --blue: #0059B9;
+  --blue-strong: #004fa6;
+  --blue-soft: #2268B9;
+  --grad-brand: linear-gradient(104.83deg, #2268B9 39.53%, #89C2FF 89.38%);
+
+  /* Текст и иконки */
+  --ink: #1a1a2e;
+  --muted: #6b7280;
+  --icon: #475886;
+
+  /* Линии */
+  --line: #CAD5F0;
+  --line-soft: #e6ecf6;
+
+  /* Поверхности */
+  /* Холст. Взят из visual-language.html (data-canvas="mid"): чуть теплее
+     и глубже прежнего #F8FAFD, и именно на нём рассчитан неоморфизм —
+     выпуклые кнопки читаются объёмом только когда фон не белый. */
+  --bg: #ECEEF2;
+  --surface: #ffffff;
+  --fill: #F2F6FD;
+  --fill-2: #F0F4FF;
+
+  /* Состояния */
+  --danger: #e05656;
+  --danger-bg: #FFECEC;
+  --ok: #1a9d5a;
+  --star: #f59e0b;
+  --like: #e61e28;
+
+  /* Форма */
+  --r-pill: 999px;
+  --r-card: 12px;
+  --r-ctrl: 12px;
+
+  /* Шрифт */
+  --font: 'Montserrat', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+
+  /* Неоморфизм — приправа, не база. Применяется точечно, см. кит, раздел 04. */
+  --nm-h: 1;
+  --nm-light: rgba(255, 255, 255, .5);
+  --nm-dark: rgba(0, 0, 0, .5);
+  --nm-off: calc(.33rem * var(--nm-h));
+  --nm-off-in: calc(.25rem * var(--nm-h));
+  --nm-blur: .95rem;
+  --nm-press: .1516rem;
+
+  /* Тени */
+  --shadow-float: 0 14px 34px -14px rgba(0, 30, 80, .20), 0 5px 14px -7px rgba(0, 30, 80, .12);
+  --shadow-lift: 0 6px 18px rgba(0, 30, 80, .14);
+
+  /* Ритм */
+  --gut: 20px;
+  --wrap: 1060px;
+
+  /* Каркас приложения. Высоты шапки и таб-бара нужны и разметке, и отступам контента,
+     поэтому они переменные, а не числа в трёх местах. */
+  --header-h: 56px;
+  --tabbar-h: 58px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  /* Длительности. Держим здесь, чтобы «замедлить всё» было одной правкой. */
+  --t-fast: .16s;
+  --t-base: .24s;
+  --t-slow: .34s;
+  --ease: cubic-bezier(.4, 0, .2, 1);
+
+  /* Слои. Любой position:fixed берёт z-index отсюда, чтобы не было войны сотен. */
+  --z-header: 100;
+  --z-tabbar: 100;
+  --z-drop: 200;
+  --z-overlay: 300;
+  --z-sheet: 310;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --gut: 14px;
+  }
+}
+
+/* ── ОЖИДАНИЕ: фирменная «О» вместо кольца ────────────────────────────
+   Один кирпич на все спиннеры сайта. Буква берётся маской из /img/logo-o.svg,
+   а красится фоном — поэтому на синей кнопке она белая, а на холсте синяя,
+   и второй иконки для этого не нужно.
+
+   Движение то же, что у заставки: разгон, два оборота, короткая пауза —
+   ожидание на сайте выглядит одинаково везде. */
+.tc-o-spin {
+  background-color: currentColor;
+  -webkit-mask: url('../img/logo-o.svg') center / contain no-repeat;
+  mask: url('../img/logo-o.svg') center / contain no-repeat;
+  animation: tcOSpin 1.7s cubic-bezier(.82, 0, .22, 1) infinite;
+}
+
+@keyframes tcOSpin {
+  0%   { transform: rotate(0); }
+  70%  { transform: rotate(720deg); }
+  100% { transform: rotate(720deg); }
+}
