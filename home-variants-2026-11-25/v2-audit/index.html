@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>TOP Cosmetics — Аудит+</title>
+<meta name="description" content="Концепт главной TOP Cosmetics «Аудит+»: бренды наверху, преимущества галочками, синий цвет и капсулы логотипа.">
+<meta name="theme-color" content="#0059B9">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400..800&family=Playfair+Display:wght@600&display=swap">
+<link rel="stylesheet" href="../_shared/kit.css">
+<link rel="stylesheet" href="style.css">
+<script src="../_shared/data.js"></script>
+<script src="../_shared/kit.js" defer></script>
+<script src="app.js" defer></script>
+</head>
+<body>
+
+<!-- Спрайт. Логотип и «О» — пути из _shared/logo/logo-footer.svg (CSS-маска по file:// в WebKit не грузится),
+     иконки — из _shared/icons/ с цветом currentColor. Фильтры перекрашивают логотипы брендов (в исходниках чёрный 20%). -->
+<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="tint-white" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%">
+      <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 5 0"/>
+    </filter>
+    <filter id="tint-blue" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%">
+      <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0.349  0 0 0 0 0.725  0 0 0 5 0"/>
+    </filter>
+    <symbol id="logo" viewBox="0 0 398 133">
+      <path fill-rule="evenodd" d="M153.475 8.93882C166.048 1.13599 187.777 -0.249239 197.07 0.0334723C244.491 0.0334788 255.971 23.2157 258.294 28.5872C260.618 33.9587 267.997 46.8222 264.307 81.5957C260.618 116.369 242.442 123.861 227.819 128.384C213.196 132.908 194.337 135.169 167.961 128.384C141.585 121.599 135.435 106.192 131.472 89.7943C127.509 73.397 127.646 52.1936 131.472 40.1784C135.299 28.1632 137.759 18.6924 153.475 8.93882ZM190.648 12.5714C175.065 4.23094 163.929 3.77884 149.809 13.1281C133.974 23.6116 127.689 48.3987 145.652 70.6886C164.024 93.4859 198.88 125.476 224.15 125.8C249.42 126.124 260.323 102.133 259.171 90.0019C258.019 77.8708 257.662 67.0339 226.119 38.1528C219.833 32.2993 206.908 21.2744 190.648 12.5714Z"/>
+      <path d="M40.08 132.608V32.5579H0V6.25344e-08L119.665 6.25362e-08V32.5579H79.7859V132.608H40.08Z"/>
+      <path d="M282.373 132.608V6.25344e-08H341.011C352.739 6.25344e-08 362.817 1.95755 371.246 5.87266C379.798 9.78777 386.395 15.471 391.037 22.9223C395.679 30.2474 398 38.9616 398 49.0651C398 59.0423 395.679 67.6935 391.037 75.0185C386.395 82.3436 379.798 88.0268 371.246 92.0682C362.817 95.9833 352.739 97.9408 341.011 97.9408H318.656V132.608H282.373ZM318.656 68.3881H332.776C340.35 68.3881 345.97 66.6831 349.635 63.2732C353.422 59.8633 355.315 55.1272 355.315 49.0651C355.315 42.8767 353.422 38.0776 349.635 34.6676C345.97 31.2577 340.35 29.5527 332.776 29.5527H318.656V68.3881Z"/>
+    </symbol>
+    <symbol id="o" viewBox="124 -3 146 139">
+      <path fill-rule="evenodd" d="M153.475 8.93882C166.048 1.13599 187.777 -0.249239 197.07 0.0334723C244.491 0.0334788 255.971 23.2157 258.294 28.5872C260.618 33.9587 267.997 46.8222 264.307 81.5957C260.618 116.369 242.442 123.861 227.819 128.384C213.196 132.908 194.337 135.169 167.961 128.384C141.585 121.599 135.435 106.192 131.472 89.7943C127.509 73.397 127.646 52.1936 131.472 40.1784C135.299 28.1632 137.759 18.6924 153.475 8.93882ZM190.648 12.5714C175.065 4.23094 163.929 3.77884 149.809 13.1281C133.974 23.6116 127.689 48.3987 145.652 70.6886C164.024 93.4859 198.88 125.476 224.15 125.8C249.42 126.124 260.323 102.133 259.171 90.0019C258.019 77.8708 257.662 67.0339 226.119 38.1528C219.833 32.2993 206.908 21.2744 190.648 12.5714Z"/>
+    </symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M6 12.4l3.9 3.9L18 8.2" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><path d="M21 21l-4.343-4.343M19 11a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-basket" viewBox="0 0 18 23"><path d="M13.1944 10.375V5.125C13.1944 3.96468 12.7262 2.85188 11.8927 2.03141C11.0592 1.21094 9.92874 0.75 8.75 0.75C7.57126 0.75 6.4408 1.21094 5.6073 2.03141C4.77381 2.85188 4.30556 3.96468 4.30556 5.125V10.375M0.75 7V20.75C0.75 21.3023 1.19772 21.75 1.75 21.75H15.75C16.3023 21.75 16.75 21.3023 16.75 20.75V7C16.75 6.44772 16.3023 6 15.75 6H1.75C1.19772 6 0.75 6.44771 0.75 7Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 22 19"><path fill="currentColor" fill-rule="evenodd" d="M4.374 1.89038C2.715 2.64838 1.5 4.45238 1.5 6.60338C1.5 8.80038 2.4 10.4944 3.688 11.9464C4.751 13.1424 6.037 14.1344 7.291 15.1004C7.58967 15.3304 7.88467 15.5597 8.176 15.7884C8.702 16.2034 9.171 16.5664 9.624 16.8314C10.077 17.0964 10.44 17.2164 10.75 17.2164C11.06 17.2164 11.424 17.0964 11.876 16.8314C12.329 16.5664 12.798 16.2034 13.324 15.7884C13.6153 15.559 13.9103 15.33 14.209 15.1014C15.463 14.1334 16.749 13.1424 17.812 11.9464C19.101 10.4944 20 8.80038 20 6.60338C20 4.45338 18.785 2.64838 17.126 1.89038C15.514 1.15338 13.348 1.34838 11.29 3.48738C11.22 3.55996 11.1362 3.6177 11.0434 3.65714C10.9506 3.69657 10.8508 3.7169 10.75 3.7169C10.6492 3.7169 10.5494 3.69657 10.4566 3.65714C10.3638 3.6177 10.28 3.55996 10.21 3.48738C8.152 1.34838 5.986 1.15338 4.374 1.89038ZM10.75 1.92638C8.438 -0.143622 5.849 -0.433622 3.75 0.525378C1.536 1.54038 0 3.89238 0 6.60438C0 9.26938 1.11 11.3034 2.567 12.9434C3.733 14.2564 5.16 15.3554 6.421 16.3254C6.70767 16.5454 6.983 16.7594 7.247 16.9674C7.76 17.3714 8.31 17.8014 8.867 18.1274C9.424 18.4534 10.06 18.7174 10.75 18.7174C11.44 18.7174 12.076 18.4524 12.633 18.1274C13.191 17.8014 13.74 17.3714 14.253 16.9674C14.517 16.7594 14.7923 16.5454 15.079 16.3254C16.339 15.3554 17.767 14.2554 18.933 12.9434C20.39 11.3034 21.5 9.26938 21.5 6.60438C21.5 3.89238 19.965 1.54038 17.75 0.527378C15.651 -0.432622 13.062 -0.142622 10.75 1.92638Z"/></symbol>
+    <symbol id="i-heart-f" viewBox="0 0 22 19"><path fill="currentColor" d="M10.75 1.92638C8.438 -0.143622 5.849 -0.433622 3.75 0.525378C1.536 1.54038 0 3.89238 0 6.60438C0 9.26938 1.11 11.3034 2.567 12.9434C3.733 14.2564 5.16 15.3554 6.421 16.3254C6.70767 16.5454 6.983 16.7594 7.247 16.9674C7.76 17.3714 8.31 17.8014 8.867 18.1274C9.424 18.4534 10.06 18.7174 10.75 18.7174C11.44 18.7174 12.076 18.4524 12.633 18.1274C13.191 17.8014 13.74 17.3714 14.253 16.9674C14.517 16.7594 14.7923 16.5454 15.079 16.3254C16.339 15.3554 17.767 14.2554 18.933 12.9434C20.39 11.3034 21.5 9.26938 21.5 6.60438C21.5 3.89238 19.965 1.54038 17.75 0.527378C15.651 -0.432622 13.062 -0.142622 10.75 1.92638Z"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M12 1.25a4.75 4.75 0 1 0 0 9.5 4.75 4.75 0 0 0 0-9.5ZM8.75 6a3.25 3.25 0 1 1 6.5 0 3.25 3.25 0 0 1-6.5 0ZM12 12.25c-2.313 0-4.445.526-6.024 1.414C4.42 14.54 3.25 15.866 3.25 17.5v.102c-.001 1.162-.002 2.62 1.277 3.662.629.512 1.51.877 2.7 1.117 1.192.242 2.747.369 4.773.369 2.026 0 3.58-.127 4.774-.369 1.19-.24 2.07-.605 2.7-1.117 1.279-1.042 1.277-2.5 1.276-3.662V17.5c0-1.634-1.17-2.96-2.725-3.836-1.58-.888-3.711-1.414-6.025-1.414ZM4.75 17.5c0-.851.622-1.775 1.961-2.528 1.316-.74 3.184-1.222 5.29-1.222 2.104 0 3.972.482 5.288 1.222 1.34.753 1.961 1.677 1.961 2.528 0 1.308-.04 2.044-.724 2.6-.37.302-.99.597-2.05.811-1.057.214-2.502.339-4.476.339-1.974 0-3.42-.125-4.476-.339-1.06-.214-1.68-.509-2.05-.81-.684-.557-.724-1.293-.724-2.601Z"/></symbol>
+    <symbol id="i-burger" viewBox="0 0 24 24"><path d="M4 7h16M4 12h11M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4.5 8.5h15M4.5 15.5h15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M7.5 16.5l9-9M9.5 7.5h7v7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-next" viewBox="0 0 24 24"><path d="M5 12h13M13 6.5l5.5 5.5-5.5 5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-chev-l" viewBox="0 0 24 24"><path d="M14.5 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-chev-r" viewBox="0 0 24 24"><path d="M9.5 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-tg" viewBox="0 0 37 37"><path fill="currentColor" d="M18.3333 0C8.21333 0 0 8.21333 0 18.3333C0 28.4533 8.21333 36.6667 18.3333 36.6667C28.4533 36.6667 36.6667 28.4533 36.6667 18.3333C36.6667 8.21333 28.4533 0 18.3333 0ZM26.84 12.4667C26.565 15.3633 25.3733 22.4033 24.7683 25.6483C24.5117 27.0233 23.9983 27.4817 23.5217 27.5367C22.4583 27.6283 21.6517 26.84 20.625 26.1617C19.0117 25.0983 18.095 24.4383 16.5367 23.4117C14.7217 22.22 15.895 21.56 16.94 20.4967C17.215 20.2217 21.9083 15.95 22 15.565C22.0127 15.5067 22.011 15.4461 21.9951 15.3886C21.9791 15.3311 21.9493 15.2784 21.9083 15.235C21.7983 15.1433 21.6517 15.18 21.5233 15.1983C21.3583 15.235 18.7917 16.94 13.7867 20.3133C13.0533 20.8083 12.3933 21.065 11.8067 21.0467C11.1467 21.0283 9.9 20.68 8.965 20.3683C7.81 20.0017 6.91167 19.8 6.985 19.1583C7.02167 18.8283 7.48 18.4983 8.34167 18.15C13.695 15.8217 17.2517 14.2817 19.03 13.5483C24.1267 11.4217 25.1717 11.055 25.8683 11.055C26.015 11.055 26.3633 11.0917 26.5833 11.275C26.7667 11.4217 26.8217 11.6233 26.84 11.77C26.8217 11.88 26.8583 12.21 26.84 12.4667Z"/></symbol>
+    <symbol id="i-vk" viewBox="0 0 33 33"><path fill="currentColor" d="M2.31 2.31C0 4.642 0 8.371 0 15.84V17.16C0 24.618 0 28.347 2.31 30.69C4.642 33 8.371 33 15.84 33H17.16C24.618 33 28.347 33 30.69 30.69C33 28.358 33 24.629 33 17.16V15.84C33 8.382 33 4.653 30.69 2.31C28.358 0 24.629 0 17.16 0H15.84C8.382 0 4.653 0 2.31 2.31ZM5.566 10.043H9.35C9.471 16.335 12.243 18.997 14.443 19.547V10.043H17.996V15.466C20.163 15.235 22.451 12.76 23.221 10.032H26.763C26.474 11.4441 25.897 12.7814 25.068 13.9605C24.2391 15.1396 23.1759 16.1351 21.945 16.885C23.319 17.5686 24.5323 18.5358 25.505 19.7228C26.4778 20.9097 27.1877 22.2895 27.588 23.771H23.683C22.847 21.164 20.757 19.14 17.996 18.865V23.771H17.556C10.032 23.771 5.742 18.623 5.566 10.043Z"/></symbol>
+  </defs>
+</svg>
+
+<a class="skip" href="#main">Перейти к содержимому</a>
+
+<!-- 1. Преимущества: компактная строка с галочками в капсулах, самый верх страницы.
+     Планшет и телефон — неподвижная сетка 2×2: все четыре пункта целиком, без прокрутки и затухания. -->
+<div class="benefits" data-req="benefits" role="region" aria-label="Преимущества магазина">
+  <div class="wrap benefits__viewport">
+    <ul class="benefits__list" data-slot="benefits"></ul>
+  </div>
+</div>
+
+<!-- 2. Шапка как в аудите: логотип, широкий поиск, избранное, вход, синяя капсула корзины.
+     Телефон: поиск во всю ширину под логотипом, липкий; «Поиск» в нижней панели ставит в него курсор. -->
+<header class="header" data-req="header">
+  <div class="wrap header__row">
+    <a class="logo" href="#" aria-label="TOP Cosmetics — на главную"><svg viewBox="0 0 398 133" aria-hidden="true"><use href="#logo"/></svg></a>
+    <form class="search" role="search">
+      <svg class="search__ico" aria-hidden="true"><use href="#i-search"/></svg>
+      <input class="search__input" id="q" type="search" name="q" placeholder="Бренд, средство или задача" aria-label="Поиск по каталогу" autocomplete="off" enterkeyhint="search">
+    </form>
+    <a class="header__task" href="#tasks"><span class="capsule-ico" aria-hidden="true"></span>Подбор по задаче</a>
+    <div class="actions">
+      <a class="action" href="#"><svg aria-hidden="true"><use href="#i-heart"/></svg><span>Избранное</span></a>
+      <a class="action" href="#"><svg aria-hidden="true"><use href="#i-user"/></svg><span>Войти</span></a>
+      <a class="cart" href="#" data-cart-target aria-label="Корзина">
+        <svg aria-hidden="true"><use href="#i-basket"/></svg><span class="cart__label">Корзина</span>
+        <b class="badge" data-cart-count hidden>0</b>
+      </a>
+    </div>
+  </div>
+</header>
+
+<nav class="nav" aria-label="Разделы каталога">
+  <div class="wrap nav__row" data-slot="nav"></div>
+</nav>
+
+<main id="main">
+
+  <!-- 3. Бренды — сразу под навигацией: синяя капсула-лента, белый «колпачок» со счётчиком -->
+  <section class="brands" id="brands" data-req="brands" aria-label="Бренды">
+    <div class="wrap">
+      <div class="brands__bar">
+        <div class="brands__scroller">
+          <ul class="brands__list" data-slot="brands"></ul>
+        </div>
+        <!-- Число брендов — длина списка в данных; на телефоне подпись скрыта визуально, но остаётся именем ссылки -->
+        <a class="brands__all" href="#"><span class="brands__all-t">Все <span data-slot="brand-count"></span> брендов</span><svg aria-hidden="true"><use href="#i-next"/></svg></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Первый экран: белая карточка с заголовком + синяя карточка «Новинка» + капсула «Пробники» -->
+  <section class="hero wrap" data-req="hero" aria-labelledby="hero-h">
+    <div class="hero__main" data-slot="hero-main"></div>
+    <div class="hero__side" data-slot="hero-side"></div>
+  </section>
+
+  <!-- 5. Подбор по задаче: чипы из аудита стали капсулами с товаром и описанием, на синей ленте во всю ширину -->
+  <section class="tasks" id="tasks" data-req="tasks" aria-labelledby="tasks-h">
+    <div class="tasks__panel">
+      <div class="wrap">
+        <div class="sec-head sec-head--on-blue">
+          <h2 class="sec-title" id="tasks-h">Подбор по задаче</h2>
+          <a class="more more--on-blue" href="#"><span>Смотреть все</span><svg aria-hidden="true"><use href="#i-next"/></svg></a>
+        </div>
+        <ul class="tasks__grid" data-slot="tasks"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Быстрые категории: высокие капсулы с товаром -->
+  <section class="cats wrap" id="cats" data-req="categories" aria-labelledby="cats-h">
+    <div class="sec-head">
+      <h2 class="sec-title" id="cats-h">Быстрые категории</h2>
+      <a class="more" href="#catalog"><span>Смотреть все</span><svg aria-hidden="true"><use href="#i-next"/></svg></a>
+    </div>
+    <ul class="cats__grid" data-slot="cats"></ul>
+  </section>
+
+  <!-- 7. В каталоге: вкладки по реальным категориям, фото раздела в капсуле + лента товаров -->
+  <section class="shop wrap" id="catalog" data-req="products" aria-labelledby="shop-h">
+    <div class="sec-head sec-head--shop">
+      <h2 class="sec-title" id="shop-h">В каталоге</h2>
+      <div class="tabs" role="tablist" aria-label="Категории товаров" data-slot="tabs"></div>
+      <div class="rail-nav">
+        <button class="rail-nav__btn" type="button" data-rail="-1" aria-label="Предыдущие товары"><svg aria-hidden="true"><use href="#i-chev-l"/></svg></button>
+        <button class="rail-nav__btn" type="button" data-rail="1" aria-label="Следующие товары"><svg aria-hidden="true"><use href="#i-chev-r"/></svg></button>
+      </div>
+    </div>
+    <div class="shop__body">
+      <a class="shop__photo" href="#" data-slot="shop-photo" aria-label="Для лица: смотреть все"></a>
+      <div class="rail" id="rail" role="tabpanel" aria-labelledby="tab-0" tabindex="-1">
+        <ul class="rail__track" data-slot="rail"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. Подборки: остальные плитки из данных -->
+  <section class="picks wrap" aria-labelledby="picks-h">
+    <div class="sec-head">
+      <h2 class="sec-title" id="picks-h">Подборки</h2>
+    </div>
+    <ul class="picks__grid" data-slot="picks"></ul>
+  </section>
+</main>
+
+<!-- 9. Подвал -->
+<footer class="footer" data-req="footer">
+  <div class="wrap footer__grid" data-slot="footer"></div>
+</footer>
+
+<!-- Нижняя панель телефона, как на сайте -->
+<nav class="tabbar" aria-label="Быстрое меню">
+  <a class="tabbar__item" href="#"><svg aria-hidden="true"><use href="#i-user"/></svg><span>Профиль</span></a>
+  <a class="tabbar__item" href="#"><svg aria-hidden="true"><use href="#i-heart"/></svg><span>Избранное</span></a>
+  <a class="tabbar__item tabbar__item--catalog" href="#catalog"><span class="tabbar__capsule"><svg aria-hidden="true"><use href="#i-menu"/></svg></span><span>Каталог</span></a>
+  <a class="tabbar__item" href="#" data-cart-target aria-label="Корзина"><span class="tabbar__icon"><svg aria-hidden="true"><use href="#i-basket"/></svg><b class="badge badge--tab" data-cart-count hidden>0</b></span><span>Корзина</span></a>
+  <button class="tabbar__item" type="button" data-search-focus aria-controls="q"><svg aria-hidden="true"><use href="#i-search"/></svg><span>Поиск</span></button>
+</nav>
+
+<p class="sr-only" aria-live="polite" id="live"></p>
+</body>
+</html>

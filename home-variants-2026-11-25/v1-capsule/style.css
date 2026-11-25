@@ -1,0 +1,1016 @@
+/* v1-capsule «Капсула» — диагональная капсула из «О» логотипа как основа макета.
+   Цвета, шрифты и правила движения — по BRIEF.md (§4, §6). */
+
+:root {
+  --blue: #0059B9;
+  --blue-deep: #003F8C;
+  --ink-blue: #0B2A5B;
+  --soft: #EAF2FB;
+  --mist: #F2F6FD;
+  --sky: #89C2FF;
+  --grad: linear-gradient(104.83deg, #2268B9 39.53%, #89C2FF 89.38%);
+  --ink: #171B24;
+  --muted: #5F6876;
+  --plate: #F2F2F2;
+  --line: rgba(11, 42, 91, .09);
+  --ease: cubic-bezier(.16, 1, .3, 1);
+  --sans: "Montserrat", "Helvetica Neue", Arial, sans-serif;
+  --serif: "Lora", Georgia, "Times New Roman", serif;
+  --wrap: 1312px;
+  --gutter: 64px;
+  --tabbar: 0px;
+}
+
+/* ---------- База ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 92px; }
+body {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: #fff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
+}
+img { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; -webkit-tap-highlight-color: transparent; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+ul { list-style: none; margin: 0; padding: 0; }
+h1, h2, h3, p, figure { margin: 0; }
+input { font: inherit; }
+:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+.benefits :focus-visible, .tasks :focus-visible, .footer :focus-visible { outline-color: #fff; }
+.cat:focus-visible { outline: none; }
+.cat:focus-visible .cat__pill { outline: 2px solid var(--blue); outline-offset: 4px; }
+.cat:focus-visible .cat__name { color: var(--blue); }
+
+.defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+.wrap { width: min(calc(100% - 2 * var(--gutter)), var(--wrap)); margin-inline: auto; }
+.ico { width: 24px; height: 24px; flex: none; }
+.sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.skip {
+  position: absolute; left: 16px; top: -64px; z-index: 100;
+  padding: 12px 20px; border-radius: 999px; background: var(--blue); color: #fff; font-weight: 600;
+  transition: top .2s var(--ease);
+}
+.skip:focus { top: 12px; }
+
+/* Галочка в капсуле — общий знак преимуществ */
+.check {
+  display: grid; place-items: center; flex: none;
+  width: 26px; height: 16px; border-radius: 999px;
+  background: #fff; color: var(--blue);
+}
+.check .ico { width: 12px; height: 12px; stroke-dasharray: 20; }
+.benefits .check .ico { animation: draw .55s var(--ease) both; animation-delay: calc(280ms + var(--i, 0) * 110ms); }
+@keyframes draw { from { stroke-dashoffset: 20; } to { stroke-dashoffset: 0; } }
+
+/* Ссылка с круглой стрелкой */
+.link-round {
+  display: inline-flex; align-items: center; gap: 10px; flex: none;
+  height: 40px; padding: 0 5px 0 16px; border-radius: 999px;
+  color: var(--blue); font-size: 14px; font-weight: 600; white-space: nowrap;
+  transition: background-color .2s var(--ease), color .2s var(--ease);
+}
+.link-round__ico {
+  display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%;
+  background: var(--blue); color: #fff;
+  transition: transform .3s var(--ease), background-color .2s var(--ease);
+}
+.link-round__ico .ico { width: 16px; height: 16px; }
+
+/* ---------- 1. Преимущества ---------- */
+.benefits { position: relative; z-index: 51; background: var(--blue); color: #fff; }
+.benefits__viewport { width: min(calc(100% - 2 * var(--gutter)), var(--wrap)); margin-inline: auto; overflow: hidden; }
+.benefits__list { display: flex; align-items: center; justify-content: space-between; gap: 24px; height: 40px; }
+.benefits__item { display: inline-flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; letter-spacing: .005em; white-space: nowrap; }
+
+/* ---------- 2. Шапка ---------- */
+.header { position: sticky; top: 0; z-index: 50; background: #fff; }
+/* Тень прилипшей шапки — на отдельном слое, появляется прозрачностью (box-shadow не анимируется) */
+.header::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  box-shadow: 0 1px 0 var(--line), 0 18px 34px -30px rgba(11, 42, 91, .55);
+  opacity: 0; transition: opacity .3s var(--ease);
+}
+.header.is-stuck::after { opacity: 1; }
+.header__row { display: flex; align-items: center; gap: 14px; height: 76px; }
+.logo { position: relative; display: block; flex: none; width: 106px; height: 36px; color: var(--blue); }
+/* Зона нажатия логотипов не меньше 44 px по высоте (на телефоне знак 28 px) */
+.logo::after, .footer__logo::after { content: ""; position: absolute; inset: -8px -4px; }
+.logo svg, .footer__logo svg { display: block; width: 100%; height: 100%; fill: currentColor; }
+.catalog-btn {
+  display: inline-flex; align-items: center; gap: 10px; flex: none;
+  height: 48px; padding: 0 22px 0 17px; margin-left: 10px; border-radius: 999px;
+  background: var(--blue); color: #fff; font-size: 15px; font-weight: 600;
+  transition: background-color .2s var(--ease);
+}
+.catalog-btn .ico { width: 22px; height: 22px; }
+.search {
+  position: relative; flex: 1; min-width: 200px;
+  display: flex; align-items: center; gap: 8px;
+  height: 48px; padding: 0 5px 0 20px; border-radius: 999px;
+  background: var(--mist); box-shadow: inset 0 0 0 1px rgba(0, 89, 185, .12);
+  transition: background-color .2s var(--ease);
+}
+.search:focus-within { background: #fff; box-shadow: inset 0 0 0 2px var(--blue); }
+.search__ico { width: 20px; height: 20px; color: var(--blue); }
+.search__input { flex: 1; min-width: 0; height: 100%; border: 0; background: none; color: var(--ink); font-size: 14px; outline: none; }
+.search__input::placeholder { color: #6A7383; opacity: 1; }
+.search__input::-webkit-search-cancel-button { -webkit-appearance: none; }
+.search__go {
+  display: grid; place-items: center; flex: none;
+  width: 38px; height: 38px; border-radius: 50%;
+  background: var(--blue); color: #fff;
+  transition: background-color .2s var(--ease);
+}
+.search__go .ico { width: 18px; height: 18px; }
+/* Лупа — в синей кнопке справа (слева значка нет): подсказка «Бренд, средство или задача» помещается целиком */
+.search__ico, .search__go .search__go-arrow { display: none; }
+.search__go { position: relative; }
+.search__go::after { content: ""; position: absolute; inset: -5px; border-radius: 50%; }
+/* Профиль · Избранное · Корзина — значок над подписью: подписи остаются, а строка шапки вмещает разделы */
+.tools { display: flex; align-items: center; gap: 0; flex: none; margin-right: -8px; }
+.tool {
+  display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  min-width: 64px; height: 58px; padding: 0 6px; border-radius: 20px;
+  color: var(--ink-blue); font-size: 11.5px; font-weight: 600; line-height: 1.15; letter-spacing: .01em;
+  transition: background-color .2s var(--ease), color .2s var(--ease);
+}
+.tool .ico { width: 24px; height: 24px; }
+.tool--cart { color: var(--blue); }
+.tool__cart {
+  position: relative; display: grid; place-items: center;
+  width: 44px; height: 28px; border-radius: 999px; background: var(--blue); color: #fff;
+}
+.tool__cart .ico { width: 18px; height: 18px; }
+.badge {
+  position: absolute; top: -6px; right: -8px;
+  min-width: 20px; height: 20px; padding: 0 5px; border-radius: 999px;
+  background: #fff; color: var(--blue);
+  box-shadow: 0 0 0 2px var(--blue);
+  font: 700 11px/20px var(--sans); text-align: center; font-variant-numeric: tabular-nums;
+}
+.badge[hidden] { display: none; }
+
+/* Разделы — в строке шапки рядом с «Каталогом» (отдельной строки меню нет: первый экран выше на 46 px) */
+.menu { flex: none; margin-left: -6px; }
+.menu__list { display: flex; align-items: center; gap: 0; }
+.menu__link {
+  display: inline-flex; align-items: center;
+  height: 40px; padding: 0 9px; border-radius: 999px;
+  color: var(--ink); font-size: 14px; font-weight: 500; white-space: nowrap;
+  transition: background-color .2s var(--ease), color .2s var(--ease);
+}
+
+/* ---------- Сцена: бренды + первый экран на мягком синем ---------- */
+.stage {
+  position: relative; overflow: hidden; isolation: isolate;
+  background:
+    radial-gradient(42% 58% at 80% 62%, rgba(137, 194, 255, .30), rgba(137, 194, 255, 0) 72%),
+    linear-gradient(180deg, #E2EDFB 0%, #ECF3FC 46%, #F6F9FE 84%, #fff 100%);
+}
+/* Ряды «О» логотипа внизу слева — как на баннерах сайта, едва заметно */
+.stage::before {
+  content: ""; position: absolute; left: 0; bottom: 0; z-index: -1;
+  width: 62%; height: 300px;
+  background: url("assets/o-tile-blue.svg") 18px 100% / 112px 100px repeat;
+  opacity: .11;
+  -webkit-mask-image: radial-gradient(90% 100% at 0% 100%, #000 0%, rgba(0, 0, 0, .55) 38%, rgba(0, 0, 0, 0) 74%);
+  mask-image: radial-gradient(90% 100% at 0% 100%, #000 0%, rgba(0, 0, 0, .55) 38%, rgba(0, 0, 0, 0) 74%);
+}
+
+/* ---------- 3. Бренды ---------- */
+/* Одна строка: синий ярлык «Бренды 12» → 12 белых капсул → «Все бренды». Отдельной строки-заголовка нет.
+   --u — модуль размера логотипов и словесных знаков (10px = полный размер). Считается от ширины ряда (cqw):
+   ярлык 118 + «Все бренды» 142 + 13 промежутков × 5 + поля 12 × 18 = 541 px, остальное — 12 знаков (≈ 93 модуля).
+   На 1440 это 8,3 px; знаки не сжимаются по отдельности. */
+.brands {
+  position: relative; z-index: 2; padding-top: 12px;
+  --bh: 56px; --lead: 118px; --all: 142px;
+  --u: clamp(7.4px, calc((100cqw - var(--lead) - var(--all) - 65px - 216px) / 93), 10px);
+}
+.brands > .wrap { container-type: inline-size; }
+.brands__row { display: flex; align-items: center; gap: 5px; }
+.brands__title {
+  flex: none; display: inline-flex; align-items: center; justify-content: space-between; gap: 6px;
+  width: var(--lead); height: var(--bh); padding: 0 6px 0 16px; border-radius: 999px;
+  background: var(--blue); color: #fff;
+  font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; white-space: nowrap;
+  animation: fade-up .6s var(--ease) .1s both;
+}
+.brands__count {
+  display: inline-grid; place-items: center; min-width: 30px; height: 26px; padding: 0 7px; border-radius: 999px;
+  background: #fff; color: var(--blue); font-size: 12px; letter-spacing: 0; font-variant-numeric: tabular-nums;
+}
+/* Капсулы по ширине содержимого: широкие знаки получают место, свободное место делится поровну */
+.brands__list { flex: 1; min-width: 0; display: flex; gap: 5px; }
+.brands__list > li { flex: 1 1 auto; }
+.brands__list > li { animation: fade-up .6s var(--ease) both; animation-delay: calc(120ms + var(--i, 0) * 30ms); }
+.brand {
+  position: relative; display: flex; align-items: center; justify-content: center;
+  height: var(--bh); padding: 0 9px; border-radius: 999px;
+  background: #fff; color: var(--ink-blue);
+  transition: background-color .25s var(--ease), transform .3s var(--ease), color .25s var(--ease);
+}
+/* --h — высота логотипа в модулях (задаёт app.js): 1.9 × 10px = 19px и т. д. */
+.brand__logo { width: auto; height: calc(var(--h, 1.8) * var(--u)); max-width: 100%; object-fit: contain; filter: url(#f-ink); transition: opacity .2s var(--ease); }
+.brand__logo--w { position: absolute; left: 50%; top: 50%; max-width: calc(100% - 20px); transform: translate(-50%, -50%); filter: url(#f-white); opacity: 0; }
+.brand--all {
+  flex: none; justify-content: space-between; gap: 7px; width: var(--all); padding: 0 6px 0 15px;
+  color: var(--blue); font-size: 13px; font-weight: 600; white-space: nowrap;
+  animation: fade-up .6s var(--ease) .5s both;
+}
+.brand__go { display: grid; place-items: center; flex: none; width: 30px; height: 30px; border-radius: 50%; background: var(--blue); color: #fff; transition: transform .3s var(--ease), background-color .25s var(--ease), color .25s var(--ease); }
+.brand__go .ico { width: 16px; height: 16px; }
+/* Словесные знаки брендов без файла логотипа */
+.wm { display: block; max-width: 100%; color: inherit; line-height: 1; white-space: nowrap; transition: color .25s var(--ease); }
+.wm-lisap { font-weight: 800; font-size: calc(1.7 * var(--u)); letter-spacing: .01em; }
+.wm-mesoderm { font-weight: 600; font-size: calc(1.25 * var(--u)); letter-spacing: .13em; }
+.wm-skin { font-family: var(--serif); font-weight: 600; font-size: calc(1.55 * var(--u)); letter-spacing: -.015em; }
+.wm-shor { font-weight: 800; font-size: calc(1.7 * var(--u)); letter-spacing: .06em; }
+.wm-eks { font-weight: 600; font-size: calc(1.2 * var(--u)); letter-spacing: .14em; text-transform: uppercase; }
+.wm-green { font-weight: 700; font-size: calc(1.4 * var(--u)); letter-spacing: -.01em; }
+.wm-bns { font-weight: 800; font-size: calc(1.25 * var(--u)); letter-spacing: .08em; padding: .32em .8em .24em; border: 1.6px solid currentColor; border-radius: 999px; }
+
+/* ---------- 4. Первый экран ---------- */
+/* --art — размер «О»: 612 px на высоких экранах, 480 на ноутбуках (≤ 940 px высоты); текст получает остаток строки */
+.hero { position: relative; z-index: 1; padding: 12px 0 30px; --art: 612px; }
+.hero__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, var(--art)); align-items: center; gap: 28px; }
+.hero__copy { position: relative; z-index: 3; max-width: 640px; }
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 10px;
+  height: 34px; padding: 0 16px 0 8px; border-radius: 999px;
+  background: #fff; color: var(--blue);
+  font-size: 11.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+}
+.eyebrow__o { width: 22px; height: 21px; fill: var(--blue); }
+.hero__title {
+  margin-top: 22px;
+  font-family: var(--serif); font-weight: 600;
+  font-size: clamp(48px, 5.25vw, 76px); line-height: 1.06; letter-spacing: -.02em;
+  color: var(--ink-blue);
+}
+.hero__line { display: block; }
+/* Последнее слово заголовка — в синей капсуле, как капсула в «О» логотипа.
+   Отступы дают воздух выносным элементам: «у» строки выше и «р» внутри капсулы её не касаются. */
+.pill-word {
+  position: relative; display: inline-block; margin-top: .18em;
+  padding: .02em .42em .2em .38em; border-radius: 999px;
+  background: var(--blue); color: #fff;
+  font-style: italic; font-weight: 500; line-height: 1.02;
+  box-shadow: 0 22px 40px -26px rgba(0, 89, 185, .9);
+}
+.pill-word--white { margin-top: 0; padding: 0 .36em .08em .32em; background: #fff; color: var(--blue); box-shadow: none; animation: none; }
+.hero__text { margin-top: 24px; max-width: 30em; font-size: 18px; line-height: 1.6; color: var(--muted); }
+.hero__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+  height: 58px; padding: 0 30px; border-radius: 999px;
+  font-size: 16px; font-weight: 600; white-space: nowrap;
+  transition: background-color .25s var(--ease), color .25s var(--ease), border-color .25s var(--ease);
+}
+.btn .ico { width: 20px; height: 20px; transition: transform .3s var(--ease); }
+.btn--primary { padding: 0 34px; background: var(--blue); color: #fff; box-shadow: 0 18px 34px -18px rgba(0, 89, 185, .85); }
+.btn--ghost { background: #fff; color: var(--blue); border: 1.5px solid rgba(0, 89, 185, .24); }
+
+/* Задачи-капсулы под кнопками: средство в синем круге-«О» + название задачи из данных */
+.hero__tasks { display: flex; flex-wrap: wrap; gap: 14px 8px; margin-top: 26px; }
+.hero__tasks > li { animation: fade-up .5s var(--ease) both; animation-delay: calc(380ms + var(--i, 0) * 70ms); }
+.chip {
+  display: inline-flex; align-items: center; gap: 10px;
+  height: 46px; padding: 0 17px 0 4px; border-radius: 999px;
+  background: #fff; color: var(--ink-blue);
+  font-size: 14px; font-weight: 600; white-space: nowrap;
+  box-shadow: 0 12px 26px -20px rgba(11, 42, 91, .55);
+  transition: background-color .25s var(--ease), color .25s var(--ease), translate .3s var(--ease);
+}
+/* Круг — «О» в миниатюре (синий + белая диагональ), средство выходит из него вверх, как в плитках задач */
+.chip__orb {
+  position: relative; flex: none; width: 38px; height: 38px; border-radius: 50%;
+  background:
+    linear-gradient(40deg, rgba(255, 255, 255, 0) 37.6%, #fff 38.2% 61.8%, rgba(255, 255, 255, 0) 62.4%),
+    linear-gradient(160deg, #2B77D2, #0059B9 60%, #004A9E);
+}
+.chip__ph { position: absolute; left: 0; right: 0; bottom: 0; height: 142%; border-radius: 0 0 19px 19px; overflow: hidden; }
+.chip__ph img {
+  position: absolute; left: 50%; bottom: -2px; width: 122%; max-width: none; height: auto;
+  transform: translateX(-50%); transition: transform .4s var(--ease);
+}
+
+/* Огромная «О»: контур логотипа + белая диагональная капсула, средства стоят в ней */
+.art { position: relative; width: 100%; max-width: var(--art); justify-self: end; aspect-ratio: 137.1 / 133.3; }
+.art__o { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+/* «О» и прорезь — один знак: поворачиваются за курсором вместе (прорезь у края «О» — тонкий синий ободок) */
+.art__o, .art__win { rotate: calc(var(--mx, 0) * 3deg); transition: rotate .5s var(--ease); }
+.art__floor {
+  position: absolute; left: 10%; right: 6%; bottom: -3%; height: 9%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(0, 50, 125, .26), rgba(0, 50, 125, 0));
+}
+.art__win { position: absolute; inset: 0; }
+.art__win svg { display: block; width: 100%; height: 100%; overflow: visible; }
+/* Прорезь — ровно контур из logo-o.svg, плоская белая заливка (без градиента, внутренней тени и светлой обводки) */
+.art__cut { fill: #fff; }
+.art__shadow {
+  position: absolute; z-index: 1; height: 3.4%;
+  border-radius: 50%; transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, rgba(0, 40, 105, .4), rgba(0, 40, 105, 0));
+}
+.art__p { position: absolute; z-index: 2; height: auto; max-width: none; pointer-events: none; filter: url(#f-clean); transition: translate .45s var(--ease); }
+/* Средства стоят «лесенкой» вдоль капсулы; координаты посчитаны по непрозрачной части исходников */
+.art__p--1 { left: 12.82%; top: .38%; width: 40.27%; translate: calc(var(--mx, 0) * -10px) calc(var(--my, 0) * -8px); }
+.art__p--2 { left: 35.11%; top: 11.18%; width: 33.87%; translate: calc(var(--mx, 0) * -16px) calc(var(--my, 0) * -11px); }
+/* У исходника сыворотки справа и снизу — непрозрачная серая «тень-плита» (#5F6170…#646471).
+   Контур обрезки идёт по краю флакона (340×640): крышка до x≈212, ворот и корпус до x≈229, дно — дуга к y≈488. */
+.art__p[src$="hero-serum.webp"] {
+  clip-path: polygon(0 0, 62.35% 0, 62.35% 24.2%, 65.3% 24.55%, 67.35% 25.2%, 67.35% 71.1%, 65% 72.5%, 62.95% 73.6%,
+    61.75% 74.7%, 59.4% 75.8%, 57.05% 76.25%, 34.7% 76.25%, 31.2% 75.45%, 28.55% 74.2%, 26.45% 72.8%, 0 72.8%);
+}
+.art__p--3 { left: 47.55%; top: 51.67%; width: 46.44%; translate: calc(var(--mx, 0) * -24px) calc(var(--my, 0) * -15px); }
+.art__shadow--1 { left: 33%; top: 55.4%; width: 22%; }
+.art__shadow--2 { left: 52%; top: 69.4%; width: 19%; }
+.art__shadow--3 { left: 72%; top: 85.2%; width: 36%; height: 4.2%; }
+
+/* Ярлык «Новинка» поверх «О» */
+.ticket {
+  position: absolute; z-index: 3; left: -5%; bottom: 6%;
+  display: flex; align-items: center; gap: 12px;
+  padding: 6px 7px 6px 6px; border-radius: 999px;
+  background: #fff; color: var(--ink-blue);
+  box-shadow: 0 22px 44px -24px rgba(11, 42, 91, .55);
+  transition: translate .3s var(--ease);
+}
+.ticket__img { display: grid; place-items: center; flex: none; width: 56px; height: 56px; border-radius: 50%; background: var(--soft); overflow: hidden; }
+.ticket__img img { width: 82%; height: auto; }
+.ticket__txt { display: flex; flex-direction: column; gap: 3px; padding-right: 6px; }
+.ticket__label { font-size: 10.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--blue); }
+.ticket__title { font-size: 15px; font-weight: 600; white-space: nowrap; }
+.ticket__go { display: grid; place-items: center; flex: none; width: 42px; height: 42px; border-radius: 50%; background: var(--blue); color: #fff; transition: transform .3s var(--ease); }
+.ticket__go .ico { width: 18px; height: 18px; }
+
+/* Появление первого экрана: «О» проявляется, капсула прорезает её по диагонали, средства поднимаются.
+   Каждое появление 400–650 мс, вся сцена собирается примерно за 1,2 с. */
+@keyframes o-in { from { opacity: 0; transform: scale(.9) rotate(-6deg); } to { opacity: 1; transform: none; } }
+@keyframes slice { from { clip-path: polygon(0 0, 0 0, 0 0); } to { clip-path: polygon(0 0, 205% 0, 0 205%); } }
+@keyframes rise { from { opacity: 0; transform: translateY(48px); } to { opacity: 1; transform: none; } }
+@keyframes fade-up { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pill-in { 0% { opacity: 0; clip-path: inset(0 100% 0 0 round 999px); } 10% { opacity: 1; } 100% { opacity: 1; clip-path: inset(0 0 0 0 round 999px); } }
+.art__o, .art__win { transform-origin: 50% 55%; }
+.art__o { animation: o-in .6s var(--ease) .05s both; }
+.art__floor { animation: fade .6s ease .1s both; }
+/* Прорезь проявляется той же «О» (тот же масштаб и поворот) и прорезает её по диагонали */
+.art__win { animation: o-in .6s var(--ease) .05s both, slice .65s cubic-bezier(.65, 0, .2, 1) .15s both; }
+.art__p--1 { animation: rise .6s var(--ease) .35s both; }
+.art__p--2 { animation: rise .6s var(--ease) .42s both; }
+.art__p--3 { animation: rise .6s var(--ease) .49s both; }
+.art__shadow { animation: fade .4s ease .6s both; }
+.ticket { animation: fade-up .5s var(--ease) .7s both; }
+.eyebrow, .hero__title, .hero__text, .hero__actions { animation: fade-up .6s var(--ease) both; }
+.eyebrow { animation-delay: .06s; }
+.hero__title { animation-delay: .12s; }
+.hero__text { animation-delay: .2s; }
+.hero__actions { animation-delay: .28s; }
+.pill-word { animation: pill-in .6s cubic-bezier(.65, 0, .2, 1) .3s both; }
+
+/* ---------- Секции ---------- */
+.section { position: relative; padding: 96px 0; }
+.section__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 36px; }
+.section__title { font-family: var(--serif); font-weight: 600; font-size: 44px; line-height: 1.08; letter-spacing: -.015em; color: var(--ink-blue); }
+
+/* ---------- 6. Быстрые категории (после «Подбора по задаче») ---------- */
+.cats { padding-top: 88px; padding-bottom: 72px; }
+.cats__list { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 16px; }
+.cat { display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+/* Каждая категория — высокая синяя капсула со средством на мягком свете.
+   Диагональная белая капсула «О» появляется только при наведении: в покое ряд спокойный, а полную силу знак
+   сохраняет на первом экране и в кругах задач. */
+.cat__pill {
+  position: relative; display: block; width: 100%; aspect-ratio: .64;
+  border-radius: 999px; overflow: hidden; isolation: isolate;
+  background:
+    radial-gradient(70% 42% at 50% 50%, rgba(255, 255, 255, .58), rgba(255, 255, 255, 0) 100%),
+    linear-gradient(165deg, #2B77D2 0%, #0059B9 55%, #00499C 100%);
+}
+.cat__pill::before {
+  content: ""; position: absolute; left: 50%; top: 52%; z-index: -1;
+  width: 150%; height: 30%; border-radius: 999px;
+  background: linear-gradient(180deg, #fff 0%, #EEF4FD 100%);
+  transform: translate(-50%, -50%) rotate(52deg);
+  opacity: 0;
+  transition: opacity .25s var(--ease), transform .45s var(--ease);
+}
+.cat__img {
+  position: absolute; left: 50%; top: 50%; width: 122%; max-width: none; height: auto;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 14px 12px rgba(0, 34, 92, .28));
+  transition: transform .45s var(--ease);
+}
+.cat__name { display: block; max-width: 13ch; min-height: 2.6em; font-size: 14px; font-weight: 600; line-height: 1.3; color: var(--ink); transition: color .25s var(--ease); }
+
+/* ---------- 5. Подбор по задаче — сразу под первым экраном ---------- */
+.tasks {
+  overflow: hidden; isolation: isolate;
+  width: min(calc(100% - 48px), 1392px); margin-inline: auto; padding: 54px 0 80px; border-radius: 56px;
+  background: linear-gradient(160deg, #0A63C4 0%, var(--blue) 45%, #004C9F 100%); color: #fff;
+}
+.tasks__pattern {
+  position: absolute; inset: 0; z-index: -1;
+  background: url("assets/o-tile-white.svg") 40px 30px / 168px 151px repeat;
+  opacity: .085;
+  -webkit-mask-image: linear-gradient(105deg, rgba(0, 0, 0, 0) 32%, rgba(0, 0, 0, .7) 70%, #000 100%);
+  mask-image: linear-gradient(105deg, rgba(0, 0, 0, 0) 32%, rgba(0, 0, 0, .7) 70%, #000 100%);
+}
+.tasks .wrap { width: min(calc(100% - 80px), var(--wrap)); }
+.tasks .section__title { color: #fff; }
+.tasks .section__head { margin-bottom: 30px; }
+.tasks__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 44px 24px; }
+.task {
+  position: relative; isolation: isolate;
+  display: flex; align-items: center; gap: 20px;
+  height: 128px; padding: 0 22px 0 8px; border-radius: 999px;
+  background: #fff; color: var(--ink);
+  box-shadow: 0 26px 40px -30px rgba(0, 20, 60, .6);
+}
+.task__bg { position: absolute; inset: 0; z-index: -1; border-radius: inherit; overflow: hidden; }
+.task__bg::before {
+  content: ""; position: absolute; inset: 0;
+  background: var(--ink-blue);
+  clip-path: circle(56px at 64px 50%);
+  transition: clip-path .55s var(--ease);
+}
+/* Синий круг — «О» в миниатюре: внутри белая диагональная капсула; средство выходит за край круга */
+.task__orb { position: relative; flex: none; width: 112px; height: 112px; }
+.task__ring { position: absolute; inset: 0; border-radius: 50%; overflow: hidden; background: linear-gradient(160deg, #2B77D2, #0059B9 60%, #004A9E); }
+.task__ring::before {
+  content: ""; position: absolute; left: 50%; top: 50%;
+  width: 104%; height: 34%; border-radius: 999px;
+  background: rgba(255, 255, 255, .94);
+  transform: translate(-50%, -50%) rotate(40deg);
+}
+.task__ph {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 140%;
+  border-radius: 0 0 56px 56px; overflow: hidden;
+}
+/* Вырезки — WebP из assets/img: ореол по краю уже убран в файле (то же, что делал фильтр #f-clean),
+   у сыворотки HydroPeptide (p-017) серая плита справа от крышки стёрта по краю флакона. */
+.task__ph img {
+  position: absolute; left: 50%; bottom: -2px; width: 128%; max-width: none; height: auto;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 10px 8px rgba(0, 34, 92, .25));
+  transition: transform .45s var(--ease);
+}
+html.tck-js li.tck-reveal .task__ph img { translate: 0 46%; }
+html.tck-js li.tck-in .task__ph img { translate: 0 0; transition: transform .45s var(--ease), translate .65s var(--ease) calc(var(--tck-delay, 0ms) + 120ms); }
+/* Задачи, видные уже при загрузке (app.js прячет только то, что ниже окна): средство выходит из круга следом
+   за первым экраном. Задачам ниже окна app.js даёт .tck-reveal — у них подъём при прокрутке (правила выше). */
+@keyframes ph-rise { from { translate: 0 46%; } to { translate: 0 0; } }
+html.tck-js [data-list="tasks"] > li:not(.tck-reveal) .task__ph img { animation: ph-rise .65s var(--ease) both; animation-delay: calc(640ms + var(--i, 0) * 80ms); }
+.task__body { flex: 1; min-width: 0; }
+.task__name { display: block; font-size: 18px; font-weight: 700; line-height: 1.25; color: var(--ink-blue); transition: color .3s var(--ease); }
+.task__desc { display: block; margin-top: 6px; font-size: 14px; line-height: 1.45; color: var(--muted); transition: color .3s var(--ease); }
+/* Стрелка задачи — только как отклик на наведение/фокус: в покое капсулы чистые */
+.task__go {
+  display: grid; place-items: center; flex: none;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: #fff; color: var(--ink-blue);
+  opacity: 0; transform: translateX(-6px);
+  transition: opacity .2s var(--ease), transform .3s var(--ease);
+}
+.task__go .ico { width: 19px; height: 19px; }
+
+/* ---------- 7. Товары: вкладки и сетка 5×2 ---------- */
+.shop { padding-top: 40px; }
+.shop__head { display: flex; align-items: center; gap: 36px; margin-bottom: 36px; }
+.shop__head .section__title { flex: none; }
+.tabs { min-width: 0; }
+.tabs__in { position: relative; display: inline-flex; gap: 2px; padding: 5px; border-radius: 999px; background: var(--mist); box-shadow: inset 0 0 0 1px rgba(0, 89, 185, .08); }
+.tabs__ink {
+  position: absolute; inset: 0; border-radius: 999px; background: var(--blue);
+  clip-path: inset(5px 100% 5px 5px round 999px);
+  transition: clip-path .5s var(--ease);
+  pointer-events: none;
+}
+.tab {
+  position: relative; z-index: 1;
+  height: 44px; padding: 0 22px; border-radius: 999px;
+  color: var(--ink-blue); font-size: 14px; font-weight: 600; white-space: nowrap;
+  transition: color .3s var(--ease);
+}
+.tab[aria-selected="true"] { color: #fff; }
+
+/* Сетка вместо карусели: 5 колонок × 2 ряда на десктопе. --cols/--gap нужны карточке «Смотреть все»
+   (её высота = высота фото: (ширина сетки − промежутки) / колонки / .86). */
+.grid { outline: none; }
+.grid__list {
+  --cols: 5; --gap: 20px;
+  container-type: inline-size;
+  display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: 40px var(--gap);
+}
+/* Карточка: одна ссылка — название; её ::after растянут на фото (фото само клики пропускает, «избранное» — нет) */
+.card { position: relative; isolation: isolate; display: flex; flex-direction: column; min-width: 0; }
+.card--in { animation: fade-up .5s var(--ease) both; }
+.card__media {
+  position: relative; display: block; aspect-ratio: .86; overflow: hidden; isolation: isolate;
+  border-radius: 999px 999px 28px 28px;
+  background: var(--plate);
+  pointer-events: none;
+}
+.card__img { width: 100%; height: 100%; object-fit: cover; transition: transform .45s var(--ease); }
+.card__name a::after {
+  content: ""; position: absolute; z-index: -1; left: 0; right: 0; top: 0; aspect-ratio: .86;
+  border-radius: 999px 999px 28px 28px;
+}
+.fav {
+  pointer-events: auto;
+  position: absolute; right: 12px; bottom: 12px;
+  display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%;
+  background: #fff; color: var(--ink-blue);
+  transition: color .2s var(--ease), transform .3s var(--ease);
+}
+.fav .ico { width: 20px; height: 20px; }
+.fav__on { position: absolute; color: var(--blue); opacity: 0; transform: scale(.5); transition: opacity .2s var(--ease), transform .3s var(--ease); }
+.fav[aria-pressed="true"] .fav__on { opacity: 1; transform: none; }
+.fav[aria-pressed="true"] .fav__off { opacity: 0; }
+.card__brand { margin-top: 16px; font-size: 11.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--blue); }
+.card__name { margin-top: 6px; font-size: 14px; font-weight: 500; line-height: 1.42; color: var(--ink); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.84em; }
+.card__name a { transition: color .2s var(--ease); }
+.card__size { margin-top: 4px; min-height: 1.5em; font-size: 13px; color: var(--muted); }
+.card__buy { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: auto; padding-top: 12px; }
+.card__price { font-size: 18px; font-weight: 700; color: var(--ink-blue); font-variant-numeric: tabular-nums; white-space: nowrap; letter-spacing: -.01em; }
+
+/* Кнопка «В корзину»: капсула с корзиной → галочка, «+1» и полёт фото к корзине */
+.add {
+  position: relative; flex: none;
+  display: grid; place-items: center;
+  width: 60px; height: 46px; border-radius: 999px;
+  background: var(--blue); color: #fff;
+  transition: background-color .25s var(--ease);
+}
+.add > .ico { grid-area: 1 / 1; width: 22px; height: 22px; transition: opacity .2s var(--ease), transform .3s var(--ease); }
+.add__ok { opacity: 0; transform: scale(.4) rotate(-20deg); }
+/* Кольцо «добавлено» — масштаб и прозрачность, без анимации тени */
+.add::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  border: 2px solid var(--blue); opacity: 0;
+}
+.add.is-added { background: var(--ink-blue); }
+.add.is-added .add__basket { opacity: 0; transform: scale(.4) translateY(6px); }
+.add.is-added .add__ok { opacity: 1; transform: none; }
+.add.is-added::after { animation: ring .6s var(--ease) both; }
+.add__plus {
+  position: absolute; left: 50%; bottom: 100%; margin-left: -18px; margin-bottom: 4px;
+  width: 36px; height: 22px; border-radius: 999px;
+  background: var(--blue); color: #fff;
+  font: 700 12px/22px var(--sans); text-align: center;
+  opacity: 0; pointer-events: none;
+}
+.add.is-added .add__plus { animation: plus-one .8s var(--ease) both; }
+@keyframes plus-one {
+  0% { opacity: 0; transform: translateY(8px) scale(.6); }
+  28% { opacity: 1; transform: translateY(-4px) scale(1); }
+  72% { opacity: 1; transform: translateY(-9px) scale(1); }
+  100% { opacity: 0; transform: translateY(-15px) scale(.96); }
+}
+@keyframes ring { 0% { opacity: .55; transform: scale(1); } 100% { opacity: 0; transform: scale(1.38, 1.5); } }
+
+/* «Смотреть все» закрывает последний ряд: в одну колонку — арка, как фото товаров; шире — капсула логотипа */
+.card--more { grid-column: span var(--s5, 1); }
+.card--more .more {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+  height: calc((100cqw - (var(--cols) - 1) * var(--gap)) / var(--cols) / .86);
+  padding: 24px; text-align: center; overflow: hidden; isolation: isolate;
+  border-radius: 999px 999px 28px 28px;
+  background: var(--blue); color: #fff;
+  transition: background-color .3s var(--ease);
+}
+.card--more:not([data-s5="1"]) .more { border-radius: 999px; }
+/* Узор из «О» логотипа, как на баннерах сайта и в подвале (вместо одной огромной «О») */
+.card--more .more::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: url("assets/o-tile-white.svg") 50% 50% / 132px 118px repeat;
+  opacity: .1;
+}
+.more__t { font-family: var(--serif); font-size: 24px; font-weight: 600; line-height: 1.15; }
+.more__c { display: inline-flex; align-items: center; height: 30px; padding: 0 14px; border-radius: 999px; background: #fff; color: var(--blue); font-size: 13px; font-weight: 600; }
+.card--more:not([data-s5="1"]) .more__t { font-size: 32px; }
+.card--more:not([data-s5="1"]) .more__c { height: 36px; padding: 0 18px; font-size: 14px; }
+
+/* ---------- 8. Подборки: одна полка ---------- */
+/* Четыре подборки на одной мягко-синей полке: текст сверху, средство целиком стоит на общей линии основания.
+   Ярлык — простые малые прописные. Вырезки обрезаны по контуру (assets/img/tile), поэтому bottom = линия. */
+.feats { padding-top: 24px; }
+.shelf {
+  --base: 50px;
+  position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-radius: 44px; overflow: hidden; isolation: isolate;
+  background:
+    linear-gradient(180deg, rgba(0, 89, 185, 0) calc(100% - var(--base)), rgba(0, 89, 185, .045) calc(100% - var(--base))),
+    linear-gradient(180deg, var(--mist) 0%, var(--soft) 100%);
+}
+.shelf__item { position: relative; min-width: 0; }
+.shelf__item + .shelf__item::before {
+  content: ""; position: absolute; left: 0; top: 36px; bottom: var(--base); width: 1px;
+  background: rgba(0, 89, 185, .1);
+}
+.shelf__link {
+  position: relative; isolation: isolate; overflow: hidden;
+  display: flex; flex-direction: column; align-items: flex-start; height: 100%;
+  padding: 38px 34px var(--base); color: var(--ink-blue);
+}
+/* Линия основания — у каждого отдела на одной высоте, поэтому через всю полку идёт одна линия */
+.shelf__link::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: var(--base); height: 1px;
+  background: rgba(0, 89, 185, .16);
+}
+.shelf__label { font-size: 11.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--blue); }
+.shelf__title { margin-top: 10px; font-family: var(--serif); font-size: 28px; font-weight: 600; line-height: 1.12; letter-spacing: -.01em; transition: color .25s var(--ease); }
+.shelf__text { margin-top: 8px; margin-bottom: 26px; max-width: 16em; font-size: 14.5px; line-height: 1.5; color: var(--muted); }
+/* margin-top: auto — фото прижато к низу отдела, поэтому все четыре стоят ровно на линии при любой длине текста */
+.shelf__pic {
+  position: relative; align-self: stretch; display: flex; align-items: flex-end; justify-content: center;
+  height: 236px; margin-top: auto;
+}
+.shelf__img { position: relative; z-index: 1; display: block; width: auto; height: var(--h, 200px); max-width: 100%; object-fit: contain; object-position: 50% 100%; transform-origin: 50% 100%; transition: transform .45s var(--ease); }
+/* Высоты — в пропорции к реальным упаковкам: тюбик и коробка выше банок */
+.shelf__item--1 { --h: 214px; }
+/* Тюбик HydroPeptide: серая тень из исходного фото (полоса справа и пятно под колпачком) стёрта в файле,
+   кадр обрезан по тюбику (125×457 вместо 138×480) — высота уменьшена в той же пропорции, масштаб средства прежний */
+.shelf__item--2 { --h: 217px; }
+.shelf__item--3 { --h: 156px; }
+.shelf__item--4 { --h: 122px; }
+.shelf__shadow {
+  position: absolute; left: 50%; bottom: -7px; width: 74%; height: 16px; border-radius: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(closest-side, rgba(0, 40, 105, .26), rgba(0, 40, 105, 0));
+}
+/* Диагональная белая капсула «О» за средством — появляется при наведении/фокусе */
+.shelf__slice {
+  position: absolute; left: 50%; top: 52%; z-index: 0;
+  width: 108%; height: 34%; border-radius: 999px; background: #fff;
+  transform: translate(-50%, -50%) rotate(40deg) scaleX(.2); opacity: 0;
+  transition: transform .5s var(--ease), opacity .25s var(--ease);
+}
+.shelf__link:focus-visible { outline-offset: -4px; border-radius: 40px; }
+.shelf__link:focus-visible .shelf__slice { opacity: 1; transform: translate(-50%, -50%) rotate(40deg); }
+
+/* ---------- 9. Подвал ---------- */
+.footer { position: relative; overflow: hidden; isolation: isolate; background: linear-gradient(160deg, var(--blue-deep) 0%, #06337A 55%, var(--ink-blue) 100%); color: #fff; }
+.footer__pattern {
+  position: absolute; inset: 0; z-index: -1;
+  background: url("assets/o-tile-white.svg") 30px 24px / 176px 158px repeat;
+  opacity: .09;
+  -webkit-mask-image: linear-gradient(110deg, rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, .65) 68%, #000 100%);
+  mask-image: linear-gradient(110deg, rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, .65) 68%, #000 100%);
+}
+.footer__inner { position: relative; display: grid; grid-template-columns: 1.35fr .9fr 1fr 1.25fr; gap: 48px; padding: 80px 0 56px; }
+.footer__logo { position: relative; display: block; width: 148px; height: 50px; color: #fff; }
+.footer__checks { margin-top: 28px; display: grid; gap: 12px; }
+.footer__checks li { display: flex; align-items: center; gap: 12px; font-size: 14px; color: rgba(255, 255, 255, .92); }
+.footer__checks .check { background: rgba(255, 255, 255, .16); color: #fff; }
+.footer__h { margin-bottom: 18px; font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--sky); }
+.footer__links { display: grid; gap: 2px; }
+.footer__links--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 24px; }
+.footer__links a { display: inline-flex; align-items: center; min-height: 34px; font-size: 15px; color: rgba(255, 255, 255, .9); transition: color .2s var(--ease); }
+.footer__bottom { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 22px 0 30px; border-top: 1px solid rgba(255, 255, 255, .16); font-size: 12.5px; line-height: 1.5; color: rgba(255, 255, 255, .8); }
+.footer__note { max-width: 64em; }
+.footer__copy { flex: none; }
+
+/* ---------- Нижняя панель (телефон) ---------- */
+.tabbar { display: none; }
+
+/* ---------- Наведение: только мышь ---------- */
+@media (hover: hover) and (pointer: fine) {
+  .catalog-btn:hover, .search__go:hover { background: var(--blue-deep); }
+  .tool:hover { background: var(--mist); color: var(--blue); }
+  .menu__link:hover { background: var(--mist); color: var(--blue); }
+  .link-round:hover { background: rgba(255, 255, 255, .7); }
+  .link-round:hover .link-round__ico { transform: translateX(3px); }
+  .brand:hover { background: var(--blue); color: #fff; transform: translateY(-2px); }
+  .brand:hover .brand__logo { opacity: 0; }
+  .brand:hover .brand__logo--w { opacity: 1; }
+  .brand--all:hover .brand__go { background: #fff; color: var(--blue); transform: translateX(2px); }
+  .btn--primary:hover { background: var(--blue-deep); }
+  .btn--ghost:hover { border-color: var(--blue); }
+  .chip:hover { background: var(--blue); color: #fff; }
+  .chip:hover .chip__ph img { transform: translateX(-50%) translateY(-3px) rotate(-4deg); }
+  .ticket:hover { translate: 0 -3px; }
+  .ticket:hover .ticket__go { transform: rotate(45deg); }
+  .cat:hover .cat__pill::before { opacity: 1; transform: translate(-50%, -50%) rotate(40deg) scaleY(1.12); }
+  .cat:hover .cat__img { transform: translate(-50%, calc(-50% - 10px)) scale(1.05); }
+  .cat:hover .cat__name { color: var(--blue); }
+  .task:hover .task__bg::before { clip-path: circle(460px at 64px 50%); }
+  .task:hover .task__name { color: #fff; }
+  .task:hover .task__desc { color: rgba(255, 255, 255, .82); }
+  .task:hover .task__go { opacity: 1; transform: none; }
+  .task:hover .task__ph img { transform: translateX(-50%) translateY(-6px) rotate(-3deg); }
+  .tab:not([aria-selected="true"]):hover { color: var(--blue); }
+  .card:hover .card__img { transform: scale(1.045); }
+  .card__name a:hover { color: var(--blue); }
+  .fav:hover { color: var(--blue); transform: scale(1.06); }
+  .add:not(.is-added):hover { background: var(--blue-deep); }
+  .card--more .more:hover { background: var(--blue-deep); }
+  .shelf__link:hover .shelf__img { transform: translateY(-8px); }
+  .shelf__link:hover .shelf__slice { opacity: 1; transform: translate(-50%, -50%) rotate(40deg); }
+  .shelf__link:hover .shelf__title { color: var(--blue); }
+  .footer__links a:hover { color: #fff; text-decoration: underline; text-underline-offset: 4px; }
+}
+.task:focus-visible { outline-offset: 4px; }
+/* .is-picked — задача, выбранная капсулой в первом экране: та же заливка от круга, что при наведении */
+.task:focus-visible .task__bg::before, .task.is-picked .task__bg::before { clip-path: circle(460px at 64px 50%); }
+.task:focus-visible .task__name, .task.is-picked .task__name { color: #fff; }
+.task:focus-visible .task__desc, .task.is-picked .task__desc { color: rgba(255, 255, 255, .82); }
+.task:focus-visible .task__go, .task.is-picked .task__go { opacity: 1; transform: none; }
+
+/* ---------- Промежуточные ширины ---------- */
+/* Разделы в шапке уступают место поиску (≥ 277 px — подсказка видна целиком): сначала подписи значков (остаются
+   для чтения с экрана), затем «Новинки», затем «Для тела», ниже 1180 px — вся строка (остаётся «Каталог»). */
+@media (max-width: 1417px) {
+  .tool { min-width: 48px; height: 48px; border-radius: 999px; }
+  .tool > span:last-child { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
+@media (max-width: 1352px) { .menu__item--n { display: none; } }
+@media (max-width: 1268px) { .menu__item--t { display: none; } }
+@media (max-width: 1180px) { .menu { display: none; } }
+
+/* Бренды: ярлык и «Все бренды» по краям, между ними 12 капсул в две строки по 6.
+   Колонки равные, поэтому модуль считается от самого широкого знака (Mesopharm ≈ 10,8 модуля + поля 18 px).
+   Одна строка помещается без сжатия логотипов только от 1366 px: уже — модуль упирается в нижний предел 7,4 px,
+   и капсулы с файлами логотипов (KLAPP, HydroPeptide, Yu.R…) сжимаются вместе с логотипами. */
+@media (max-width: 1365px) {
+  .brands { --u: clamp(7.4px, calc((100cqw - var(--lead) - var(--all) - 35px - 108px) / 64.8), 10px); }
+  .brands__list { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+
+@media (max-width: 1240px) {
+  :root { --gutter: 40px; }
+  .cats__list { display: flex; flex-wrap: wrap; justify-content: center; gap: 28px 16px; }
+  .cats__list > li { width: calc((100% - 4 * 16px) / 5); }
+  .tasks__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid__list { --cols: 4; }
+  .card--more { grid-column: span var(--s4, 1); }
+  .card--more .more { border-radius: 999px 999px 28px 28px; }
+  .card--more:not([data-s4="1"]) .more { border-radius: 999px; }
+  .shelf__link { padding-inline: 26px; }
+  .shelf__title { font-size: 25px; }
+  .footer__inner { grid-template-columns: 1fr 1fr; }
+}
+
+/* Преимущества не помещаются в одну строку (≤ 1160 px: строке нужно ≈ 1066 px, а поле ≤ 1240 — ширина окна − 80) —
+   компактная сетка 2×2, как на телефоне: все четыре пункта видны сразу, без листания и обрезанных слов, высота ≈ 57 px.
+   Длинный «Курьер по Крыму…» — в широкой левой колонке. */
+@media (max-width: 1160px) {
+  .benefits__list {
+    display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: center;
+    height: auto; gap: 6px 24px; padding: 9px 0;
+  }
+  .benefits__item { line-height: 1.25; }
+}
+
+@media (max-width: 900px) {
+  .tasks__grid { grid-template-columns: minmax(0, 1fr); max-width: 640px; }
+}
+
+@media (max-width: 960px) {
+  .catalog-btn { width: 48px; padding: 0; margin-left: 8px; justify-content: center; }
+  .catalog-btn span { display: none; }
+  /* Бренды — одна строка, листается пальцем; ярлык в начале, «Все бренды» в конце */
+  .brands { --u: 8.4px; }
+  .brands > .wrap { width: 100%; }
+  /* Поля сверху и снизу 6 px (компенсированы отрицательным отступом) — кольцо фокуса капсулы (2 px + 3 px)
+     не срезается листающейся строкой */
+  .brands__row {
+    overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; scroll-snap-type: x proximity;
+    padding: 6px var(--gutter) 8px; margin-block: -6px; scroll-padding-inline: var(--gutter);
+  }
+  .brands__row::-webkit-scrollbar { display: none; }
+  .brands__list { display: flex; flex: none; }
+  .brands__list li, .brands__title, .brand--all { flex: none; scroll-snap-align: start; }
+  .brand { min-width: 96px; padding: 0 16px; }
+  .hero { padding-top: 36px; }
+  .hero__grid { grid-template-columns: 1fr; }
+  .art { justify-self: center; }
+  /* Вкладки — второй строкой под заголовком, листаются пальцем */
+  .shop__head { flex-wrap: wrap; gap: 18px 36px; }
+  .shop__head .tabs {
+    flex: 1 1 100%; overflow-x: auto; scrollbar-width: none;
+    margin-inline: calc(-1 * var(--gutter)); padding-inline: var(--gutter);
+  }
+  .shop__head .tabs::-webkit-scrollbar { display: none; }
+  .grid__list { --cols: 3; }
+  .card--more { grid-column: span var(--s3, 1); }
+  .card--more .more { border-radius: 999px 999px 28px 28px; }
+  .card--more:not([data-s3="1"]) .more { border-radius: 999px; }
+  .shelf { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .shelf__item:nth-child(3)::before { display: none; }
+  .shelf__item:nth-child(n+3) { border-top: 1px solid rgba(0, 89, 185, .1); }
+}
+
+/* ---------- Телефон ---------- */
+@media (max-width: 760px) {
+  :root { --gutter: 16px; --tabbar: 70px; }
+  html { scroll-padding-top: 72px; }
+  body { padding-bottom: calc(var(--tabbar) + env(safe-area-inset-bottom)); }
+
+  /* Преимущества — компактная сетка 2×2 (≤ 64 px): все четыре читаются сразу, без листания.
+     Первая строка — в одну строку, «Курьер по Крыму…» — в две. */
+  .benefits__viewport { width: 100%; overflow: visible; -webkit-mask-image: none; mask-image: none; }
+  .benefits__list {
+    display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr); align-items: center;
+    width: auto; height: auto; gap: 5px 8px; padding: 8px 12px;
+  }
+  .benefits__item { gap: 5px; font-size: 10.5px; font-weight: 500; line-height: 1.2; letter-spacing: 0; white-space: normal; }
+  .benefits .check { width: 18px; height: 12px; }
+  .benefits .check .ico { width: 10px; height: 10px; }
+
+  .header__row { height: 60px; gap: 12px; }
+  .logo { width: 82px; height: 28px; }
+  .catalog-btn, .tools { display: none; }
+  .search { height: 44px; padding-left: 16px; gap: 6px; }
+  .search__ico { display: none; }
+  .search__input { font-size: 13.5px; }
+  .search__go { width: 34px; height: 34px; }
+  .search__go .search__go-arrow { display: none; }
+  .search__go .search__go-find { display: block; }
+  .menu { display: none; }
+
+  /* Бренды — одна строка капсул, листается пальцем: «Бренды 12» → логотипы → «Все бренды» */
+  .brands { padding-top: 12px; --u: 8.6px; --bh: 48px; }
+  .brands__row, .brands__list { gap: 8px; }
+  .brand { min-width: 96px; padding: 0 16px; }
+  .brand--all { padding: 0 6px 0 16px; }
+
+  .hero { padding: 20px 0 22px; }
+  .hero__grid { gap: 12px; }
+  .eyebrow { display: none; }
+  .hero__title { margin-top: 0; font-size: 40px; line-height: 1.04; }
+  .hero__text { margin-top: 12px; font-size: 14.5px; line-height: 1.55; }
+  .hero__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+  .btn { height: 50px; padding: 0 12px; font-size: 14.5px; gap: 8px; }
+  .btn--primary { padding: 0 12px; }
+  .btn .ico { width: 18px; height: 18px; }
+  /* Две строки: «Увлажнение» и «Возрастные изменения» рядом (≈ 350 из 358 px), «Защита от солнца» ниже.
+     Капсулы 44 px — зона нажатия по брифу; промежуток между строками 8 px, блок почти той же высоты */
+  .hero__tasks { gap: 8px; margin-top: 18px; }
+  .chip { height: 44px; gap: 6px; padding: 0 12px 0 4px; font-size: 12px; }
+  .chip__orb { width: 32px; height: 32px; }
+  .chip__ph { height: 136%; border-radius: 0 0 16px 16px; }
+  .art { max-width: 340px; margin-top: 6px; }
+  .ticket { left: -3%; bottom: 3%; gap: 9px; padding: 5px 6px 5px 5px; }
+  .ticket__img { width: 44px; height: 44px; }
+  .ticket__label { font-size: 9.5px; }
+  .ticket__title { font-size: 13px; }
+  .ticket__go { width: 34px; height: 34px; }
+
+  .section { padding: 56px 0; }
+  .section__head { margin-bottom: 22px; }
+  .section__title { font-size: 30px; }
+  .section__head .link-round { display: none; }
+
+  /* Категории — сетка 3×3 из невысоких капсул: все девять видны сразу, без бокового листания */
+  .cats { padding-top: 48px; padding-bottom: 36px; }
+  .cats__list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 10px; }
+  .cats__list > li { width: auto; }
+  .cat { gap: 8px; }
+  .cat__pill { aspect-ratio: .9; }
+  .cat__img { width: 104%; }
+  .cat__name { max-width: 12ch; min-height: 2.6em; font-size: 12.5px; }
+
+  .tasks { width: 100%; padding: 48px 0 52px; border-radius: 32px; }
+  .tasks .wrap { width: calc(100% - 2 * var(--gutter)); }
+  .tasks__grid { grid-template-columns: 1fr; gap: 16px; padding-top: 14px; }
+  .task { height: 88px; gap: 14px; padding: 0 18px 0 6px; }
+  .task__bg::before { clip-path: circle(40px at 46px 50%); }
+  .task__orb { width: 80px; height: 80px; }
+  .task__ph { height: 128%; border-radius: 0 0 40px 40px; }
+  .task__name { font-size: 15.5px; }
+  .task__desc { margin-top: 3px; font-size: 13px; line-height: 1.4; }
+  .task__go { display: none; }
+  .task:focus-visible .task__bg::before { clip-path: circle(420px at 46px 50%); }
+
+  .shop { padding-top: 24px; }
+  .shop__head { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; margin-bottom: 22px; }
+  .shop__head .tabs { margin-inline: -16px; padding: 0 16px; overflow-x: auto; scrollbar-width: none; }
+  .shop__head .tabs::-webkit-scrollbar { display: none; }
+  .tab { height: 44px; padding: 0 16px; font-size: 13.5px; }
+  /* Две колонки, до шести карточек; «Смотреть все» — капсула во всю ширину под сеткой */
+  .grid__list { --cols: 2; --gap: 12px; row-gap: 28px; }
+  .grid__list > .card:not(.card--more):nth-child(n+7) { display: none; }
+  .card--more { grid-column: 1 / -1; }
+  .card--more .more, .card--more:not([data-s3="1"]) .more {
+    flex-direction: row; justify-content: space-between; gap: 12px;
+    height: 60px; padding: 0 10px 0 24px; border-radius: 999px;
+  }
+  .more__t, .card--more:not([data-s5="1"]) .more__t { font-size: 18px; }
+  .card--more:not([data-s5="1"]) .more__c { height: 30px; padding: 0 14px; font-size: 13px; }
+  .card__brand { margin-top: 12px; font-size: 10.5px; }
+  .card__name { font-size: 13px; }
+  .card__size { font-size: 12px; }
+  .card__price { font-size: 15.5px; }
+  .add { width: 52px; height: 44px; }
+  .fav { right: 8px; bottom: 8px; width: 44px; height: 44px; }
+
+  /* Полка листается пальцем: отделы стоят вплотную, линия основания идёт через все */
+  .feats { padding-top: 8px; }
+  .shelf {
+    --base: 44px;
+    grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 64%;
+    border-radius: 32px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none;
+  }
+  .shelf::-webkit-scrollbar { display: none; }
+  .shelf__item { scroll-snap-align: start; }
+  .shelf__item:nth-child(n+3) { border-top: 0; }
+  .shelf__item:nth-child(3)::before { display: block; }
+  .shelf__link { padding: 28px 22px var(--base); }
+  .shelf__title { font-size: 22px; }
+  .shelf__text { margin-bottom: 18px; font-size: 13.5px; }
+  .shelf__pic { height: 176px; }
+  .shelf__item--1 { --h: 160px; }
+  .shelf__item--2 { --h: 164px; }
+  .shelf__item--3 { --h: 118px; }
+  .shelf__item--4 { --h: 92px; }
+
+  .footer__inner { grid-template-columns: 1fr 1fr; gap: 36px 20px; padding: 56px 0 36px; }
+  .footer__brand, .footer__col--brands { grid-column: 1 / -1; }
+  .footer__logo { width: 120px; height: 40px; }
+  .footer__links a { min-height: 44px; font-size: 14.5px; }
+  .footer__bottom { flex-direction: column; align-items: flex-start; gap: 10px; padding-bottom: 28px; }
+
+  .tabbar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+    display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: end;
+    height: calc(var(--tabbar) + env(safe-area-inset-bottom));
+    padding: 0 4px env(safe-area-inset-bottom);
+    background: #fff;
+    box-shadow: 0 -1px 0 var(--line), 0 -14px 30px -24px rgba(11, 42, 91, .45);
+  }
+  .tabbar__item {
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 3px;
+    height: 62px; padding-bottom: 9px; margin-bottom: 4px; border-radius: 18px;
+    color: var(--ink-blue); font-size: 10.5px; font-weight: 600; letter-spacing: .01em; line-height: 1.2;
+  }
+  .tabbar__item > .ico { width: 23px; height: 34px; }
+  .tabbar__icon { position: relative; display: grid; place-items: center; height: 34px; }
+  .tabbar__icon .ico { width: 23px; height: 23px; }
+  .tabbar__icon .badge { top: -4px; right: -12px; background: var(--blue); color: #fff; box-shadow: 0 0 0 2px #fff; }
+  .tabbar__capsule {
+    display: grid; place-items: center; width: 60px; height: 36px; margin-bottom: -1px; border-radius: 999px;
+    background: var(--blue); color: #fff;
+    box-shadow: 0 10px 18px -10px rgba(0, 89, 185, .9);
+  }
+  .tabbar__capsule .ico { width: 22px; height: 22px; }
+  .tabbar__item--catalog { color: var(--blue); }
+}
+
+/* Узкие телефоны (360–380): сетка преимуществ остаётся в 2 строки ≤ 64 px */
+@media (max-width: 380px) {
+  .benefits__list { padding-inline: 10px; column-gap: 6px; }
+  .benefits__item { font-size: 10px; letter-spacing: -.01em; }
+}
+/* Подсказка поиска «Бренд, средство или задача» целиком и на 360–389: знак 72 px (блок по-прежнему 28 px
+   высотой — зона нажатия 44 px), промежуток 8 px, шрифт поля 12,5 px. С 390 px — прежние 82 px и 13,5 px. */
+@media (max-width: 389px) {
+  .header__row { gap: 8px; }
+  .logo { width: 72px; }
+  .search { padding-left: 14px; }
+  .search__input { font-size: 12.5px; }
+}
+
+/* ---------- Широкие экраны: узор «О» на сцене там читается как случайные пятна ---------- */
+@media (min-width: 1600px) {
+  .stage::before { display: none; }
+}
+
+/* ---------- Ноутбуки (высота ≤ 940: 1440×900, 1536×864, 1366×768, 1280×800): компактный первый экран ----------
+   «О» 480 px, капсулы брендов 52 px — под кнопками видны задачи-капсулы, а ниже начинается «Подбор по задаче». */
+@media (min-width: 961px) and (max-height: 940px) {
+  .brands { padding-top: 10px; --bh: 52px; }
+  .hero { padding: 8px 0 22px; }
+  .eyebrow { height: 32px; }
+  .hero__title { margin-top: 18px; font-size: clamp(44px, 4.4vw, 62px); }
+  .hero__text { margin-top: 14px; font-size: 16px; }
+  .hero__actions { margin-top: 24px; }
+  .btn { height: 54px; }
+  .hero { --art: 480px; }
+}
+@media (min-width: 961px) and (max-height: 820px) {
+  .eyebrow { display: none; }
+  .hero__title { margin-top: 0; }
+}
+/* Бренды в две строки (≤ 1365 px) — «О» 420 px: «Подбор по задаче» начинается там же, где на 1440 (≈ 675 px) */
+@media (min-width: 961px) and (max-width: 1365px) and (max-height: 940px) {
+  .hero { --art: 420px; }
+}
+
+/* ---------- Уменьшение движения: без перемещений, всё сразу ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  /* Переходы выключены совсем: длительность 1 мс превращала transition-property: all по умолчанию в настоящие
+     переходы, и WebKit в первом кадре показывал логотип и значки чёрными */
+  *, *::before, *::after { animation-duration: 1ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; transition: none !important; }
+  .art__p { translate: none !important; }
+}

@@ -1,0 +1,960 @@
+/* TOP Cosmetics — главная, вариант v4 «Витрина брендов».
+   Подпись: «O» логотипа (пятно с диагональной капсулой) — витрина для товара; всё круглое — капсулы.
+   Движение: transform / opacity / clip-path / цвет; 150–300 мс для состояний, 400–650 мс для появлений. */
+
+:root {
+  --blue: #0059B9;
+  --deep: #003F8C;
+  --navy: #0B2A5B;
+  --soft: #EAF2FB;
+  --mist: #F2F6FD;
+  --sky: #89C2FF;
+  --ink: #171B24;
+  --muted: #5F6876;
+  --plate: #F2F2F2;
+  --line: rgba(11, 42, 91, .09);
+  --grad: linear-gradient(104.83deg, #2268B9 39.53%, #89C2FF 89.38%);
+  --ease: cubic-bezier(.16, 1, .3, 1);
+  --font: "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --serif: "PT Serif", Georgia, "Times New Roman", serif;
+  --glow: 0 8px 18px -12px rgba(0, 63, 140, .45);
+  --gut: 64px;
+  --wrapw: 1312px;
+  --pattern: url("assets/o-pattern-w.svg");
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  margin: 0;
+  min-width: 320px;
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: #fff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
+}
+img { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+a { -webkit-tap-highlight-color: transparent; }
+ul { list-style: none; margin: 0; padding: 0; }
+h1, h2, h3, p { margin: 0; }
+svg { flex: none; }
+
+:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+.brands :focus-visible, .slide :focus-visible, .duo__card--brands :focus-visible, .ftr :focus-visible { outline-color: #fff; }
+
+.sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0;
+  overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+.skip {
+  position: fixed; top: 10px; left: 10px; z-index: 100;
+  padding: 12px 20px; border-radius: 999px; background: var(--blue); color: #fff;
+  font-weight: 700; font-size: 14px; transform: translateY(-160%);
+  transition: transform .2s var(--ease);
+}
+.skip:focus { transform: none; }
+
+.wrap { width: min(100% - 2 * var(--gut), var(--wrapw)); margin-inline: auto; }
+.ic { width: 20px; height: 20px; display: block; }
+
+/* ---------- Кнопки-капсулы ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  height: 48px; padding: 0 24px; border-radius: 999px;
+  font: 700 15px/1 var(--font); letter-spacing: -.005em; white-space: nowrap;
+  transition: background-color .2s var(--ease), color .2s var(--ease), box-shadow .25s var(--ease), transform .2s var(--ease);
+}
+.btn:active { transform: scale(.97); }
+.btn--lg { height: 54px; padding: 0 30px; font-size: 16px; }
+.btn--blue { background: var(--blue); color: #fff; box-shadow: var(--glow); }
+.btn--line { background: #fff; color: var(--blue); box-shadow: inset 0 0 0 1.5px rgba(0, 89, 185, .3); }
+.btn--white { background: #fff; color: var(--blue); }
+.btn__ic {
+  display: grid; place-items: center; width: 32px; height: 32px; margin-right: -14px;
+  border-radius: 50%; background: var(--blue); color: #fff;
+  transition: transform .35s var(--ease), background-color .2s;
+}
+.btn__ic .ic { width: 16px; height: 16px; }
+
+@media (hover: hover) and (pointer: fine) {
+  .btn--blue:hover { background: var(--deep); }
+  .btn--line:hover { background: var(--mist); box-shadow: inset 0 0 0 1.5px var(--blue); }
+  .btn--white:hover { background: var(--soft); }
+  .btn--white:hover .btn__ic { transform: rotate(45deg); }
+}
+
+/* ---------- 1. Преимущества ---------- */
+.bar { background: var(--mist); border-bottom: 1px solid var(--line); }
+.bar__list { display: flex; align-items: center; justify-content: space-between; gap: 24px; height: 40px; }
+.bar__it { display: flex; align-items: center; gap: 9px; font: 600 13px/1.2 var(--font); color: var(--navy); white-space: nowrap; }
+.tick {
+  display: grid; place-items: center; width: 18px; height: 18px; flex: none;
+  border-radius: 50%; background: var(--blue); color: #fff;
+}
+.tick .ic { width: 12px; height: 12px; }
+
+/* ---------- 2. Шапка ---------- */
+.hdr {
+  position: sticky; top: 0; z-index: 40;
+  background: rgba(255, 255, 255, .985);
+  -webkit-backdrop-filter: saturate(1.6) blur(16px);
+  backdrop-filter: saturate(1.6) blur(16px);
+  transition: box-shadow .3s var(--ease);
+}
+.hdr.is-stuck { box-shadow: 0 1px 0 var(--line), 0 14px 34px -22px rgba(11, 42, 91, .45); }
+.hdr__row { display: flex; align-items: center; gap: 12px; height: 76px; }
+.logo { display: block; flex: none; color: var(--blue); border-radius: 8px; }
+.logo svg { display: block; width: 115px; height: 39px; fill: currentColor; }
+.hdr__catalog { margin-left: 22px; padding: 0 22px 0 18px; }
+.search {
+  position: relative; flex: 1; min-width: 0; display: flex; align-items: center;
+  height: 48px; margin: 0 10px 0 4px; border-radius: 999px; background: var(--mist);
+  box-shadow: inset 0 0 0 2px transparent;
+  transition: box-shadow .2s var(--ease), background-color .2s var(--ease);
+}
+.search:focus-within { background: #fff; box-shadow: inset 0 0 0 2px var(--blue); }
+.search__input {
+  flex: 1; min-width: 0; height: 100%; padding: 0 56px 0 24px; border: 0; border-radius: 999px;
+  background: transparent; font: 500 15px var(--font); color: var(--ink); outline: none;
+  -webkit-appearance: none; appearance: none;
+}
+.search__input::placeholder { color: var(--muted); opacity: 1; }
+.search__input::-webkit-search-cancel-button { -webkit-appearance: none; }
+.search__go {
+  position: absolute; right: 4px; top: 4px; display: grid; place-items: center;
+  width: 40px; height: 40px; border-radius: 50%; background: var(--blue); color: #fff;
+  transition: background-color .2s var(--ease), transform .3s var(--ease);
+}
+.search__go .ic { width: 19px; height: 19px; }
+.hdr__acts { display: flex; align-items: center; gap: 2px; }
+.hdr__act {
+  display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 14px; border-radius: 999px;
+  font: 600 14px/1 var(--font); color: var(--navy);
+  transition: background-color .2s var(--ease), color .2s var(--ease);
+}
+.hdr__cart {
+  display: flex; align-items: center; gap: 10px; height: 48px; margin-left: 8px; padding: 0 22px 0 18px;
+  border-radius: 999px; background: var(--soft); color: var(--blue); font: 700 14px/1 var(--font);
+  transition: background-color .2s var(--ease), color .2s var(--ease);
+}
+/* Ширина капсулы «Корзина» заранее рассчитана на значок счётчика (до двух цифр): при первом добавлении
+   поиск, «Избранное» и «Войти» не сдвигаются. */
+.hdr__cart { min-width: 160px; justify-content: center; }
+.hdr__cart-ic { position: relative; display: grid; }
+.hdr__cart .badge { position: static; order: 3; margin: 0 -8px 0 -2px; min-width: 22px; height: 22px; line-height: 22px; box-shadow: none; }
+.badge {
+  position: absolute; top: -9px; right: -11px; min-width: 19px; height: 19px; padding: 0 5px;
+  border-radius: 999px; background: var(--blue); color: #fff; box-shadow: 0 0 0 2px #fff;
+  font: 800 11px/19px var(--font); text-align: center; font-variant-numeric: tabular-nums;
+}
+.badge[hidden] { display: none; }
+.hdr__pick { display: none; }
+.ic--o { width: 18px; height: 18px; fill: currentColor; }
+
+@media (hover: hover) and (pointer: fine) {
+  .hdr__act:hover { background: var(--mist); color: var(--blue); }
+  .hdr__cart:hover { background: var(--blue); color: #fff; }
+  .search__go:hover { background: var(--deep); }
+}
+
+/* Меню разделов */
+.nav { border-bottom: 1px solid var(--line); }
+.nav__row { display: flex; align-items: center; justify-content: space-between; height: 48px; }
+.nav__list { display: flex; align-items: center; gap: 4px; }
+.nav__link {
+  position: relative; display: flex; align-items: center; height: 48px; padding: 0 13px;
+  font: 600 14.5px/1 var(--font); color: var(--navy); transition: color .2s var(--ease);
+}
+.nav__list li:first-child .nav__link { padding-left: 0; }
+.nav__link::after {
+  content: ""; position: absolute; left: 13px; right: 13px; bottom: 6px; height: 4px; border-radius: 999px;
+  background: var(--blue); transform: scaleX(0); transform-origin: left center; transition: transform .3s var(--ease);
+}
+.nav__list li:first-child .nav__link::after { left: 0; }
+.nav__link--accent { color: var(--blue); }
+.nav__pick {
+  display: flex; align-items: center; gap: 9px; height: 40px; padding: 0 18px 0 14px; border-radius: 999px;
+  background: var(--soft); color: var(--blue); font: 700 14px/1 var(--font);
+  transition: background-color .2s var(--ease), color .2s var(--ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  .nav__link:hover { color: var(--blue); }
+  .nav__link:hover::after { transform: scaleX(1); }
+  .nav__pick:hover { background: var(--blue); color: #fff; }
+}
+
+/* ---------- 3. Лента брендов ---------- */
+.brands {
+  position: relative; overflow: hidden; color: #fff;
+  background: var(--pattern) 0 0 / 112px 104px, linear-gradient(90deg, #004FA6 0%, var(--blue) 30%, var(--blue) 70%, #0A64C6 100%);
+}
+/* Строка-подпись («Бренды 12» слева, «Все бренды» справа), под ней — все 12 капсул одним рядом. */
+.brands__in {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "title all" "row row";
+  align-items: center; column-gap: 24px; row-gap: 8px; padding: 10px 0 13px;
+}
+.brands__title {
+  grid-area: title; display: flex; align-items: center; gap: 9px;
+  font: 800 12px/1 var(--font); letter-spacing: .16em; text-transform: uppercase;
+}
+.brands__count {
+  display: grid; place-items: center; min-width: 28px; height: 22px; padding: 0 8px; border-radius: 999px;
+  background: #fff; color: var(--blue); font: 800 12px/1 var(--font); letter-spacing: 0; font-variant-numeric: tabular-nums;
+}
+.brands__all {
+  grid-area: all; display: flex; align-items: center; gap: 2px; height: 28px; padding: 0 2px 0 8px; margin-right: -2px;
+  border-radius: 999px; font: 700 13.5px/1 var(--font); color: #fff;
+}
+.brands__all .ic { width: 17px; height: 17px; transition: transform .25s var(--ease); }
+.brands__row { grid-area: row; display: flex; gap: var(--bgap, 8px); }
+/* Капсулы делят ряд поровну; длинные названия берут свою ширину, остальные сжимаются. */
+.brands__row > li { display: flex; flex: 1 1 0; min-width: max-content; animation: bcapIn .6s var(--ease) both; animation-delay: calc(var(--i, 0) * 32ms + 60ms); }
+@keyframes bcapIn { from { opacity: 0; transform: translate3d(40px, 0, 0); } }
+.bcap {
+  display: flex; flex: 1; align-items: center; justify-content: center; height: 54px; min-width: var(--bmin, 74px); padding: 0 var(--bpad, 10px);
+  border-radius: 999px; background: #fff; color: var(--blue);
+  box-shadow: 0 14px 26px -18px rgba(0, 22, 64, .7);
+  transition: background-color .25s var(--ease), transform .35s var(--ease);
+}
+.bcap__logo { height: calc(var(--lh, 22px) * var(--lk, 1)); width: auto; max-width: none; }
+.bcap__word { font: 700 var(--bw, 12.5px)/1 var(--font); letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; }
+/* «Все бренды» внутри ряда — только на телефоне, где ряд листается пальцем. */
+.brands__more { display: none !important; }
+.bcap--all {
+  min-width: 0; padding: 0 22px; background: transparent; color: #fff; box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .6);
+  font: 700 14px/1 var(--font); white-space: nowrap;
+}
+@media (hover: hover) and (pointer: fine) {
+  .bcap:hover { background: var(--soft); transform: translateY(-3px); }
+  .brands__all:hover .ic { transform: translateX(3px); }
+}
+/* 1280–1439: тот же ряд из 12 капсул, логотипы и поля чуть меньше. */
+@media (max-width: 1439.98px) {
+  .brands { --lk: .86; --bw: 12px; --bpad: 8px; --bgap: 6px; --bmin: 64px; }
+}
+
+/* ---------- 4. Витрина ---------- */
+.hero { padding-top: 18px; }
+/* Заголовок, подзаголовок и кнопки — один блок слева; кнопки сразу под подзаголовком, карусель сразу под кнопками. */
+.mast { margin-bottom: 20px; }
+/* Заголовок — жирная антиква, как в понравившемся концепте из аудита, и единственный крупный «голос» страницы:
+   заголовки слайдов набраны той же антиквой, но мельче (32 px). Интерфейс остаётся на Montserrat. */
+.mast__title { font: 700 52px/1.04 var(--serif); letter-spacing: -.02em; color: var(--navy); text-wrap: balance; }
+.mast__text { max-width: 980px; margin-top: 10px; font: 500 16px/1.55 var(--font); color: var(--muted); text-wrap: pretty; }
+.mast__cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
+.mast__cta .btn { height: 50px; padding: 0 28px; }
+
+/* Капсульная карусель (компьютер): четыре капсулы, активная раскрывается в широкий «стадион». */
+.acc { position: relative; height: 420px; }
+.acc--desk { overflow: hidden; }
+.slide {
+  position: absolute; top: 0; left: 0; height: 100%; color: #fff;
+  will-change: transform, clip-path;
+  transition: transform .6s var(--ease), clip-path .6s var(--ease), -webkit-clip-path .6s var(--ease);
+}
+.slide:nth-child(2) { --d: 70ms; }
+.slide:nth-child(3) { --d: 140ms; }
+.slide:nth-child(4) { --d: 210ms; }
+.acc.no-anim .slide, .acc.no-anim .slide * { transition: none !important; }
+/* Появление без «белого экрана»: синий стадион и капсулы видны с первого кадра; двигаются только
+   окно-капсула и товар активного слайда, свёрнутые капсулы слегка поднимаются (без opacity). */
+.acc--intro.acc--desk .slide:not(.is-active) { animation: pillRise .55s var(--ease) var(--d, 0ms) both; }
+.acc--intro.acc--desk .slide.is-active .slide__cap { animation: capIn .6s var(--ease) both; }
+.acc--intro.acc--desk .slide.is-active .slide__img { animation: imgIn .55s var(--ease) 60ms both; }
+@keyframes pillRise { from { translate: 0 44px; } }
+@keyframes capIn { from { transform: rotate(-40deg) scale(.84); } }
+@keyframes imgIn { from { opacity: 0; translate: 0 26px; } }
+
+.slide__bg { position: absolute; inset: 0; background: var(--pattern) 0 0 / 112px 104px, var(--sg); }
+.slide--a { --sg: linear-gradient(var(--sa, 104.83deg), #004FA8 0%, #1F66BA 55%, #89C2FF 100%); --mg: linear-gradient(180deg, #2A73C7 0%, #0059B9 100%); }
+.slide--b { --sg: linear-gradient(var(--sa, 104.83deg), #0B2A5B 0%, #003F8C 46%, #2E77CB 100%); --mg: linear-gradient(180deg, #0B2A5B 0%, #0A2F66 100%); }
+.slide--c { --sg: linear-gradient(var(--sa, 104.83deg), #003F8C 0%, #0059B9 50%, #6AAAF2 100%); --mg: linear-gradient(180deg, #004A9E 0%, #003F8C 100%); }
+.slide--d { --sg: linear-gradient(var(--sa, 104.83deg), #0052AD 0%, #2268B9 56%, #89C2FF 100%); --mg: linear-gradient(180deg, #2E78CC 0%, #2268B9 100%); }
+
+.slide__full { position: absolute; inset: 0; }
+.slide__copy {
+  position: absolute; left: 100px; top: 50%; width: 330px; transform: translateY(-50%);
+  display: flex; flex-direction: column; align-items: flex-start;
+}
+.chip--glass {
+  display: inline-flex; align-items: center; height: 32px; padding: 0 15px; border-radius: 999px;
+  background: rgba(255, 255, 255, .16); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .3);
+  font: 700 11.5px/1 var(--font); letter-spacing: .16em; text-transform: uppercase;
+}
+.slide__title { margin-top: 16px; font: 700 32px/1.1 var(--serif); letter-spacing: -.01em; text-wrap: balance; }
+.slide__text { margin-top: 14px; max-width: 300px; font: 500 16px/1.5 var(--font); color: #fff; }
+.slide__cta { margin-top: 26px; }
+/* Пульт карусели — под ней, вне картинки: точки (у активной полоска-таймер автопрокрутки) и пауза. */
+.acc-ctrl { display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 12px; }
+.acc-dots { display: flex; align-items: center; }
+.acc-dots__b { display: grid; place-items: center; min-width: 22px; height: 36px; padding: 0 4px; border-radius: 999px; }
+.acc-dots__b i {
+  position: relative; display: block; width: 8px; height: 8px; border-radius: 999px; overflow: hidden;
+  background: rgba(0, 89, 185, .24); transition: background-color .25s var(--ease);
+}
+.acc-dots__b.is-on i { width: 44px; background: rgba(0, 89, 185, .16); }
+.acc-dots__b.is-on i::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--blue);
+  transform: scaleX(1); transform-origin: left center;
+}
+.stage.is-desk.is-auto .acc-dots__b.is-on i::after { animation: accfill 7.5s linear both; }
+/* Селектор специфичнее правила с animation: иначе сокращённая запись сбрасывает play-state и пауза не держит. */
+.stage.is-desk.is-auto.is-paused .acc-dots__b.is-on i::after { animation-play-state: paused; }
+.acc-pause {
+  position: relative; display: grid; place-items: center; width: 36px; height: 36px; margin-left: 6px; border-radius: 50%;
+  color: var(--blue); box-shadow: inset 0 0 0 1.5px rgba(0, 89, 185, .28);
+  transition: background-color .2s var(--ease), color .2s var(--ease), box-shadow .2s var(--ease);
+}
+.acc-pause::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; }
+.acc-pause .ic { width: 14px; height: 14px; }
+.acc-pause .ic--play, .stage.is-user-paused .acc-pause .ic--pause { display: none; }
+.stage.is-user-paused .acc-pause .ic--play { display: block; }
+.stage:not(.is-auto) .acc-pause, .stage:not(.is-desk) .acc-pause { display: none; }
+@media (hover: hover) and (pointer: fine) {
+  .acc-pause:hover { background: var(--blue); color: #fff; box-shadow: inset 0 0 0 1.5px var(--blue); }
+  .acc-dots__b:hover:not(.is-on) i { background: rgba(0, 89, 185, .5); }
+}
+@keyframes accfill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* Окно-капсула: белая диагональная капсула внутри синего — как в «O» логотипа. */
+.slide__win { position: absolute; left: calc(var(--we, 808px) - 190px); top: 50%; width: 0; height: 0; }
+.slide__cap {
+  position: absolute; left: -105px; top: -310px; width: 210px; height: 620px; border-radius: 999px;
+  background: linear-gradient(180deg, #FFFFFF 0%, #F4F8FE 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .6);
+  transform: rotate(-40deg) scale(.86);
+  transition: transform .3s var(--ease);
+}
+.slide__shadow {
+  position: absolute; left: -134px; top: calc(var(--ph) * .5 - 30px); width: 220px; height: 40px; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(11, 42, 91, .28), rgba(11, 42, 91, 0));
+  opacity: 0; transition: opacity .3s ease;
+}
+/* Вырезки подборок с полупрозрачным ореолом: фильтр #alphacut (в спрайте) срезает его, затем тень.
+   Фильтр включается классом .is-ld только после загрузки картинки: в WebKit SVG-фильтр на ещё
+   не загруженном <img> рисует прозрачную «дыру» в левом верхнем углу страницы. */
+.slide__img {
+  position: absolute; left: calc(var(--we, 808px) - 214px); top: 50%; height: var(--ph); width: auto; max-width: none;
+  transform: translate(-50%, -50%); opacity: 0; translate: 0 36px;
+  transition: opacity .2s ease, translate .25s var(--ease);
+}
+.slide__img.is-ld { filter: url(#alphacut) drop-shadow(0 22px 26px rgba(11, 42, 91, .28)); }
+.slide__copy > * {
+  opacity: 0; transform: translateY(16px);
+  transition: opacity .2s ease, transform .25s var(--ease);
+}
+.slide.is-active .slide__copy > * {
+  opacity: 1; transform: none;
+  transition: opacity .45s ease, transform .6s var(--ease);
+  transition-delay: calc(180ms + var(--k, 0) * 60ms);
+}
+.slide__copy > :nth-child(2) { --k: 1; }
+.slide__copy > :nth-child(3) { --k: 2; }
+.slide__copy > :nth-child(4) { --k: 3; }
+.slide__copy > :nth-child(5) { --k: 4; }
+.slide.is-active .slide__cap { transform: rotate(-40deg) scale(1); transition: transform .65s var(--ease) .05s; }
+.slide.is-active .slide__shadow { opacity: 1; transition: opacity .45s ease .25s; }
+.slide.is-active .slide__img { opacity: 1; translate: 0 0; transition: opacity .45s ease .18s, translate .6s var(--ease) .15s; }
+
+/* Свёрнутая капсула */
+.slide__mini {
+  position: absolute; left: 0; top: 0; bottom: 0; width: var(--pill, 152px);
+  display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+  padding: 34px 12px 40px; background: var(--pattern) 0 0 / 112px 104px, var(--mg); color: #fff; text-align: center;
+  transition: opacity .35s ease .3s;
+}
+.slide.is-active .slide__mini { opacity: 0; pointer-events: none; transition: opacity .26s ease; }
+/* Фокус свёрнутой капсулы — белое кольцо внутри неё (снаружи его срезал бы clip-path слайда). */
+.slide__mini { border-radius: 999px; }
+.slide__mini:focus-visible { outline-offset: -6px; }
+.slide__mwin { position: relative; display: grid; place-items: center; width: 100%; flex: 1; margin: 10px 0 14px; }
+.slide__mcap {
+  position: absolute; left: 50%; top: 50%; width: 88px; height: 236px; margin: -118px 0 0 -44px;
+  border-radius: 999px; background: #fff; transform: rotate(-40deg);
+  transition: transform .35s var(--ease);
+}
+.slide__mwin img {
+  position: relative; height: var(--mh); width: auto; max-width: calc(var(--pill, 152px) - 30px); object-fit: contain;
+  transition: transform .3s var(--ease);
+}
+.slide__mwin img.is-ld { filter: url(#alphacut) drop-shadow(0 14px 14px rgba(11, 42, 91, .3)); }
+.slide__mtitle { max-width: calc(var(--pill, 152px) - 28px); font: 700 14px/1.25 var(--font); text-wrap: balance; }
+@media (hover: hover) and (pointer: fine) {
+  .slide__mini:hover .slide__mcap { transform: rotate(-34deg) scale(1.05); }
+  .slide__mini:hover .slide__mwin img { transform: translateY(-8px); }
+  .slide__cta:hover .btn__ic { transform: rotate(45deg); }
+}
+/* Узкий компьютер (раскрытая капсула уже 790 px): окно-капсула уже и правее, заголовок меньше. */
+.acc--compact .slide__copy { left: 84px; width: 280px; }
+.acc--compact .slide__title { font-size: 28px; }
+.acc--compact .slide__text { max-width: 260px; font-size: 15px; }
+.acc--compact .slide__win { left: calc(var(--we, 720px) - 150px); }
+.acc--compact .slide__cap { left: -90px; top: -270px; width: 180px; height: 540px; }
+.acc--compact .slide__img { left: calc(var(--we, 720px) - 168px); height: calc(var(--ph) * .8); }
+.acc--compact .slide__mtitle { font-size: 13px; }
+
+/* ---------- Заголовки разделов ---------- */
+.sec-head { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
+.sec-title { font: 700 38px/1.08 var(--serif); letter-spacing: -.015em; color: var(--navy); }
+
+/* ---------- «O» логотипа как подставка ---------- */
+.ostage { position: relative; display: block; flex: none; }
+.ostage__o { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.ostage__blob { fill: var(--blue); transition: fill .3s var(--ease); }
+.ostage__cap { fill: #fff; transition: fill .3s var(--ease); }
+.ostage__img {
+  position: absolute; left: 50%; bottom: 2%; width: 128%; height: 128%; max-width: none;
+  object-fit: contain; object-position: 50% 100%;
+  transform: translateX(-50%); transition: transform .3s var(--ease);
+  filter: drop-shadow(0 8px 10px rgba(11, 42, 91, .22));
+}
+
+/* ---------- 5. Быстрые категории ---------- */
+/* Девять высоких капсул одним рядом — как свёрнутые капсулы карусели: синий фон с узором из «O»,
+   белая диагональная капсула логотипа и крупный товар на ней; название под капсулой. */
+.cats { margin-top: 56px; }
+.cats__grid { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 16px; }
+.cats__grid > li { display: flex; }
+.qcat { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; color: var(--navy); text-align: center; }
+.qcat__cap {
+  position: relative; display: block; width: 100%; aspect-ratio: 2 / 3; overflow: hidden; isolation: isolate;
+  border-radius: 999px; background: var(--pattern) 0 0 / 84px 78px, linear-gradient(180deg, #2A73C7 0%, var(--blue) 100%);
+  transition: transform .3s var(--ease);
+}
+.qcat__win {
+  position: absolute; left: 50%; top: 50%; width: 50%; height: 112%; border-radius: 999px;
+  background: linear-gradient(180deg, #FFFFFF 0%, #F4F8FE 100%);
+  transform: translate(-50%, -50%) rotate(-40deg);
+  transition: transform .45s var(--ease);
+}
+.qcat__img {
+  position: absolute; left: 50%; top: 50%; width: 124%; height: auto; max-width: none; aspect-ratio: 1 / 1;
+  transform: translate(-50%, -48%);
+  filter: drop-shadow(0 12px 12px rgba(11, 42, 91, .3));
+  transition: transform .35s var(--ease);
+}
+.qcat__name { font: 700 14px/1.25 var(--font); text-wrap: balance; transition: color .25s var(--ease); }
+.qcat:active .qcat__cap { transform: scale(.97); }
+@media (hover: hover) and (pointer: fine) {
+  .qcat:hover .qcat__win { transform: translate(-50%, -50%) rotate(-32deg) scale(1.08); }
+  .qcat:hover .qcat__img { transform: translate(-50%, calc(-48% - 8px)) scale(1.05); }
+  .qcat:hover .qcat__name { color: var(--blue); }
+}
+
+/* ---------- 7. Товары ---------- */
+.shop { margin-top: 96px; }
+/* Якоря «Смотреть каталог» / «Подбор по задаче»: заголовок раздела не уходит под липкую шапку (76 px). */
+.shop, .tasks { scroll-margin-top: 92px; }
+.sec-head--shop { justify-content: flex-start; }
+.tabs { display: flex; gap: 4px; margin-left: 28px; padding: 5px; border-radius: 999px; background: var(--mist); }
+.tab {
+  height: 40px; padding: 0 18px; border-radius: 999px; font: 700 14px/1 var(--font); color: var(--navy); white-space: nowrap;
+  transition: background-color .25s var(--ease), color .25s var(--ease), box-shadow .25s var(--ease);
+}
+.tab[aria-selected="true"] { background: var(--blue); color: #fff; box-shadow: var(--glow); }
+.more {
+  display: flex; align-items: center; gap: 4px; margin-left: auto; padding: 0 4px; font: 700 15px/1 var(--font);
+  color: var(--blue); white-space: nowrap; border-radius: 999px;
+}
+.more__ic { width: 18px; height: 18px; transition: transform .25s var(--ease); }
+@media (hover: hover) and (pointer: fine) {
+  .tab:hover:not([aria-selected="true"]) { color: var(--blue); }
+  .more:hover .more__ic { transform: translateX(3px); }
+}
+
+.grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 44px 20px; }
+.pcard { position: relative; display: flex; flex-direction: column; min-width: 0; }
+.pcard__media { position: relative; aspect-ratio: 1 / 1; border-radius: 30px; background: var(--mist); overflow: hidden; isolation: isolate; }
+.pcard__ph { display: block; width: 100%; height: 100%; }
+.pcard__ph img {
+  width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; filter: brightness(1.055);
+  transition: transform .3s var(--ease);
+}
+.pcard__fav {
+  position: absolute; top: 12px; right: 12px; z-index: 1; display: grid; place-items: center;
+  width: 40px; height: 40px; border-radius: 50%; background: rgba(255, 255, 255, .94); color: var(--navy);
+  box-shadow: 0 8px 18px -12px rgba(11, 42, 91, .55);
+  transition: color .2s var(--ease), background-color .2s var(--ease);
+}
+.pcard__fav .ic { width: 19px; height: 19px; }
+.pcard__fav::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; }
+.pcard__fav .ic--fill, .pcard__fav[aria-pressed="true"] .ic--line { display: none; }
+.pcard__fav[aria-pressed="true"] { color: var(--blue); }
+.pcard__fav[aria-pressed="true"] .ic--fill { display: block; }
+.pcard__fav.is-pop .ic--fill { animation: pop .45s var(--ease); }
+@keyframes pop { 0% { transform: scale(.5); } 60% { transform: scale(1.18); } 100% { transform: scale(1); } }
+.pcard__brand { margin-top: 16px; font: 800 11px/1 var(--font); letter-spacing: .14em; text-transform: uppercase; color: var(--blue); }
+.pcard__name {
+  margin-top: 9px; font: 500 14px/1.43 var(--font); color: var(--ink);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.86em;
+}
+.pcard__name a { transition: color .2s var(--ease); }
+.pcard__size { margin-top: 6px; font: 500 13px/1.2 var(--font); color: var(--muted); }
+.pcard__buy { position: relative; display: flex; align-items: center; justify-content: space-between; height: 48px; margin-top: 14px; }
+.pcard__price { font: 800 19px/1 var(--font); letter-spacing: -.01em; font-variant-numeric: tabular-nums; color: var(--navy); white-space: nowrap; }
+
+/* Кнопка «в корзину»: круг с корзиной; при наведении капсула раскрывается (clip-path) до «В корзину». */
+.addbtn {
+  position: absolute; right: 0; top: 0; display: grid; place-items: center;
+  width: 48px; height: 48px; border-radius: 50%; color: #fff;
+}
+.addbtn__pill {
+  position: absolute; right: 0; top: 0; width: 142px; height: 100%; border-radius: 999px; background: var(--blue);
+  clip-path: inset(0 0 0 94px round 24px); -webkit-clip-path: inset(0 0 0 94px round 24px);
+  transition: clip-path .28s var(--ease), -webkit-clip-path .28s var(--ease), background-color .2s var(--ease);
+}
+.addbtn__ic { position: relative; display: grid; place-items: center; width: 48px; height: 48px; }
+.addbtn__ic .ic { position: absolute; left: 50%; top: 50%; width: 21px; height: 21px; margin: -10.5px 0 0 -10.5px; transition: transform .3s var(--ease), opacity .2s ease; }
+.addbtn .ic--check { opacity: 0; transform: scale(.4) rotate(-40deg); }
+.addbtn__txt {
+  position: absolute; left: 22px; top: 50%; margin-top: -7px; font: 700 14px/14px var(--font); white-space: nowrap;
+  transition: opacity .2s ease, transform .3s var(--ease);
+}
+.addbtn__txt--add { opacity: 0; transform: translateX(8px); }
+.addbtn__txt--done { opacity: 0; transform: translateY(10px); }
+.addbtn.is-added .addbtn__pill, .addbtn:focus-visible .addbtn__pill { clip-path: inset(0 0 0 0 round 24px); -webkit-clip-path: inset(0 0 0 0 round 24px); }
+.addbtn.is-added .addbtn__pill { background: var(--deep); }
+.addbtn.is-added .ic--basket { opacity: 0; transform: scale(.4); }
+.addbtn.is-added .ic--check { opacity: 1; transform: none; }
+.addbtn.is-added .addbtn__txt--add { opacity: 0; transform: translateY(-10px); }
+.addbtn.is-added .addbtn__txt--done { opacity: 1; transform: none; }
+/* Кольцо фокуса повторяет раскрытую капсулу «В корзину», а не круг с корзиной (значок остаётся справа). */
+.addbtn:focus-visible { width: 142px; border-radius: 999px; place-items: center end; outline-offset: 4px; }
+.addbtn:focus-visible:not(.is-added) .addbtn__txt--add { opacity: 1; transform: none; }
+.addbtn__plus {
+  position: absolute; right: 2px; top: -4px; z-index: 2; padding: 5px 9px; border-radius: 999px;
+  background: var(--blue); color: #fff; font: 800 12px/1 var(--font); pointer-events: none;
+  animation: plus .9s var(--ease) forwards;
+}
+@keyframes plus {
+  0% { opacity: 0; transform: translateY(8px) scale(.6); }
+  25% { opacity: 1; transform: translateY(-12px) scale(1); }
+  100% { opacity: 0; transform: translateY(-34px) scale(.95); }
+}
+@media (hover: hover) and (pointer: fine) {
+  .pcard:hover .pcard__ph img { transform: scale(1.05); }
+  .pcard:hover .addbtn__pill { clip-path: inset(0 0 0 0 round 24px); -webkit-clip-path: inset(0 0 0 0 round 24px); }
+  .pcard:hover .addbtn:not(.is-added) .addbtn__txt--add { opacity: 1; transform: none; transition: opacity .2s ease .06s, transform .28s var(--ease) .04s; }
+  .addbtn:hover .addbtn__pill { background: var(--deep); }
+  .pcard__name a:hover { color: var(--blue); }
+  .pcard__fav:hover { color: var(--blue); }
+}
+.grid.is-swap .pcard { animation: cardIn .6s var(--ease) both; animation-delay: calc(var(--i, 0) * 45ms); }
+@keyframes cardIn { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+
+/* ---------- 8. Двойное промо (закрывающий блок перед подвалом) ---------- */
+.duo { margin-top: 100px; padding-bottom: 110px; }
+.duo__grid { display: grid; grid-template-columns: 1.32fr 1fr; gap: 20px; }
+.duo__card { position: relative; overflow: hidden; min-height: 400px; padding: 46px 48px 48px; border-radius: 40px; }
+.duo__card--brands {
+  color: #fff;
+  background: var(--pattern) 0 0 / 112px 104px, linear-gradient(104.83deg, #004FA8 0%, #0059B9 38%, #2268B9 66%, #6FAEF5 100%);
+}
+.duo__card--brands { display: flex; flex-direction: column; align-items: flex-start; }
+.duo__title { max-width: 540px; font: 700 40px/1.08 var(--serif); letter-spacing: -.015em; }
+.duo__num {
+  display: inline-flex; align-items: center; justify-content: center; height: 1.12em; padding: 0 .36em; margin-right: .1em;
+  border-radius: 999px; background: #fff; color: var(--blue); vertical-align: -.12em;
+  font: 800 .84em/1 var(--font); letter-spacing: -.02em; font-variant-numeric: tabular-nums;
+}
+.duo__card--brands .btn { margin-top: auto; }
+.duo__wall { display: flex; flex-wrap: wrap; gap: 10px; margin: 32px 0 34px; }
+.bcap--wall { height: 56px; min-width: 0; padding: 0 26px; box-shadow: 0 12px 24px -18px rgba(0, 22, 64, .8); }
+.bcap--wall .bcap__logo { height: calc(var(--lh, 22px) * .9); }
+.bcap--wall .bcap__word { font-size: 14px; }
+/* Ровные ряды стены без одиночной капсулы: поля капсул подобраны под ширину карточки.
+   Две колонки промо: 3/3/3/3 на 1024–1204 px, 4/4/4 от 1205 px. Промо в столбец (721–1023): 4/4/4 до 836 px, 6/6 от 905 px. */
+@media (min-width: 1024px) and (max-width: 1078.98px), (min-width: 1205px) and (max-width: 1376.98px), (min-width: 905px) and (max-width: 1023.98px) {
+  .bcap--wall { padding: 0 18px; }
+}
+@media (min-width: 721px) and (max-width: 796.98px) {
+  .bcap--wall { padding: 0 22px; }
+}
+@media (min-width: 837px) and (max-width: 904.98px) {
+  .bcap--wall { padding: 0 34px; }
+}
+/* «Не знаете, что выбрать?»: заголовок и одна кнопка слева, крупные товары в «O» логотипа справа — как в «Ритейле». */
+.duo__card--pick { display: flex; flex-direction: column; align-items: flex-start; background: var(--soft); color: var(--navy); }
+.duo__title--ink { position: relative; z-index: 1; max-width: 300px; color: var(--navy); }
+.duo__cta { position: relative; z-index: 1; margin-top: auto; }
+.duo__art { position: absolute; right: 22px; bottom: 34px; width: 262px; height: 255px; pointer-events: none; }
+.duo__o { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; transform: rotate(8deg); }
+.duo__p {
+  position: absolute; width: auto; max-width: none;
+  transition: transform .3s var(--ease);
+}
+.duo__p.is-ld { filter: url(#alphacut) drop-shadow(0 18px 18px rgba(11, 42, 91, .26)); }
+.duo__p--1 { height: 209px; left: 22px; bottom: -4px; }
+/* Квадратная вырезка cut-v8/p-017 (флакон 75 % высоты): флакон стоит там же, где стоял hero-serum.
+   Остаток запечённой тени справа от крышки и плечика срезан по контуру флакона. */
+.duo__p--2 {
+  height: 229px; left: 38px; bottom: 21px;
+  -webkit-clip-path: polygon(0 0, 57.4% 0, 57.4% 28.4%, 60.5% 28.4%, 60.5% 100%, 0 100%);
+  clip-path: polygon(0 0, 57.4% 0, 57.4% 28.4%, 60.5% 28.4%, 60.5% 100%, 0 100%);
+}
+.duo__p--3 { height: 133px; left: 32px; bottom: -6px; }
+@media (hover: hover) and (pointer: fine) {
+  .duo__card--pick:hover .duo__p--2 { transform: translateY(-6px); }
+}
+
+/* ---------- 6. Подбор по задаче ---------- */
+.tasks { margin-top: 88px; }
+.tasks__grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px; }
+.tasks__grid > li { display: flex; }
+.task {
+  position: relative; display: flex; flex-direction: column; width: 100%; min-height: 336px; padding: 24px 20px 22px;
+  border-radius: 34px; background: var(--soft); color: var(--navy); overflow: hidden;
+  transition: background-color .35s var(--ease), color .35s var(--ease);
+}
+.task__name { font: 800 17px/1.22 var(--font); letter-spacing: -.01em; text-wrap: balance; }
+.task__desc { margin-top: 8px; font: 500 13.5px/1.45 var(--font); color: var(--muted); transition: color .35s var(--ease); }
+.ostage--task { width: 150px; height: 146px; margin: auto auto 0; }
+.ostage--task .ostage__img { width: 124%; height: 124%; bottom: 6%; }
+@media (hover: hover) and (pointer: fine) {
+  .task:hover { background: var(--blue); color: #fff; }
+  .task:hover .task__desc { color: rgba(255, 255, 255, .84); }
+  .task:hover .ostage__blob { fill: #fff; }
+  .task:hover .ostage__cap { fill: #CFE3FA; }
+  .task:hover .ostage__img { transform: translateX(-50%) translateY(-10px); }
+}
+
+/* ---------- 9. Подвал ---------- */
+.ftr { position: relative; overflow: hidden; padding: 76px 0 40px; background: var(--navy); color: rgba(255, 255, 255, .88); }
+.ftr__o { position: absolute; right: -150px; bottom: -190px; width: 600px; height: 583px; fill: rgba(255, 255, 255, .045); pointer-events: none; }
+.ftr__in { position: relative; }
+.ftr__top { display: grid; grid-template-columns: 1.25fr .9fr 1fr 1.55fr; gap: 40px; }
+.logo--w { color: #fff; display: inline-block; }
+.logo--w svg { width: 130px; height: 44px; }
+.ftr__tag { margin-top: 16px; font: 700 11.5px/1 var(--font); letter-spacing: .18em; text-transform: uppercase; color: rgba(255, 255, 255, .62); }
+.ftr__social { display: flex; gap: 10px; margin-top: 28px; }
+.ftr__social a { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; transition: background-color .2s var(--ease); }
+.ftr__social img { width: 34px; height: 34px; }
+.ftr__h { margin-bottom: 20px; font: 800 12px/1 var(--font); letter-spacing: .16em; text-transform: uppercase; color: var(--sky); }
+.ftr__col li + li { margin-top: 12px; }
+.ftr__col a { font: 500 15px/1.35 var(--font); color: rgba(255, 255, 255, .86); transition: color .2s var(--ease); }
+.ftr__brands { display: flex; flex-wrap: wrap; gap: 8px; }
+.ftr__brands li + li { margin-top: 0; }
+.ftr__brands a {
+  display: flex; align-items: center; height: 36px; padding: 0 15px; border-radius: 999px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .22); font-size: 13px; font-weight: 600;
+  transition: background-color .2s var(--ease), color .2s var(--ease);
+}
+.ftr__bottom {
+  display: flex; justify-content: space-between; gap: 40px; margin-top: 60px; padding-top: 26px;
+  border-top: 1px solid rgba(255, 255, 255, .12); font: 500 12.5px/1.55 var(--font); color: rgba(255, 255, 255, .62);
+}
+.ftr__note { max-width: 640px; text-align: right; }
+@media (hover: hover) and (pointer: fine) {
+  .ftr__col a:hover { color: #fff; }
+  .ftr__brands a:hover { background: #fff; color: var(--navy); }
+  .ftr__social a:hover { background: rgba(255, 255, 255, .1); }
+}
+
+/* ---------- Нижняя панель (телефон) ---------- */
+.tabbar { display: none; }
+
+/* =========================================================
+   Адаптив
+   ========================================================= */
+/* Уже 1440: четыре карточки в ряд — раскрытая капсула «В корзину» не наезжает на цену (на 1280 и 1366 наезжала). */
+@media (max-width: 1439.98px) {
+  .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .grid > .pcard:nth-child(n+9) { display: none; }
+}
+/* 1024–1439: карточка «Не знаете, что выбрать?» уже 560 px — товары стоят над кнопкой, а не рядом с ней. */
+@media (max-width: 1439.98px) and (min-width: 1024px) {
+  .duo__card { min-height: 520px; }
+  .duo__art { bottom: 112px; }
+}
+/* 1024–1199: карточка ~220 px — капсула короче, цена чуть мельче. */
+@media (max-width: 1199.98px) and (min-width: 1024px) {
+  .pcard__price { font-size: 18px; }
+  .addbtn__pill { width: 128px; clip-path: inset(0 0 0 80px round 24px); -webkit-clip-path: inset(0 0 0 80px round 24px); }
+  .addbtn:focus-visible { width: 128px; }
+  .addbtn__txt { left: 16px; font-size: 13px; }
+}
+
+@media (max-width: 1279.98px) {
+  :root { --gut: 40px; }
+  .hdr__act span { display: none; }
+  .hdr__act { width: 48px; padding: 0; justify-content: center; }
+  .tasks__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .mast__title { font-size: 50px; }
+}
+
+/* Преимущества уже 1128 px: четыре пункта в одну строку не помещаются — сетка 2×2 по центру,
+   все четыре видны целиком (без прокрутки и затемнения края). На телефоне та же сетка мельче, см. ниже. */
+@media (max-width: 1127.98px) {
+  .bar__list {
+    display: grid; grid-template-columns: repeat(2, max-content); justify-content: center;
+    width: 100%; height: auto; padding: 8px var(--gut); column-gap: 56px; row-gap: 6px;
+  }
+}
+
+@media (max-width: 1179.98px) {
+  /* Карусель-лента вместо аккордеона */
+  .acc {
+    display: flex; gap: 12px; height: auto; overflow-x: auto; overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory; scrollbar-width: none;
+    margin-inline: calc(-1 * var(--gut)); padding-inline: var(--gut); scroll-padding-inline: var(--gut);
+  }
+  .acc::-webkit-scrollbar { display: none; }
+  .slide {
+    position: relative; flex: 0 0 min(100% - 40px, 520px); height: 440px; border-radius: 40px; overflow: hidden;
+    scroll-snap-align: start; transform: none; clip-path: none; -webkit-clip-path: none; will-change: auto;
+  }
+  .slide__mini { display: none; }
+  .slide__copy { left: 26px; right: 26px; top: 28px; bottom: 26px; width: auto; transform: none; }
+  .slide__copy > *, .slide.is-active .slide__copy > * { opacity: 1; transform: none; transition: none; }
+  .slide__title { max-width: 330px; font-size: 30px; margin-top: auto; }
+  .slide__text { font-size: 15px; margin-top: 10px; max-width: 290px; }
+  .slide__cta { position: relative; z-index: 1; margin-top: 18px; height: 46px; }
+  .slide__win { left: auto; right: 130px; top: 128px; }
+  .slide__cap, .slide.is-active .slide__cap { transform: rotate(-40deg) scale(.6); opacity: 1; transition: none; }
+  .slide__img, .slide.is-active .slide__img {
+    left: auto; right: 130px; top: 128px; height: calc(var(--ph) * .6);
+    transform: translate(50%, -50%); opacity: 1; translate: 0 0; transition: none;
+  }
+  .slide__shadow { display: none; }
+  .acc-ctrl { margin-top: 4px; }
+  .acc-dots__b { min-width: 44px; height: 44px; padding: 0; }
+  .acc-dots__b.is-on i { width: 26px; background: var(--blue); }
+}
+
+@media (max-width: 1179.98px) {
+  .cats__grid { gap: 10px; }
+  .qcat__name { font-size: 12.5px; }
+}
+@media (max-width: 1023.98px) {
+  .cats__grid { grid-template-columns: repeat(5, minmax(0, 1fr)); row-gap: 22px; }
+}
+
+/* Заголовок каталога переносит вкладки на свою строку раньше, чем им станет тесно (на 1024 было +3 px). */
+@media (max-width: 1099.98px) {
+  .sec-head--shop { flex-wrap: wrap; row-gap: 14px; }
+  .sec-head--shop .more { order: 2; }
+  .tabs { order: 3; margin-left: 0; overflow-x: auto; scrollbar-width: none; max-width: 100%; }
+  .tabs::-webkit-scrollbar { display: none; }
+}
+
+/* Бренды на планшете: неподвижная сетка — две строки по шесть (1024–1279), три по четыре (721–1023). */
+@media (max-width: 1279.98px) {
+  .brands__row { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .brands__row > li { min-width: 0; }
+}
+@media (max-width: 1023.98px) {
+  .brands__row { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media (max-width: 1023.98px) {
+  :root { --gut: 24px; }
+  .hdr__catalog span, .hdr__cart > span:nth-child(2) { display: none; }
+  .hdr__cart { position: relative; }
+  .hdr__cart .badge { position: absolute; top: 3px; right: 3px; margin: 0; min-width: 19px; height: 19px; line-height: 19px; box-shadow: 0 0 0 2px #fff; }
+  .hdr__catalog { width: 48px; padding: 0; margin-left: 12px; }
+  .hdr__cart { min-width: 0; padding: 0 16px; }
+  .nav__list { overflow-x: auto; scrollbar-width: none; }
+  .nav__pick { display: none; }
+
+  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px 16px; }
+  .grid > .pcard:nth-child(n+7) { display: none; }
+  .duo__grid { grid-template-columns: 1fr; }
+  .ftr__top { grid-template-columns: 1fr 1fr; }
+  .ftr__bottom { flex-direction: column; gap: 10px; }
+  .ftr__note { text-align: left; }
+}
+
+@media (max-width: 720px) {
+  :root { --gut: 16px; }
+
+  /* Преимущества: все четыре видны сразу — компактная сетка 2×2 вместо прокрутки
+     (первый ряд в одну строку, «Курьер по Крыму…» — в две). */
+  .bar__list {
+    display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr); align-items: center;
+    height: auto; padding: 8px 12px; column-gap: 8px; row-gap: 5px; overflow: visible;
+    -webkit-mask-image: none; mask-image: none;
+  }
+  .bar__it { gap: 5px; font-size: 10.5px; line-height: 1.25; letter-spacing: -.005em; white-space: normal; }
+  .tick { width: 15px; height: 15px; }
+  .tick .ic { width: 10px; height: 10px; }
+
+  .hdr { position: relative; }
+  /* Шапка в две строки: логотип и «Подбор по задаче», под ними поле поиска во всю ширину. */
+  .hdr__row { flex-wrap: wrap; height: auto; column-gap: 10px; row-gap: 9px; padding: 9px 0 12px; }
+  .logo svg { width: 94px; height: 32px; }
+  .hdr__catalog, .hdr__acts { display: none; }
+  .search { order: 9; flex: 1 0 100%; height: 46px; margin: 0; }
+  .search__input { padding-left: 20px; font-size: 16px; }
+  .search__go { top: 3px; right: 3px; }
+  .hdr__pick {
+    display: flex; align-items: center; gap: 8px; height: 44px; margin-left: auto; padding: 0 16px 0 13px;
+    border-radius: 999px; background: var(--soft); color: var(--blue); font: 700 13px/1 var(--font);
+  }
+  .nav { display: none; }
+
+  /* Бренды: подпись «Бренды 12» слева, неподвижный ряд капсул листается пальцем, в конце — «Все бренды». */
+  .brands { --lk: .82; --bw: 13px; }
+  .brands__in { display: flex; align-items: center; gap: 0; width: 100%; height: 76px; padding: 0 0 0 16px; }
+  .brands__title { flex: none; gap: 7px; letter-spacing: .12em; }
+  .brands__count { min-width: 26px; height: 26px; padding: 0 7px; }
+  .brands__all { display: none; }
+  .brands__row {
+    display: flex; flex: 1; min-width: 0; gap: 8px; padding: 8px 0 8px 14px;
+    overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x proximity; scroll-padding-left: 14px; scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 40px), transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 40px), transparent 100%);
+  }
+  .brands__row::-webkit-scrollbar { display: none; }
+  .brands__row > li { flex: none; min-width: 0; }
+  .brands__row > li:last-child { padding-right: 16px; }
+  .brands__more { display: flex !important; }
+  .bcap { height: 50px; min-width: 112px; padding: 0 20px; scroll-snap-align: start; }
+  .bcap--all { min-width: 0; }
+
+  .hero { padding-top: 18px; }
+  .mast { margin-bottom: 16px; }
+  .mast__title { font-size: 37px; line-height: 1.06; letter-spacing: -.015em; }
+  .mast__text { margin-top: 12px; font-size: 14.5px; }
+  .mast__cta { flex-wrap: nowrap; gap: 10px; margin-top: 18px; }
+  .mast__cta .btn { flex: 1 1 auto; height: 50px; padding: 0 16px; font-size: 15px; }
+
+  /* Слайды: товар крупнее (60 % высоты из данных), окно-капсула под ним. */
+  .slide { flex-basis: calc(100% - 34px); height: 380px; border-radius: 34px; }
+  /* Подпись-чип над заголовком внизу: верх слайда свободен для товара и белой капсулы. */
+  .slide__copy { left: 22px; right: 22px; top: 22px; bottom: 22px; }
+  .chip--glass { height: 28px; margin-top: auto; padding: 0 12px; font-size: 10.5px; }
+  /* Светлый конец градиента — в правом верхнем углу, за товаром и белой капсулой; подпись внизу слева
+     остаётся на насыщенном синем (белый текст ≥ 4,5:1). Заголовок переносится раньше и не заходит на белую капсулу. */
+  .slide { --sa: 60deg; }
+  .slide__title { max-width: min(230px, calc(100% - 64px)); margin-top: 10px; font-size: 24px; }
+  .slide__text { margin-top: 8px; font-size: 14px; line-height: 1.45; max-width: 240px; }
+  .slide__cta { margin-top: 16px; height: 44px; padding: 0 20px; font-size: 14px; }
+  .slide__win { right: 92px; top: 104px; }
+  .slide__cap, .slide.is-active .slide__cap { transform: rotate(-40deg) scale(.6); }
+  .slide__img, .slide.is-active .slide__img { right: 92px; top: 104px; height: calc(var(--ph) * .6); }
+
+  .sec-title { font-size: 28px; }
+  .sec-head { margin-bottom: 14px; }
+  /* Быстрые категории: два ряда, сразу видно 4–5 капсул с фото; «Новинки» (без фото) — в конце. */
+  /* Быстрые категории: сетка 3×3, все девять видны сразу. */
+  .cats { margin-top: 44px; }
+  .cats .more { display: none; }
+  .cats__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 12px; }
+  .qcat { gap: 8px; }
+  .qcat__cap { aspect-ratio: 3 / 4; }
+  .qcat__img { width: calc(124% * var(--qf, 1)); }
+  .qcat__name { font-size: 13px; }
+
+  .shop { margin-top: 56px; }
+  .shop, .tasks { scroll-margin-top: 8px; }
+  .sec-head--shop { flex-wrap: wrap; row-gap: 12px; }
+  .sec-head--shop .more { order: 2; }
+  .tabs {
+    order: 3; width: calc(100% + 2 * var(--gut)); max-width: none; margin: 0 calc(-1 * var(--gut)); padding: 0 var(--gut);
+    background: none; border-radius: 0; overflow-x: auto; scrollbar-width: none; gap: 6px;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { height: 44px; padding: 0 16px; background: var(--mist); font-size: 13.5px; }
+  .more { font-size: 14px; }
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 12px; }
+  .pcard__media { border-radius: 24px; }
+  .pcard__fav { top: 8px; right: 8px; width: 36px; height: 36px; }
+  .pcard__fav .ic { width: 17px; height: 17px; }
+  .pcard__brand { margin-top: 12px; font-size: 10px; }
+  .pcard__name { margin-top: 7px; font-size: 13px; }
+  .pcard__size { font-size: 12px; }
+  .pcard__buy { height: 44px; margin-top: 10px; }
+  .pcard__price { font-size: 16px; }
+  .addbtn, .addbtn:focus-visible { width: 44px; height: 44px; }
+  .addbtn__pill, .addbtn.is-added .addbtn__pill, .addbtn:focus-visible .addbtn__pill { width: 44px; clip-path: none; -webkit-clip-path: none; }
+  .addbtn__txt { display: none; }
+  .addbtn__ic { width: 44px; height: 44px; }
+  .addbtn__ic .ic { width: 20px; height: 20px; }
+
+  .duo { margin-top: 56px; padding-bottom: 64px; }
+  .duo__grid { gap: 14px; }
+  .duo__card { min-height: 0; padding: 30px 22px 26px; border-radius: 32px; }
+  .duo__title { font-size: 26px; }
+  .duo__wall {
+    flex-wrap: nowrap; align-self: stretch; margin: 22px -22px 22px; padding: 0 22px 6px; overflow-x: auto; scrollbar-width: none;
+  }
+  .duo__wall::-webkit-scrollbar { display: none; }
+  .bcap--wall { height: 50px; padding: 0 20px; flex: none; }
+  .duo__card--pick { min-height: 380px; }
+  .duo__title--ink { max-width: 200px; }
+  .duo__art { right: 2px; bottom: 88px; width: 198px; height: 193px; }
+  .duo__p--1 { height: 158px; left: 21px; bottom: -3px; }
+  .duo__p--2 { height: 173px; left: 33px; bottom: 16px; }
+  .duo__p--3 { height: 100px; left: 29px; bottom: -5px; }
+  .duo__cta { width: 100%; margin-top: auto; }
+
+  .tasks { margin-top: 52px; }
+  .tasks__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .task { min-height: 272px; padding: 18px 15px 16px; border-radius: 28px; }
+  .task__name { font-size: 15px; }
+  .task__desc { font-size: 12.5px; }
+  .ostage--task { width: 118px; height: 115px; }
+
+  /* Синий подвал уходит под панель вкладок — без белой полосы снизу. */
+  .ftr { padding: 52px 0 calc(32px + 70px + env(safe-area-inset-bottom)); }
+  .ftr__top { grid-template-columns: 1fr 1fr; gap: 36px 20px; }
+  .ftr__about, .ftr__col--brands { grid-column: 1 / -1; }
+  .ftr__o { width: 380px; height: 369px; right: -120px; bottom: -110px; }
+  .ftr__bottom { margin-top: 40px; }
+  .ftr__col li + li { margin-top: 0; }
+  .ftr__col a { display: flex; align-items: center; min-height: 44px; padding-block: 5px; }
+  .ftr__h { margin-bottom: 6px; }
+  .ftr__brands a { min-height: 44px; height: auto; }
+  .logo { padding-block: 6px; }
+  .more { min-height: 44px; }
+
+  .tabbar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+    display: grid; grid-template-columns: repeat(5, 1fr); align-items: stretch;
+    height: calc(70px + env(safe-area-inset-bottom)); padding: 0 4px env(safe-area-inset-bottom);
+    /* Панель непрозрачная: текст слайдов и карточек под ней не просвечивает. */
+    background: #fff;
+    box-shadow: 0 -1px 0 var(--line), 0 -14px 30px -22px rgba(11, 42, 91, .4);
+  }
+  .tabbar__it {
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px;
+    min-height: 44px; padding-bottom: 11px; font: 600 11px/1 var(--font); color: var(--muted);
+  }
+  .tabbar__it .ic { width: 24px; height: 24px; color: var(--navy); }
+  .tabbar__it--cat { color: var(--blue); font-weight: 700; }
+  .tabbar__pill {
+    display: grid; place-items: center; width: 62px; height: 40px; margin-bottom: -2px; border-radius: 999px;
+    background: var(--blue); box-shadow: var(--glow);
+  }
+  .tabbar__pill .ic { color: #fff; }
+  .tabbar__ic { position: relative; display: grid; }
+  .tabbar__ic .badge { top: -6px; right: -10px; }
+}
+
+/* Узкие телефоны (до 374 px): две кнопки первого экрана помещаются в строку. */
+@media (max-width: 374.98px) {
+  .mast__cta .btn { padding: 0 12px; font-size: 14px; }
+  /* «Уход на каждый вечер» остаётся в две строки и не касается белой капсулы. */
+  .slide__title { font-size: 22px; }
+}
+@media (max-width: 340px) {
+  .mast__cta { flex-wrap: wrap; }
+  .mast__cta .btn { flex: 1 1 100%; }
+}
+
+/* Уменьшенное движение: всё на месте, без автопрокрутки и бегущей строки. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0s !important; transition-delay: 0s !important; animation-duration: 0s !important; animation-delay: 0s !important; }
+  .brands__row > li { animation: none; }
+  /* Без автопрокрутки: полоска прогресса не анимируется (иначе нулевая анимация листала бы слайды подряд). */
+  .acc-dots__b.is-on i::after { animation: none !important; }
+  .acc--intro .slide, .acc--intro .slide * { animation: none !important; }
+  .addbtn__plus { display: none; }
+}

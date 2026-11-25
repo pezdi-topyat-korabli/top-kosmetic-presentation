@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <title>TOP Cosmetics — концепция «Клиника»</title>
+  <meta name="description" content="Прототип главной страницы магазина профессиональной косметики TOP Cosmetics. Концепция «Клиника».">
+  <meta name="theme-color" content="#0059B9">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,600&family=Montserrat:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="../_shared/kit.css">
+  <link rel="stylesheet" href="style.css">
+  <script>document.documentElement.classList.add('is-ready');</script>
+  <script src="../_shared/data.js"></script>
+  <script src="../_shared/kit.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Перейти к содержанию</a>
+
+<!-- Спрайт: логотип, «О» логотипа, иконки, фильтры перекраски SVG-логотипов брендов -->
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="logo" viewBox="0 0 398 133">
+      <path d="M40.08 132.608V32.5579H0V0L119.665 0V32.5579H79.7859V132.608H40.08Z"/>
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M153.475 8.93882C166.048 1.13599 187.777 -0.249239 197.07 0.0334723C244.491 0.0334788 255.971 23.2157 258.294 28.5872C260.618 33.9587 267.997 46.8222 264.307 81.5957C260.618 116.369 242.442 123.861 227.819 128.384C213.196 132.908 194.337 135.169 167.961 128.384C141.585 121.599 135.435 106.192 131.472 89.7943C127.509 73.397 127.646 52.1936 131.472 40.1784C135.299 28.1632 137.759 18.6924 153.475 8.93882ZM190.648 12.5714C175.065 4.23094 163.929 3.77884 149.809 13.1281C133.974 23.6116 127.689 48.3987 145.652 70.6886C164.024 93.4859 198.88 125.476 224.15 125.8C249.42 126.124 260.323 102.133 259.171 90.0019C258.019 77.8708 257.662 67.0339 226.119 38.1528C219.833 32.2993 206.908 21.2744 190.648 12.5714Z"/>
+      <path d="M282.373 132.608V0H341.011C352.739 0 362.817 1.95755 371.246 5.87266C379.798 9.78777 386.395 15.471 391.037 22.9223C395.679 30.2474 398 38.9616 398 49.0651C398 59.0423 395.679 67.6935 391.037 75.0185C386.395 82.3436 379.798 88.0268 371.246 92.0682C362.817 95.9833 352.739 97.9408 341.011 97.9408H318.656V132.608H282.373ZM318.656 68.3881H332.776C340.35 68.3881 345.97 66.6831 349.635 63.2732C353.422 59.8633 355.315 55.1272 355.315 49.0651C355.315 42.8767 353.422 38.0776 349.635 34.6676C345.97 31.2577 340.35 29.5527 332.776 29.5527H318.656V68.3881Z"/>
+    </symbol>
+    <symbol id="o-mark" viewBox="128.55 0 136.78 132.67">
+      <path fill-rule="evenodd" d="M153.475 8.93882C166.048 1.13599 187.777 -0.249239 197.07 0.0334723C244.491 0.0334788 255.971 23.2157 258.294 28.5872C260.618 33.9587 267.997 46.8222 264.307 81.5957C260.618 116.369 242.442 123.861 227.819 128.384C213.196 132.908 194.337 135.169 167.961 128.384C141.585 121.599 135.435 106.192 131.472 89.7943C127.509 73.397 127.646 52.1936 131.472 40.1784C135.299 28.1632 137.759 18.6924 153.475 8.93882ZM190.648 12.5714C175.065 4.23094 163.929 3.77884 149.809 13.1281C133.974 23.6116 127.689 48.3987 145.652 70.6886C164.024 93.4859 198.88 125.476 224.15 125.8C249.42 126.124 260.323 102.133 259.171 90.0019C258.019 77.8708 257.662 67.0339 226.119 38.1528C219.833 32.2993 206.908 21.2744 190.648 12.5714Z"/>
+    </symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M16.2 16.2 20.5 20.5"/></g></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" d="M12 20.2c-.25 0-.5-.08-.7-.24C7.7 17.2 3.6 13.9 3.6 9.6 3.6 7 5.6 5 8.1 5c1.6 0 3 .8 3.9 2.1C12.9 5.8 14.3 5 15.9 5c2.5 0 4.5 2 4.5 4.6 0 4.3-4.1 7.6-7.7 10.36-.2.16-.45.24-.7.24Z"/></symbol>
+    <symbol id="i-heart-fill" viewBox="0 0 24 24"><path fill="currentColor" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" d="M12 20.2c-.25 0-.5-.08-.7-.24C7.7 17.2 3.6 13.9 3.6 9.6 3.6 7 5.6 5 8.1 5c1.6 0 3 .8 3.9 2.1C12.9 5.8 14.3 5 15.9 5c2.5 0 4.5 2 4.5 4.6 0 4.3-4.1 7.6-7.7 10.36-.2.16-.45.24-.7.24Z"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="8" r="3.9"/><path d="M4.6 20c.9-3.5 3.9-5.8 7.4-5.8s6.5 2.3 7.4 5.8"/></g></symbol>
+    <symbol id="i-basket" viewBox="-1.5 -0.5 21 24"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M13.1944 10.375V5.125C13.1944 3.96468 12.7262 2.85188 11.8927 2.03141C11.0592 1.21094 9.92874 0.75 8.75 0.75C7.57126 0.75 6.4408 1.21094 5.6073 2.03141C4.77381 2.85188 4.30556 3.96468 4.30556 5.125V10.375M0.75 7V20.75C0.75 21.3023 1.19772 21.75 1.75 21.75H15.75C16.3023 21.75 16.75 21.3023 16.75 20.75V7C16.75 6.44772 16.3023 6 15.75 6H1.75C1.19772 6 0.75 6.44771 0.75 7Z"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M5 12.6 9.6 17 19 7.5"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M4 7h16M4 12h11M4 17h16"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M5 12h13.5M13 6.5 18.5 12 13 17.5"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></symbol>
+    <filter id="tc-blue" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0.349  0 0 0 0 0.725  0 0 0 5 0"/></filter>
+    <filter id="tc-deep" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0 0 0 0 0.043  0 0 0 0 0.165  0 0 0 0 0.357  0 0 0 5 0"/></filter>
+    <filter id="tc-white" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 5 0"/></filter>
+  </defs>
+</svg>
+
+<!-- 1. Преимущества: тонкая синяя полоса с галочками (уже 1180 px — неподвижная строка с прокруткой пальцем) -->
+<div class="topbar" data-req="benefits">
+  <div class="topbar__viewport" id="benefits-viewport">
+    <div class="topbar__track">
+      <ul class="topbar__list" id="benefits" aria-label="Преимущества магазина"></ul>
+    </div>
+  </div>
+</div>
+
+<!-- 2. Шапка: поиск слева, логотип по центру, «Подбор по задаче» справа -->
+<header class="hdr" data-req="header">
+  <div class="hdr__row wrap">
+    <button class="iconbtn hdr__burger" type="button" aria-label="Открыть меню" aria-controls="drawer" aria-expanded="false" data-drawer-open>
+      <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-menu"/></svg>
+    </button>
+    <form class="search" role="search" action="#" id="search">
+      <svg class="search__icon" aria-hidden="true" focusable="false"><use href="#i-search"/></svg>
+      <label class="sr" for="q">Поиск по каталогу</label>
+      <input id="q" name="q" type="search" placeholder="Бренд, средство или задача" autocomplete="off" enterkeyhint="search">
+    </form>
+    <a class="logo" href="#" aria-label="TOP Cosmetics — на главную">
+      <svg viewBox="0 0 398 133" aria-hidden="true" focusable="false"><use href="#logo"/></svg>
+    </a>
+    <div class="hdr__actions">
+      <a class="btn btn--blue hdr__cta" href="#tasks" data-scroll-to="tasks">
+        <svg class="omark" aria-hidden="true" focusable="false"><use href="#o-mark"/></svg>
+        <span class="hdr__cta-full">Подбор по задаче</span><span class="hdr__cta-short" aria-hidden="true">Подбор</span>
+      </a>
+      <a class="hdr__link" href="#"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-heart"/></svg><span>Избранное</span></a>
+      <a class="hdr__link" href="#"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-user"/></svg><span>Войти</span></a>
+      <a class="btn btn--blue hdr__cart" href="#" data-cart-target>
+        <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-basket"/></svg><span>Корзина</span>
+        <span class="hdr__count" data-cart-count hidden>0</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<nav class="nav" aria-label="Разделы каталога">
+  <ul class="nav__list wrap" id="nav"></ul>
+</nav>
+
+<main id="main">
+  <!-- 3. Бренды — сразу под шапкой -->
+  <section class="brands wrap" data-req="brands" aria-label="Бренды">
+    <div class="brands__bar">
+      <a class="brands__label" href="#">
+        <span>Бренды</span><span class="brands__count" id="brands-count"></span>
+      </a>
+      <div class="brands__scroller" id="brands-scroller">
+        <span class="brands__hl" id="brands-hl" aria-hidden="true"></span>
+        <ul class="brands__list" id="brands"></ul>
+      </div>
+      <a class="brands__all" href="#" title="Все бренды">
+        <span class="brands__all-text">Все бренды</span>
+        <span class="arrow-dot" aria-hidden="true"><svg class="ico" focusable="false"><use href="#i-arrow"/></svg></span>
+      </a>
+    </div>
+  </section>
+
+  <!-- 4. Сплит-герой: синяя капсула с текстом + светлая витрина с плавающими задачами -->
+  <section class="hero wrap" data-req="hero" aria-labelledby="hero-title">
+    <div class="hero__panel">
+      <p class="hero__eyebrow"><svg class="omark" aria-hidden="true" focusable="false"><use href="#o-mark"/></svg><span id="hero-eyebrow"></span></p>
+      <h1 class="hero__title" id="hero-title"></h1>
+      <p class="hero__text" id="hero-text"></p>
+      <div class="hero__actions">
+        <a class="btn btn--white btn--lg" href="#tasks" id="hero-primary" data-scroll-to="tasks"></a>
+        <a class="btn btn--ghost btn--lg" href="#catalog" id="hero-secondary" data-scroll-to="catalog"></a>
+      </div>
+      <!-- капсулы-задачи — одной строкой под кнопками, внутри синей панели (на телефоне — лента) -->
+      <ul class="hero__tags" id="hero-tags" aria-label="Подбор по задаче"></ul>
+    </div>
+    <div class="hero__stage" id="hero-stage">
+      <div class="stage__layer stage__layer--back" data-depth="0.5" aria-hidden="true">
+        <span class="stage__capsule"></span>
+      </div>
+      <div class="stage__layer stage__layer--mid" data-depth="1" id="hero-products">
+        <span class="stage__podium" aria-hidden="true"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Подбор по задаче: название + описание + продукт в «О» логотипа -->
+  <section class="section tasks wrap" id="tasks" data-req="tasks" aria-labelledby="tasks-title">
+    <div class="sec-head">
+      <h2 class="sec-title" id="tasks-title">Подбор по задаче</h2>
+      <a class="more" href="#"><span class="more__full">Смотреть все</span><span class="more__short" aria-hidden="true">Все</span><span class="arrow-dot" aria-hidden="true"><svg class="ico" focusable="false"><use href="#i-arrow"/></svg></span></a>
+    </div>
+    <ul class="tasks__grid" id="tasks-grid"></ul>
+  </section>
+
+  <!-- 6. Быстрые категории: фото продукта в форме «О» логотипа -->
+  <section class="section cats wrap" data-req="categories" aria-labelledby="cats-title">
+    <div class="sec-head">
+      <h2 class="sec-title" id="cats-title">Быстрые категории</h2>
+      <a class="more" href="#"><span class="more__full">Весь каталог</span><span class="more__short" aria-hidden="true">Все</span><span class="arrow-dot" aria-hidden="true"><svg class="ico" focusable="false"><use href="#i-arrow"/></svg></span></a>
+    </div>
+    <ul class="cats__grid" id="cats-grid"></ul>
+  </section>
+
+  <!-- 7. Товары: вкладки-капсулы, карточки без рамок, кнопка-корзина (выше «Подборок» — первая цена ближе) -->
+  <section class="section prods wrap" id="catalog" data-req="products" aria-labelledby="prods-title">
+    <div class="sec-head sec-head--prods">
+      <h2 class="sec-title" id="prods-title">В каталоге</h2>
+      <div class="tabs" id="tabs" role="tablist" aria-label="Разделы каталога">
+        <span class="tabs__ink" id="tabs-ink" aria-hidden="true"></span>
+      </div>
+      <a class="more" href="#"><span class="more__full">Смотреть все</span><span class="more__short" aria-hidden="true">Все</span><span class="arrow-dot" aria-hidden="true"><svg class="ico" focusable="false"><use href="#i-arrow"/></svg></span></a>
+    </div>
+    <ul class="prods__grid" id="prods-grid" role="tabpanel" aria-labelledby="prods-title"></ul>
+  </section>
+
+  <!-- 8. Подборки (плитки из данных) на синем поле с узором капсул -->
+  <section class="feats" aria-labelledby="feats-title">
+    <div class="wrap">
+      <div class="sec-head sec-head--light">
+        <h2 class="sec-title" id="feats-title">Подборки</h2>
+      </div>
+      <ul class="feats__grid" id="feats-grid"></ul>
+    </div>
+  </section>
+</main>
+
+<footer class="ftr" data-req="footer">
+  <div class="wrap ftr__inner">
+    <div class="ftr__brand">
+      <a class="ftr__logo" href="#" aria-label="TOP Cosmetics — на главную"><svg viewBox="0 0 398 133" aria-hidden="true" focusable="false"><use href="#logo"/></svg></a>
+      <ul class="ftr__benefits" id="ftr-benefits" aria-label="Преимущества"></ul>
+    </div>
+    <nav class="ftr__col" aria-labelledby="f-cat">
+      <h2 class="ftr__h" id="f-cat">Каталог</h2>
+      <ul id="ftr-catalog"></ul>
+    </nav>
+    <nav class="ftr__col" aria-labelledby="f-buy">
+      <h2 class="ftr__h" id="f-buy">Покупателям</h2>
+      <ul id="ftr-buyers"></ul>
+    </nav>
+    <div class="ftr__col">
+      <h2 class="ftr__h">Оплата</h2>
+      <div class="ftr__pay">
+        <img src="../_shared/icons/mir-ico.svg" alt="Мир" width="64" height="18">
+        <img src="../_shared/icons/SBP-ico.svg" alt="СБП" width="62" height="32">
+      </div>
+      <h2 class="ftr__h ftr__h--gap">Мы в соцсетях</h2>
+      <div class="ftr__social">
+        <a href="#" aria-label="Telegram"><img src="../_shared/icons/tg-ico.svg" alt="" width="36" height="36"></a>
+        <a href="#" aria-label="ВКонтакте"><img src="../_shared/icons/vk-ico.svg" alt="" width="33" height="33"></a>
+      </div>
+    </div>
+  </div>
+  <div class="wrap ftr__bottom">
+    <p class="ftr__note" id="ftr-note"></p>
+    <p class="ftr__copy">TOP Cosmetics</p>
+  </div>
+</footer>
+
+<!-- Нижняя панель телефона -->
+<nav class="tabbar" aria-label="Быстрая навигация">
+  <a class="tabbar__item" href="#"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-user"/></svg><span>Профиль</span></a>
+  <a class="tabbar__item" href="#"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-heart"/></svg><span>Избранное</span></a>
+  <button class="tabbar__item tabbar__cat" type="button" aria-controls="drawer" aria-expanded="false" data-drawer-open>
+    <span class="tabbar__pill"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-menu"/></svg></span><span>Каталог</span>
+  </button>
+  <a class="tabbar__item" href="#" aria-label="Корзина">
+    <span class="tabbar__ico" data-cart-target><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-basket"/></svg><span class="badge" data-cart-count hidden>0</span></span><span aria-hidden="true">Корзина</span>
+  </a>
+  <button class="tabbar__item" type="button" id="tab-search"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-search"/></svg><span>Поиск</span></button>
+</nav>
+
+<!-- Меню (телефон) -->
+<div class="drawer" id="drawer" hidden>
+  <div class="drawer__scrim" data-drawer-close></div>
+  <div class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+    <div class="drawer__head">
+      <svg class="drawer__logo" viewBox="0 0 398 133" aria-hidden="true" focusable="false"><use href="#logo"/></svg>
+      <h2 class="sr" id="drawer-title">Меню</h2>
+      <button class="iconbtn" type="button" aria-label="Закрыть меню" data-drawer-close><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-close"/></svg></button>
+    </div>
+    <ul class="drawer__nav" id="drawer-nav"></ul>
+    <ul class="drawer__benefits" id="drawer-benefits" aria-label="Преимущества"></ul>
+  </div>
+</div>
+
+<p class="sr" aria-live="polite" id="live"></p>
+</body>
+</html>
